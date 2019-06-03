@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Profile</title>
+	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css"
+		  integrity="sha384-oS3vJWv+0UjzBfQzYUhtDYW+Pj2yciDJxpsK1OYPAYjqT085Qq/1cq5FLXAZQ7Ay" crossorigin="anonymous">
+	<link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
+	<link href="https://fonts.googleapis.com/css?family=Montserrat" rel="stylesheet">
+	<link rel="stylesheet" href="/style/style.css">
+</head>
+<body id="profile">
+
+<div id="profile-top">
+		<nav>
+			<ul>
+				<li class="nav-logo">
+					<a class="font-bold" href="/">runner</a>
+				</li>
+				<li class="nav-item">
+					<a href="/runner/settings">settings</a>
+				</li>
+				<li class="nav-item">
+					<a href="/runner/logout">sign out</a>
+				</li>
+			</ul>
+		</nav>
+		<div class="nav-opacity-overlay"></div>
+</div>
+
+<main>
+	<div id="profile-picture-container">
+		<div id="profile-picture-img">
+			<img src="/img/profile_bluer.png" alt="profile picture">
+		</div>
+		<div id="profile-picture-general">
+			<div class="profile-picture-general-item">
+				<p>
+					<span>Runs</span><span></span>
+				</p>
+			</div>
+			<div class="profile-picture-general-item">
+				<p>
+					<span>Distance</span><span></span>
+				</p>
+			</div>
+			<div class="profile-picture-general-item">
+				<p>
+					<span>Total steps</span><span></span>
+				</p>
+			</div>
+			<div class="profile-picture-general-item profile-picture-general-item-multiline">
+				<p>
+					Last activity
+				</p>
+				<p>
+					<!--<span>Typical Run</span> - Tue, 13/04/2019-->
+					<span></span>
+				</p>
+			</div>
+		</div>
+	</div>
+
+	<div id="profile-right">
+		<div id="profile-name">
+			<span></span>
+			<!--<span id="pro">PRO</span>-->
+		</div>
+
+		<div id="overview-container" class="data-container">
+			<header>
+				<h2>Overview</h2>
+			</header>
+			<div id="overview-data-container">
+				<div class="overview-data-item" id="overview-distance">
+					<h3>
+						<span>total</span>
+						<span>distance</span>
+					</h3>
+					<p>
+						<span></span><span>km</span>
+					</p>
+				</div>
+				<div class="overview-data-item" id="overview-time">
+					<h3>
+						<span>total</span>
+						<span>time</span>
+					</h3>
+					<p>
+						<span></span><span>h</span>
+					</p>
+				</div>
+				<div class="overview-data-item" id="overview-steps">
+					<h3>
+						<span>total</span>
+						<span>steps</span>
+					</h3>
+					<p>
+						<span></span>
+					</p>
+				</div>
+			</div>
+		</div>
+
+		<div id="activity-container" class="data-container">
+			<header>
+				<h2 id="profile-dashboard-gateway">Runs</h2>
+			</header>
+			<div id="activity-data-container">
+
+				<table>
+					<tr>
+						<th>date</th>
+						<th>title</th>
+						<th>distance</th>
+						<th>time</th>
+						<th>steps</th>
+					</tr>
+					<!--<tr>-->
+						<!--<td>Tue, 13/04/2019</td>-->
+						<!--<td>Typical Run</td>-->
+						<!--<td>8.7 km</td>-->
+						<!--<td>00:55:33</td>-->
+						<!--<td>11342</td>-->
+					<!--</tr>-->
+					<!--<tr>-->
+						<!--<td>Thu, 09/12/2018</td>-->
+						<!--<td>A Bit Bad Run</td>-->
+						<!--<td>0.1 km</td>-->
+						<!--<td>00:00:59</td>-->
+						<!--<td>139</td>-->
+					<!--</tr>-->
+					<!--<tr>-->
+						<!--<td>Thu, 09/12/2018</td>-->
+						<!--<td>A Too Long Run</td>-->
+						<!--<td>63 km</td>-->
+						<!--<td>06:11:03</td>-->
+						<!--<td>86736</td>-->
+					<!--</tr>-->
+				</table>
+			</div>
+		</div>
+	</div>
+</main>
+
+<footer>
+	<div>
+		<p>
+			runner
+		</p>
+		<p>
+			(c) 2019 Runner
+		</p>
+	</div>
+	<div>
+		<p>
+			Created with Love and Passion.
+		</p>
+	</div>
+</footer>
+
+<script src="https://code.jquery.com/jquery-3.4.1.min.js"
+		integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+		crossorigin="anonymous"></script>
+<!--<script src="/script/jquery.nicescroll.js"></script>-->
+<script src="/script/script.js"></script>
+</body>
+</html>
+
+
+<!-- password: NoEncryptionForNow -->

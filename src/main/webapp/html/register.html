@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Register</title>
+	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css"
+		  integrity="sha384-oS3vJWv+0UjzBfQzYUhtDYW+Pj2yciDJxpsK1OYPAYjqT085Qq/1cq5FLXAZQ7Ay" crossorigin="anonymous">
+	<link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
+	<link href="https://fonts.googleapis.com/css?family=Montserrat" rel="stylesheet">
+	<link rel="stylesheet" href="/style/style.css">
+</head>
+<body id="register">
+
+<nav>
+	<ul>
+		<li class="nav-logo">
+			<a class="font-bold" href="/">runner</a>
+		</li>
+		<!--<li class="nav-item">-->
+		<!--<a href="/runner/login">login</a>-->
+		<!--</li>-->
+	</ul>
+	<div class="nav-opacity-overlay">
+	</div>
+</nav>
+
+<main>
+	<div id="register-background-overlay">
+	</div>
+
+	<div id="registration-form">
+		<form>
+			<h1>Register</h1>
+
+				<input type="text" placeholder="username" name="username" required>
+				<input type="email" placeholder="email" name="email" required>
+
+				<input type="text" placeholder="first name" name="firstName" required>
+				<input type="text" placeholder="last name" name="lastName" required>
+
+				<input type="password" placeholder="password" name="password"
+					   pattern="^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z]{8,}$" required>
+				<input type="password" placeholder="confirm password" name="confirmPassword"
+					   pattern="^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z]{8,}$" required>
+
+			<button type="button"><span>Sign up</span></button>
+			<p>Already have an account? <a href="/runner/login">Sign in</a></p>
+		</form>
+	</div>
+</main>
+
+<script src="https://code.jquery.com/jquery-3.4.1.min.js"
+		integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+		crossorigin="anonymous"></script>
+<!--<script src="/script/jquery.nicescroll.js"></script>-->
+<script src="/script/script.js"></script>
+</body>
+</html>
