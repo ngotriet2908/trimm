@@ -48,18 +48,19 @@ html, body {
     border-bottom: 3px solid var(--green);
 }
 
-#index, #login {
+#index, #login, #password-reset-enter, #password-reset-request {
     width: 100vw;
     height: 100vh;
 
     display: grid;
     grid-template-rows: 100%;
-    grid-template-columns: repeat(7, 1fr);
-    background: url("../img/blue_runner.jpg") no-repeat right;
+    /*grid-template-columns: repeat(7, 1fr);*/
+    grid-template-columns: 1fr;
+    background: black url("../img/blue_runner.jpg") no-repeat right bottom;
     background-size: cover;
 }
 
-#index nav, #login nav, #register nav {
+#index nav, #login nav, #register nav, #password-reset-enter nav, #password-reset-request nav {
     position: absolute;
     top: 0;
     left: 0;
@@ -69,19 +70,21 @@ html, body {
     z-index: 2;
 }
 
-#index .nav-opacity-overlay, #login .nav-opacity-overlay, #register .nav-opacity-overlay {
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    background: black;
-    background: rgba(0,0,0,0.30);
-    opacity: 0.5;
-    z-index: -1;
-}
+/*#index .nav-opacity-overlay, #login .nav-opacity-overlay, #register .nav-opacity-overlay,*/
+/*#password-reset-enter .nav-opacity-overlay, #password-reset-request .nav-opacity-overlay {*/
+    /*position: absolute;*/
+    /*top: 0;*/
+    /*bottom: 0;*/
+    /*left: 0;*/
+    /*right: 0;*/
+    /*background: black;*/
+    /*background: rgba(0,0,0,0.30);*/
+    /*opacity: 0.5;*/
+    /*z-index: -1;*/
+/*}*/
 
-#index nav ul, #login nav ul,  #profile nav ul, #profile-management nav ul, #dashboard nav ul, #register nav ul {
+#index nav ul, #login nav ul,  #profile nav ul, #profile-management nav ul, #dashboard nav ul, #register nav ul,
+#password-reset-enter nav ul, #password-reset-request nav ul {
     margin: 0;
     height: 100%;
     padding: 0;
@@ -95,7 +98,8 @@ html, body {
     border: 3px solid transparent;
 }
 
-#index nav li, #login nav li, #profile nav li, #profile-management nav li, #dashboard nav li, #register nav li {
+#index nav li, #login nav li, #profile nav li, #profile-management nav li, #dashboard nav li, #register nav li,
+#password-reset-enter nav li, #password-reset-request nav li{
     display: inline-block;
     list-style-type: none;
     padding: 0 2rem;
@@ -138,8 +142,8 @@ html, body {
 /*}*/
 
 #index main {
-    margin: 0 0 0 3em;
-    grid-column: 1 / 5;
+    /*margin: 0 0 0 3em;*/
+    /*grid-column: 1 / 5;*/
     grid-row: 1 / 2;
     display: flex;
     align-items: center;
@@ -150,6 +154,7 @@ html, body {
 
 #welcome-main {
     color: white;
+    width: 50%;
 }
 
 
@@ -184,7 +189,7 @@ html, body {
 }
 
 /* - - - - - - LOGIN - - - -  - - - */
-#login, #register {
+#login, #register, #password-reset-request, #password-reset-enter {
     grid-template-columns: 100%;
 
     width: 100vw;
@@ -201,7 +206,7 @@ html, body {
 }
 
 
-#login main, #register {
+#login main, #register, #password-reset-request, #password-reset-enter {
     grid-column: 1 / 2;
     grid-row: 1 / 2;
     display: flex;
@@ -216,9 +221,11 @@ html, body {
 }
 
 
-#login form {
+#login form, #password-reset-request form, #password-reset-enter form{
     background: white;
     padding: 4em;
+
+    width: 18rem;
 
     border-radius: 0.8rem;
 
@@ -322,6 +329,10 @@ html, body {
     display: none;
 }
 
+#login-error {
+    color: rgba(208, 0, 0, 0.74);
+}
+
 #login form p {
     /*color: white;*/
 }
@@ -390,6 +401,7 @@ html, body {
     font-size: 1.5rem;
 
 }
+
 
 #register button {
     /*grid-column: 1 / 3;*/

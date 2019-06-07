@@ -12,6 +12,7 @@ CREATE TABLE general_user (
     last_name VARCHAR(100),
     email VARCHAR(255),
     password text, -- when we know the actual length of salted hash, better replace with CHAR(fixed_limit)
+    salt text,
     PRIMARY KEY (username)
 );
 

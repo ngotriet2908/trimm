@@ -183,4 +183,24 @@ public enum RunDao {
 
         return null;
     }
+
+    public boolean isUsersRun(String username, int runId) {
+        try {
+            String query = "SELECT r.id " +
+                    "FROM run AS r " +
+                    "WHERE r.id = ? AND r.username = ?";
+
+            PreparedStatement statement = DatabaseInitialiser.getCon().prepareStatement(query);
+            statement.setInt(1, runId);
+            statement.setString(2, username);
+
+            ResultSet resultSet = statement.executeQuery();
+
+            return resultSet.next();
+        } catch (SQLException se) {
+            se.printStackTrace();
+        }
+
+        return false;
+    }
 }

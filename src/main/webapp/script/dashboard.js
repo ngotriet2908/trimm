@@ -278,7 +278,7 @@ document.addEventListener('DOMContentLoaded', function () {
         };
 
         if (typeName === "graph") {
-            http.open("GET", window.location.href + "/graph/20/" + indicatorName, true);
+            http.open("GET", window.location.href + "/graph/50/" + indicatorName, true);
         } else {
             http.open("GET", window.location.href + "/indicator/" + indicatorName, true);
         }
@@ -696,10 +696,11 @@ document.addEventListener('DOMContentLoaded', function () {
                 spanGaps: true,
                 hoverMode: 'index',
                 stacked: false,
-                // title: {
-                //     display: true,
-                //     text: data.name
-                // },
+                elements: {
+                   point: {
+                       radius: 0
+                   }
+                },
                 scales: {
                     yAxes: [{
                         type: 'linear',

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import utwente.team2.dao.RunDao;
 import utwente.team2.dao.StepDao;
+import utwente.team2.filter.Secured;
 import utwente.team2.model.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -11,26 +12,45 @@ import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Request;
+import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.security.Principal;
 import java.util.List;
 
+
+@Secured
 @Path("/runs")
 public class Runs {
 
     @Context
     UriInfo uriInfo;
+
     @Context
-    Request request;
+    HttpServletRequest servletRequest;
+
+    @Context
+    HttpServletResponse servletResponse;
+
+    @Context
+    SecurityContext securityContext;
 
     @Path("/{run_id}")
     @GET
     @Produces(MediaType.TEXT_HTML)
-    public InputStream showRunPage(@PathParam("run_id") String run_id) {
+    public InputStream showRunPage(@PathParam("run_id") String run_id) throws IOException {
+
+        Principal principal = securityContext.getUserPrincipal();
+        String tokenUsername = principal.getName();
+
+        if (!RunDao.instance.isUsersRun(tokenUsername, Integer.parseInt(run_id))) {
+            servletResponse.sendRedirect("/runner/login");
+            return null;
+        }
+
         ClassLoader classLoader = getClass().getClassLoader();
         InputStream inputStream = classLoader.getResourceAsStream("../../html/dashboard.html");
 
@@ -42,6 +62,14 @@ public class Runs {
     @Consumes(MediaType.APPLICATION_JSON)
     public void saveLayout(@PathParam("run_id") String run_id, @Context HttpServletResponse servletResponse,
                       @Context HttpServletRequest servletRequest) throws IOException {
+
+        Principal principal = securityContext.getUserPrincipal();
+        String tokenUsername = principal.getName();
+
+        if (!RunDao.instance.isUsersRun(tokenUsername, Integer.parseInt(run_id))) {
+            servletResponse.sendRedirect("/runner/login");
+            return;
+        }
 
         BufferedReader br = null;
 
@@ -78,6 +106,14 @@ public class Runs {
     public LayoutData getLayout(@PathParam("run_id") String run_id, @Context HttpServletResponse servletResponse,
                       @Context HttpServletRequest servletRequest) throws IOException {
 
+        Principal principal = securityContext.getUserPrincipal();
+        String tokenUsername = principal.getName();
+
+        if (!RunDao.instance.isUsersRun(tokenUsername, Integer.parseInt(run_id))) {
+            servletResponse.sendRedirect("/runner/login");
+            return null;
+        }
+
         String layout = RunDao.instance.getLayout(Integer.valueOf(run_id));
 
         ObjectMapper mapper = new ObjectMapper();
@@ -85,36 +121,8 @@ public class Runs {
         if (layout == null) {
             return new LayoutData();
         } else {
-
-//            mapper.enable(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY);
             JsonNode jsonNode = mapper.readTree(layout);
-
-//            List<LayoutElement> myObjects = Arrays.asList(mapper.readValue(layout, LayoutElement[].class));
-
             LayoutData ld = new LayoutData();
-
-//            while (jsonNode.elements().hasNext()) {
-//
-//                JsonNode json = jsonNode.elements().next();
-//
-//                System.out.println(json.get("typeName"));
-//
-//                if (json.get("typeName").toString().equals("individual")) {
-//                    Indicator indicator = StepDao.instance.getFunction(json.get("indicatorName").toString(), Integer.valueOf(run_id));
-//                    ld.getCards().add(indicator);
-//
-//                    System.out.println(indicator.getMeaning());
-//                }
-//            }
-//
-//            return ld;
-
-//            System.out.println(jsonNode.elements().next());
-//            System.out.println(jsonNode.elements().next());
-//            System.out.println(jsonNode.elements().next());
-//            System.out.println(jsonNode.elements().next());
-
-//            System.out.println(jsonNode.elements().ne);
 
 
             int count = Integer.valueOf(jsonNode.get("count").toString());
@@ -127,13 +135,9 @@ public class Runs {
 
                 if (typeName.equals("individual")) {
                     Indicator indicator = StepDao.instance.getFunction(jsonNode.get("layout").get(i).get("indicatorName").textValue(), Integer.valueOf(run_id));
-
-//                    System.out.println(indicator.getMeaning());
                     ld.getCards().add(indicator);
                 } else if (typeName.equals("graph")) {
                     GraphPoints gp = StepDao.instance.getStepsWithPara(run_id, 50, jsonNode.get("layout").get(i).get("indicatorName").textValue());
-
-//                    System.out.println(gp.getStep_no());
                     ld.getCards().add(gp);
                 }
             }
@@ -141,29 +145,6 @@ public class Runs {
             return ld;
         }
     }
-
-//    // TODO BADDDDDDDD
-//    @Path("/{run_id}/layout/data")
-//    @POST
-//    @Produces(MediaType.APPLICATION_JSON)
-//    public LayoutData getLayoutData(@PathParam("run_id") String run_id, @Context HttpServletResponse servletResponse,
-//                                    @Context HttpServletRequest servletRequest) throws IOException {
-//
-//        System.out.println("Request for data arrived!");
-//
-//        String layout = RunDao.instance.getLayout(Integer.valueOf(run_id));
-//
-//        Map<String, String[]> parameterMap = servletRequest.getParameterMap();
-//
-//        for (Map.Entry entry: parameterMap.entrySet()) {
-//            System.out.println(entry.getKey());
-//            System.out.println(entry.getValue());
-//        }
-//
-//
-//        return null;
-//
-//    }
 
 
     @Path("/{run_id}/indicator/{variable}")

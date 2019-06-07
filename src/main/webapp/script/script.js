@@ -1,11 +1,40 @@
 document.addEventListener('DOMContentLoaded', function () {
 
+    var tokenJson = getTokenData(getCookieValue("token"));
+    var usernameFromToken;
+
+    if (tokenJson !== null) {
+        usernameFromToken = tokenJson.sub;
+    }
+
     $("#login input[type='text'], #login input[type='password']").on('keyup', function () {
         // $("#login input[type='text']").removeClass("incorrect");
         // $("#login input[type='password']").removeClass("incorrect");
 
         $("#login-error").addClass("login-error-hidden");
     });
+
+
+    function getTokenData(token) {
+        if (token === null) {
+            return null;
+        }
+
+        var encoded = token.split(".")[1];
+
+        console.log(encoded);
+
+        var decoded = atob(encoded);
+
+        var decodedJson = JSON.parse(decoded);
+
+        return decodedJson;
+    }
+
+    function getQueryParam(paramName) {
+        var urlParams = new URLSearchParams(window.location.search);
+        return urlParams.get(paramName);
+    }
 
 
     // get specific cookie (from https://www.w3schools.com/js/js_cookies.asp)
@@ -23,8 +52,10 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         }
 
-        return "";
+        return null;
     }
+
+
 
     // rounder (from https://stackoverflow.com/questions/15762768/javascript-math-round-to-two-decimal-places/22977058)
     function roundTo(n, digits) {
@@ -82,21 +113,166 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
+
+    function hexString(buffer) {
+        const byteArray = new Uint8Array(buffer);
+
+        const hexCodes = [...byteArray].map(value => {
+            const hexCode = value.toString(16);
+            const paddedHexCode = hexCode.padStart(2, '0');
+            return paddedHexCode;
+        });
+
+
+        return hexCodes.join('');
+    }
+
+
+    function digestMessage(message) {
+        const encoder = new TextEncoder();
+        const data = encoder.encode(message);
+        console.log(window.crypto.subtle.digest('SHA-256', data));
+        return window.crypto.subtle.digest('SHA-256', data);
+    }
+
+
     // send ajax request to login
     $("#login button").on("click", function() {
         var username = $("#login input[type='text']").val().trim();
         var password = $("#login input[type='password']").val().trim();
-
         if( username !== "" && password !== "" ){
-            var params = "username=" + username + "&password=" + password;
+            var passwordsha;
+
+            digestMessage(password).then(digestValue => {
+                return (hexString(digestValue));
+            }).then(hashPassword => {
+                console.log(hashPassword);
+
+                var params = "username=" + username + "&password=" + hashPassword;
+
+                var http = new XMLHttpRequest();
+
+                http.onreadystatechange = function () {
+                    if (http.readyState === XMLHttpRequest.DONE) {
+                        if (http.status === 200) {
+                            console.log("code 200");
+
+                            usernameFromToken = getTokenData(getCookieValue("token")).sub;
+
+                            window.location.replace("profiles/" + usernameFromToken);
+                        } else if (http.status === 401) {
+                            console.log("code 401");
+
+                            $("#login-error").text("Incorrect username or password. Please, try again.");
+                            $("#login-error").removeClass("login-error-hidden");
+                            // $("#login input[type='text']").addClass("incorrect");
+                            // $("#login input[type='password']").addClass("incorrect");
+
+                        } else {
+                            console.log("something else...");
+                        }
+                    }
+                };
+
+                http.open("POST", "login", true);
+                http.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+                http.setRequestHeader('Accept', 'text/html');
+                http.setRequestHeader('Cache-Control', 'no-store');
+                http.send(params);
+            });
+        } else {
+            // fields are empty TODO
+
+        }
+    });
+
+    if ($("#login").length > 0) {
+        displayLoginError();
+    }
+
+    function displayLoginError() {
+        var error = getQueryParam("error");
+
+        if (error != null) {
+            console.log(error);
+
+            if (error == "not_authorized") {
+                error = "You need to sign in to access this page."
+            } else if (error = "token_expired") {
+                error = "Your session expired. Sign in to access this page."
+            } else if (error = "incorrect_credentials") {
+                error = "Incorrect username or password. Please, try again."
+            }
+
+            // insert error into the page
+            $("#login-error").text(error);
+            $("#login-error").removeClass("login-error-hidden");
+        }
+
+        // show the page? TODO
+    }
+
+
+    $("#password-reset-enter button").on("click", function() {
+        var recoveryToken = getQueryParam("token");
+        var recoveryPassword = $("#password-reset-enter form input:nth-child(2)").val().trim();
+        var recoveryPasswordConfirm = $("#password-reset-enter form input:nth-child(3)").val().trim();
+
+        if( recoveryToken !== "" && recoveryPassword !== "" && recoveryPassword === recoveryPasswordConfirm){
+            var passwordsha;
+
+            digestMessage(recoveryPassword).then(digestValue => {
+                return (hexString(digestValue));
+            }).then(hashPassword => {
+                console.log(hashPassword);
+
+                var params = "token=" + recoveryToken + "&password=" + hashPassword;
+
+                var http = new XMLHttpRequest();
+
+                http.onreadystatechange = function () {
+                    if (http.readyState === XMLHttpRequest.DONE) {
+                        if (http.status === 200) {
+                            console.log("code 200");
+
+                            window.location.replace("/runner/login"); // TODO
+                        } else if (http.status === 401) {
+                            console.log("code 401");
+                            $("#login-error").removeClass("login-error-hidden");
+                            // $("#login input[type='text']").addClass("incorrect");
+                            // $("#login input[type='password']").addClass("incorrect");
+                        } else {
+                            console.log("something else...");
+                        }
+                    }
+                };
+
+                http.open("POST", "/runner/password/reset/enter", true);
+                http.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+                http.setRequestHeader('Accept', 'text/html');
+                http.setRequestHeader('Cache-Control', 'no-store');
+                http.send(params);
+            });
+        } else {
+            // fields are empty TODO
+
+        }
+    });
+
+    $("#password-reset-request button").on("click", function() {
+        var username = $("#password-reset-request form input:nth-child(2)").val().trim();
+        if(username !== ""){
+
+            var param = "username=" + username;
 
             var http = new XMLHttpRequest();
 
-            http.onreadystatechange = function() {
+            http.onreadystatechange = function () {
                 if (http.readyState === XMLHttpRequest.DONE) {
                     if (http.status === 200) {
                         console.log("code 200");
-                        window.location.replace("profiles/" + getCookieValue("username"));
+                        window.location.replace("/");
+                        // TODO email with reset was sent, show success message
                     } else if (http.status === 401) {
                         console.log("code 401");
                         $("#login-error").removeClass("login-error-hidden");
@@ -108,11 +284,11 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
             };
 
-            http.open("POST", "login", true);
+            http.open("POST", "/runner/password/reset", true);
             http.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
-            http.setRequestHeader('Accept', 'text/html');
+            http.setRequestHeader('Accept', 'text/html'); // TODO
             http.setRequestHeader('Cache-Control', 'no-store');
-            http.send(params);
+            http.send(param);
         } else {
             // fields are empty TODO
 
@@ -120,9 +296,18 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
 
+
+
+
+
+
+
+    // TODO what if session id expired/server restarted?
     // if user is already logged in, show link to user's profile page and not "login"
-    if (getCookieValue("username") !== "") {
-        $("#index nav ul").append("<li class='nav-item'><a href='/runner/profiles/" + getCookieValue("username") + "'>profile</a></li>");
+    // username = getTokenData(getCookieValue("token")).sub;
+
+    if (tokenJson !== null && tokenJson.exp > Math.floor(Date.now()/1000)) {
+        $("#index nav ul").append("<li class='nav-item'><a href='/runner/profiles/" + usernameFromToken + "'>profile</a></li>");
         $("#index nav ul").append("<li class='nav-item'><a href='/runner/logout'>sign out</a></li>");
     } else {
         $("#index nav ul").append("<li class='nav-item'><a href='/runner/register'>sign up</a></li>");
@@ -133,10 +318,10 @@ document.addEventListener('DOMContentLoaded', function () {
     // loading profile info. All processing should be handled by the server, browser receives only the result
     if ($("#profile").length > 0) {
 
-        console.log("loading " + getCookieValue("username") + " profile data");
+        console.log("loading " + usernameFromToken + " profile data");
 
         var http = new XMLHttpRequest();
-        var url = "/runner/profiles/" + getCookieValue("username");
+        var url = "/runner/profiles/" + usernameFromToken;
 
         http.open('GET', url, true);
         http.setRequestHeader('Accept', 'application/json');
@@ -232,7 +417,7 @@ document.addEventListener('DOMContentLoaded', function () {
         image.append("picture", blobFile);
 
         $.ajax({
-            url: "/runner/profile/" + getCookieValue("username") + "/picture",
+            url: "/runner/profile/" + usernameFromToken + "/picture",
             type: "POST",
             data: image,
             processData: false,
@@ -268,51 +453,57 @@ document.addEventListener('DOMContentLoaded', function () {
         var email = $("#register form input[name='email']").val().trim();
         var password = $("#register form input[name='password']").val().trim();
 
-        console.log(username);
-        console.log(firstName);
-        console.log(lastName);
-        console.log(email);
-        console.log(password);
+        digestMessage(password).then(digestValue => {
+            return (hexString(digestValue));
+        }).then(hashPassword => {
 
-        if( username !== "" && password !== "" ){ // etc. TODO
-            var params = "username=" + username + "&password=" + password +
-                "&first_name=" + firstName + "&last_name=" + lastName + "&email=" + email;
 
-            var http = new XMLHttpRequest();
+            console.log(username);
+            console.log(firstName);
+            console.log(lastName);
+            console.log(email);
+            console.log(hashPassword);
 
-            http.onreadystatechange = function() {
-                if (http.readyState === XMLHttpRequest.DONE) {
-                    if (http.status === 200) {
-                        console.log("code 200");
-                        // redirect to user's newly created profile
-                        window.location.replace("login");
-                    } else if (http.status === 401) {
-                        console.log("code 400");
+            if (username !== "" && password !== "") { // etc. TODO
+                var params = "username=" + username + "&password=" + hashPassword +
+                    "&first_name=" + firstName + "&last_name=" + lastName + "&email=" + email;
 
-                        // unauthorized
-                    } else {
-                        console.log("something else...");
-                        // TODO
+                var http = new XMLHttpRequest();
+
+                http.onreadystatechange = function () {
+                    if (http.readyState === XMLHttpRequest.DONE) {
+                        if (http.status === 200) {
+                            console.log("code 200");
+                            // redirect to user's newly created profile
+                            window.location.replace("login");
+                        } else if (http.status === 401) {
+                            console.log("code 400");
+
+                            // unauthorized
+                        } else {
+                            console.log("something else...");
+                            // TODO
+                        }
                     }
-                }
-            };
+                };
 
-            http.open("POST", "register", true);
-            http.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
-            http.setRequestHeader('Accept', 'text/html');
-            http.setRequestHeader('Cache-Control', 'no-store');
-            http.send(params);
-        }
+                http.open("POST", "register", true);
+                http.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+                http.setRequestHeader('Accept', 'text/html');
+                http.setRequestHeader('Cache-Control', 'no-store');
+                http.send(params);
+            }
+        })
     });
 
 
     // loading data to show on settings page
     if ($("#profile-management").length > 0) {
 
-        console.log("loading " + getCookieValue("username") + " profile data");
+        console.log("loading " + usernameFromToken + " profile data");
 
         var http = new XMLHttpRequest();
-        var url = "/runner/profiles/" + getCookieValue("username");
+        var url = "/runner/profiles/" + usernameFromToken;
 
         http.open('GET', url, true);
         http.setRequestHeader('Accept', 'application/json');

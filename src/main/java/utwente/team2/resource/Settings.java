@@ -11,6 +11,7 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONObject;
 import utwente.team2.dao.UserDao;
+import utwente.team2.filter.Secured;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -18,16 +19,21 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.*;
 import java.io.*;
 import java.net.HttpURLConnection;
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 
 @Path("/settings")
+@Secured
 public class Settings {
 
     @Context
     UriInfo uriInfo;
     @Context
     Request request;
+
+    @Context
+    SecurityContext securityContext;
 
 
     @GET
@@ -45,8 +51,10 @@ public class Settings {
     @PUT
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     public void updateProfile(@FormParam("firstname") String firstname, @FormParam("lastname") String lastname, @Context HttpHeaders headers,@Context HttpServletResponse servletResponse) {
-        String username = headers.getCookies().get("username").getValue();
-        UserDao.instance.updateProfile(username,firstname,lastname);
+        Principal principal = securityContext.getUserPrincipal();
+        String tokenUsername = principal.getName();
+
+        UserDao.instance.updateProfile(tokenUsername,firstname,lastname);
     }
 
     @Path("/link_strava")

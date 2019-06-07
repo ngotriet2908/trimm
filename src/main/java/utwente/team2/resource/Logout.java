@@ -3,7 +3,6 @@ package utwente.team2.resource;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -27,7 +26,7 @@ public class Logout {
 
         if(cookies != null){
             for(Cookie cookie : cookies){
-                if(cookie.getName().equals("JSESSIONID") || cookie.getName().equals("username")){
+                if(cookie.getName().equals("token")){
                     System.out.println("cookie: " + cookie.getValue());
 
                     cookie.setMaxAge(0);
@@ -36,13 +35,6 @@ public class Logout {
                     servletResponse.addCookie(cookie);
                 }
             }
-        }
-
-        HttpSession session = servletRequest.getSession(false);
-
-        if(session != null){
-            System.out.println("Invalidating session for user: " + session.getAttribute("username"));
-            session.invalidate();
         }
 
         servletResponse.sendRedirect("/");

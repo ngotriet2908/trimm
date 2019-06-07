@@ -21,4 +21,5 @@
 		<error-code>404</error-code>
 		<location>/html/error404.html</location>
 	</error-page>
+
 </web-app>

@@ -1,8 +1,13 @@
 package utwente.team2.databaseBackup;
 
+import org.apache.commons.codec.binary.Hex;
 import org.apache.poi.ss.usermodel.*;
+import utwente.team2.dao.UserDao;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.sql.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -168,26 +173,45 @@ public class DataExporter {
         }
     }
 
+    public static String getSHA256(String password) {
+        MessageDigest digest = null;
+        try {
+            digest = MessageDigest.getInstance("SHA-256");
+            byte[] hash = digest.digest(password.getBytes(StandardCharsets.UTF_8));
+            String encoded = Hex.encodeHexString(hash);
+            return encoded;
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 
     public void insertUsers() {
-        String query = "INSERT INTO general_user(username, first_name, last_name, email, password) "
-                + "VALUES(?,?,?,?,?)";
+        String query = "INSERT INTO general_user(username, first_name, last_name, email, password, salt) "
+                + "VALUES(?,?,?,?,?,?)";
 
         try {
             PreparedStatement statement = conn.prepareStatement(query);
 
+            String salt = UserDao.instance.getAlphaNumericString(50);
+
             statement.setString(1, "CvdB");
             statement.setString(2, "Christian");
             statement.setString(3, "Van Den Berge");
-            statement.setString(4, "cvdb@runner.com");
-            statement.setString(5, "Password7");
+            statement.setString(4, "khavronayevhen@gmail.com");
+            statement.setString(5, getSHA256(getSHA256("Password7")+ salt));
+            statement.setString(6, salt);
             statement.execute();
+
+            salt = UserDao.instance.getAlphaNumericString(50);
 
             statement.setString(1, "JF");
             statement.setString(2, "Johnny");
             statement.setString(3, "Frankenstein");
-            statement.setString(4, "jf@runner.com");
-            statement.setString(5, "Password7");
+            statement.setString(4, "ngotriet2908@gmail.com");
+            statement.setString(5, getSHA256(getSHA256("Password7")+ salt));
+            statement.setString(6, salt);
+
             statement.execute();
         } catch (SQLException se) {
             se.printStackTrace();
@@ -317,8 +341,8 @@ public class DataExporter {
 
     public void insertRuns() {
         String query = "INSERT INTO run(date, bodypackFile, id, username, distance, duration," +
-                "shoes_id, surface_id, description, remarks, stravaLink, name) "
-                + "VALUES(?,?,?,?,?,?,?,?,?,?,?,?)";
+                "shoes_id, surface_id, description, remarks, stravaLink, name, layout) "
+                + "VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)";
 
         try {
             Workbook workbook = WorkbookFactory.create(new File("RA-data/BodyPackRuns.xlsx"));
@@ -326,14 +350,12 @@ public class DataExporter {
             DataFormatter dataFormatter = new DataFormatter();
 
             PreparedStatement statement = conn.prepareStatement(query);
-
             for (int i = run.getFirstRowNum() + 1; i <= run.getLastRowNum(); i++) {
                 Row row = run.getRow(i);
 
                 if (row == null) {
                     continue;
                 }
-
                 for (int j = row.getFirstCellNum(); j <= row.getFirstCellNum() + 10; j++) {
                     Cell cell = row.getCell(j);
 
@@ -398,9 +420,10 @@ public class DataExporter {
                             // surface
                             statement.setInt(j, 0);
                         }
+
                     }
                 }
-
+                statement.setString(13, "{\"count\":24,\"layout\":[{\"typeName\":\"individual\",\"indicatorName\":\"axtibacc_left\"},{\"typeName\":\"individual\",\"indicatorName\":\"axtibacc_right\"},{\"typeName\":\"individual\",\"indicatorName\":\"tibimpact_left\"},{\"typeName\":\"individual\",\"indicatorName\":\"tibimpact_right\"},{\"typeName\":\"individual\",\"indicatorName\":\"axsacacc_left\"},{\"typeName\":\"individual\",\"indicatorName\":\"axsacacc_right\"},{\"typeName\":\"individual\",\"indicatorName\":\"sacimpact_left\"},{\"typeName\":\"individual\",\"indicatorName\":\"sacimpact_right\"},{\"typeName\":\"individual\",\"indicatorName\":\"brakingforce_left\"},{\"typeName\":\"individual\",\"indicatorName\":\"brakingforce_right\"},{\"typeName\":\"individual\",\"indicatorName\":\"pushoffpower_left\"},{\"typeName\":\"individual\",\"indicatorName\":\"pushoffpower_right\"},{\"typeName\":\"individual\",\"indicatorName\":\"tibintrot_left\"},{\"typeName\":\"individual\",\"indicatorName\":\"tibintrot_right\"},{\"typeName\":\"individual\",\"indicatorName\":\"vll_left\"},{\"typeName\":\"individual\",\"indicatorName\":\"vll_right\"},{\"typeName\":\"graph\",\"indicatorName\":\"axtibacc\"},{\"typeName\":\"graph\",\"indicatorName\":\"tibimpact\"},{\"typeName\":\"graph\",\"indicatorName\":\"axsacacc\"},{\"typeName\":\"graph\",\"indicatorName\":\"sacimpact\"},{\"typeName\":\"graph\",\"indicatorName\":\"brakingforce\"},{\"typeName\":\"graph\",\"indicatorName\":\"pushoffpower\"},{\"typeName\":\"graph\",\"indicatorName\":\"tibintrot\"},{\"typeName\":\"graph\",\"indicatorName\":\"vll\"}]}");
                 statement.setString(12, "Typical Run");
                 statement.execute();
             }
@@ -412,6 +435,7 @@ public class DataExporter {
             se.printStackTrace();
         }
     }
+
 
 
     public boolean importSchema(InputStream in) {
@@ -449,6 +473,7 @@ public class DataExporter {
                     return false;
                 }
             }
+            System.out.println("Finish create schema");
             return true;
         }
     }

@@ -1,35 +1,53 @@
 package utwente.team2.resource;
 
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jws;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.security.Keys;
 import utwente.team2.dao.UserDao;
 import utwente.team2.model.User;
 
+import javax.crypto.SecretKey;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Request;
-import javax.ws.rs.core.UriInfo;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.SecureRandom;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Base64;
+import java.util.HashMap;
+import java.util.Map;
+
 
 @Path("/login")
 public class Login {
 
-    @Context
-    UriInfo uriInfo;
-    @Context
-    Request request;
+    // TODO insecure!!
+    private static final String SECRET = "LZ_FzX6IB-sSeEScwB0XjhQaetivpLf91QzsQAAYnVI";
+    private static final byte[] SECRET_BYTES = SECRET.getBytes();
+    public static final SecretKey KEY = Keys.hmacShaKeyFor(SECRET_BYTES);
+
 
     @GET
     @Produces(MediaType.TEXT_HTML)
-    public InputStream showLoginPage() {
+    public InputStream showLoginPage(@Context HttpServletResponse response, @Context HttpServletRequest request,
+                                     @QueryParam("error") String error) throws IOException {
+
+        System.out.println(error);
+
+        if (error != null) {
+            response.addHeader("error", error);
+        }
+
         ClassLoader classLoader = getClass().getClassLoader();
         InputStream inputStream = classLoader.getResourceAsStream("../../html/login.html");
+
+        System.out.println("Req received.");
 
         return inputStream;
     }
@@ -43,30 +61,45 @@ public class Login {
 
         User user = UserDao.instance.getUserWithPassword(username, password);
 
-        if (user != null) {
-                HttpSession session = servletRequest.getSession();
-                session.setAttribute("username", username);
-                session.setMaxInactiveInterval(600);
 
-                // replace or create a cookie
-                Cookie existing = getCookie(servletRequest, "username");
+        if (user != null) {
+            // default timezone
+            ZoneId zoneId = ZoneId.systemDefault();
+
+            Map<String,Object> claims = new HashMap<>();
+            claims.put("iss", "runner");
+            claims.put("sub", username);
+            claims.put("exp", String.valueOf(LocalDateTime.now().plusMinutes(1).atZone(zoneId).toEpochSecond()));
+            claims.put("iat", String.valueOf(LocalDateTime.now().atZone(zoneId)));
+
+
+            String jws = Jwts.builder().setClaims(claims).signWith(KEY).compact();
+
+            System.out.println(jws);
+
+//             replace or create a cookie
+            Cookie existing = getCookie(servletRequest, "token");
 
                 if(existing != null){
                     System.out.println("Cookie exists.");
-                    existing.setValue(username);
+                    existing.setValue(jws);
                     existing.setPath("/");
-                    existing.setMaxAge(600);
+                    existing.setMaxAge(3600000);
                     servletResponse.addCookie(existing);
                 } else {
-                    Cookie cookie = new Cookie("username", username);
+                    Cookie cookie = new Cookie("token", jws);
                     cookie.setPath("/");
-                    cookie.setMaxAge(600);
+                    cookie.setMaxAge(3600000);
                     servletResponse.addCookie(cookie);
                 }
 
+            System.out.println("Redirecting to " + username);
                 servletResponse.sendRedirect("profiles/" + username);
+
         } else {
             System.out.println("User " + username + " does not exist.");
+            // FORBIDDEN TODO 403
+
             servletResponse.sendError(HttpServletResponse.SC_UNAUTHORIZED, "not authorised");
         }
     }
@@ -86,6 +119,10 @@ public class Login {
         }
 
         return null;
+    }
+
+    public static Jws<Claims> getTokenClaims(String token) {
+        return Jwts.parser().setSigningKey(Login.KEY).parseClaimsJws(token);
     }
 
 

@@ -1,15 +1,25 @@
 package utwente.team2.dao;
 
 import utwente.team2.DatabaseInitialiser;
+import utwente.team2.databaseBackup.DataExporter;
 import utwente.team2.model.User;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.Map;
 
 public enum UserDao {
 
     instance;
+
+    private Map<String,String> recoveryToken = new HashMap<>();
+
+    public Map<String, String> getRecoveryToken() {
+        return recoveryToken;
+    }
+
 
     public User getUserDetails(String username, User user) {
         try {
@@ -23,20 +33,23 @@ public enum UserDao {
             ResultSet resultSet = statement.executeQuery();
 
             // should be only one row
-            resultSet.next();
+            if (resultSet.next()) {
 
-            user.setUsername(username);
-            user.setFirstName(resultSet.getString("first_name"));
-            user.setLastName(resultSet.getString("last_name"));
-            user.setEmail(resultSet.getString("email"));
+                user.setUsername(username);
+                user.setFirstName(resultSet.getString("first_name"));
+                user.setLastName(resultSet.getString("last_name"));
+                user.setEmail(resultSet.getString("email"));
 
-            if (isPremiumUser(username)) {
-                user.setIsPremium(1);
+                if (isPremiumUser(username)) {
+                    user.setIsPremium(1);
+                } else {
+                    user.setIsPremium(0);
+                }
+
+                return user;
             } else {
-                user.setIsPremium(0);
+                return null;
             }
-
-            return user;
         } catch (SQLException se) {
             se.printStackTrace();
         }
@@ -49,6 +62,32 @@ public enum UserDao {
         return getUserDetails(username, new User());
     }
 
+    public String getSalt(String username) {
+        try {
+            String query;
+            PreparedStatement statement;
+            query = "SELECT u.salt " +
+                    "FROM general_user AS u " +
+                    "WHERE u.username = ? ";
+
+            statement = DatabaseInitialiser.getCon().prepareStatement(query);
+            statement.setString(1, username);
+
+            ResultSet resultSet = statement.executeQuery();
+
+            // should be the first entry if exists
+            if (resultSet.next()) {
+                return resultSet.getString("salt");
+            } else {
+                return null;
+            }
+        } catch (SQLException se) {
+            se.printStackTrace();
+        }
+
+        return null;
+    }
+
 
     public User getUser(String username, String password, boolean checkPassword) {
         try {
@@ -56,13 +95,17 @@ public enum UserDao {
             PreparedStatement statement;
 
             if (checkPassword) {
+
+                String salt = getSalt(username);
+
+
                 query = "SELECT u.username " +
                         "FROM general_user AS u " +
                         "WHERE u.username = ? AND u.password = ?";
 
                 statement = DatabaseInitialiser.getCon().prepareStatement(query);
                 statement.setString(1, username);
-                statement.setString(2, password);
+                statement.setString(2, DataExporter.getSHA256(password + salt));
             } else {
                 query = "SELECT u.username " +
                         "FROM general_user AS u " +
@@ -114,6 +157,29 @@ public enum UserDao {
         return false;
     }
 
+    public boolean isUsersEmail(String username, String email) {
+        try {
+            String queryForPremiumStatus = "SELECT p.username " +
+                    "FROM general_user AS p " +
+                    "WHERE p.username = ? " +
+                    "AND p.email = ?";
+
+            // also check time? TODO
+
+            PreparedStatement statementForPremiumStatus = DatabaseInitialiser.getCon().prepareStatement(queryForPremiumStatus);
+            statementForPremiumStatus.setString(1, username);
+            statementForPremiumStatus.setString(2, email);
+
+            ResultSet resultSetForPremiumStatus = statementForPremiumStatus.executeQuery();
+
+            return !(!resultSetForPremiumStatus.isBeforeFirst() && resultSetForPremiumStatus.getRow() == 0);
+        } catch (SQLException se) {
+            se.printStackTrace();
+        }
+
+        return false;
+    }
+
     public boolean updateProfile(String username, String firstname, String lastname) {
         int allRowAffect = 0;
 
@@ -149,16 +215,100 @@ public enum UserDao {
         }
         return allRowAffect > 0;
     }
+
+
+    public static String getAlphaNumericString(int n) {
+
+        // chose a Character random from this String
+        String AlphaNumericString = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+                + "0123456789"
+                + "abcdefghijklmnopqrstuvxyz";
+
+        // create StringBuffer size of AlphaNumericString
+        StringBuilder sb = new StringBuilder(n);
+
+        for (int i = 0; i < n; i++) {
+
+            // generate a random number between
+            // 0 to AlphaNumericString variable length
+            int index
+                    = (int)(AlphaNumericString.length()
+                    * Math.random());
+
+            // add Character one by one in end of sb
+            sb.append(AlphaNumericString
+                    .charAt(index));
+        }
+
+        return sb.toString();
+    }
+
+    public boolean changePassword(String password, String token) {
+        for(Map.Entry tokenRecovery : recoveryToken.entrySet()) {
+            if (tokenRecovery.getValue().equals(token)) {
+                String username = tokenRecovery.getKey().toString();
+                System.out.println("change password of " + username);
+                if (updatePassword(password, username)) {
+                    recoveryToken.remove(username);
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public String generateTokenForPasswordReset(String username) {
+        String token = getAlphaNumericString(50);
+        recoveryToken.put(username,token);
+        return token;
+    }
+
+    public boolean updatePassword(String password, String username) {
+        int allRowAffect = 0;
+
+        String salt = getAlphaNumericString(50);
+
+        try {
+            String updatefirstname = "UPDATE general_user " +
+                    "SET password = ? " +
+                    ",salt = ? " +
+                    "WHERE username = " + "'" + username + "'";
+
+            if (!password.equals("")) {
+                PreparedStatement statementForUpdate = DatabaseInitialiser.getCon().prepareStatement(updatefirstname);
+                statementForUpdate.setString(1, DataExporter.getSHA256(password + salt));
+                statementForUpdate.setString(2, salt);
+
+                int rowAffect = statementForUpdate.executeUpdate();
+                allRowAffect += rowAffect;
+            }
+
+
+
+        } catch (SQLException se) {
+            se.printStackTrace();
+        }
+        System.out.println("success update password: " + (allRowAffect > 0));
+        return allRowAffect > 0;
+    }
+
+
+
+
+
     public boolean register(String username, String firstName, String lastName, String email, String password) {
         try {
-            String query = "INSERT INTO general_user (username, first_name, last_name, email, password) VALUES (?, ?, ?, ?, ?) ";
+            String salt = getAlphaNumericString(50);
+
+            String query = "INSERT INTO general_user (username, first_name, last_name, email, password, salt) VALUES (?, ?, ?, ?, ?, ?) ";
 
             PreparedStatement statement = DatabaseInitialiser.getCon().prepareStatement(query);
             statement.setString(1, username);
             statement.setString(2, firstName);
             statement.setString(3, lastName);
             statement.setString(4, email);
-            statement.setString(5, password);
+            statement.setString(5, DataExporter.getSHA256(password + salt));
+            statement.setString(6, salt);
 
             System.out.println(statement);
 
