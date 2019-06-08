@@ -1,25 +1,19 @@
 package utwente.team2.dao;
 
+import org.apache.commons.codec.binary.Hex;
 import utwente.team2.DatabaseInitialiser;
-import utwente.team2.databaseBackup.DataExporter;
 import utwente.team2.model.User;
 
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.Map;
 
 public enum UserDao {
 
     instance;
-
-    private Map<String,String> recoveryToken = new HashMap<>();
-
-    public Map<String, String> getRecoveryToken() {
-        return recoveryToken;
-    }
-
 
     public User getUserDetails(String username, User user) {
         try {
@@ -60,6 +54,30 @@ public enum UserDao {
 
     public User getUserDetails(String username) {
         return getUserDetails(username, new User());
+    }
+
+    public String getUsersPassword(String username) {
+        try {
+            String query = "SELECT password " +
+                    "FROM general_user AS u " +
+                    "WHERE u.username = ? ";
+
+            PreparedStatement statement = DatabaseInitialiser.getCon().prepareStatement(query);
+            statement.setString(1, username);
+
+            ResultSet resultSet = statement.executeQuery();
+
+            // should be only one row
+            if (resultSet.next()) {
+                return resultSet.getString("password");
+            } else {
+                return null;
+            }
+        } catch (SQLException se) {
+            se.printStackTrace();
+        }
+
+        return null;
     }
 
     public String getSalt(String username) {
@@ -105,7 +123,7 @@ public enum UserDao {
 
                 statement = DatabaseInitialiser.getCon().prepareStatement(query);
                 statement.setString(1, username);
-                statement.setString(2, DataExporter.getSHA256(password + salt));
+                statement.setString(2, getSHA256(password + salt));
             } else {
                 query = "SELECT u.username " +
                         "FROM general_user AS u " +
@@ -217,7 +235,7 @@ public enum UserDao {
     }
 
 
-    public static String getAlphaNumericString(int n) {
+    public String getAlphaNumericString(int n) {
 
         // chose a Character random from this String
         String AlphaNumericString = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
@@ -243,62 +261,38 @@ public enum UserDao {
         return sb.toString();
     }
 
-    public boolean changePassword(String password, String token) {
-        for(Map.Entry tokenRecovery : recoveryToken.entrySet()) {
-            if (tokenRecovery.getValue().equals(token)) {
-                String username = tokenRecovery.getKey().toString();
-                System.out.println("change password of " + username);
-                if (updatePassword(password, username)) {
-                    recoveryToken.remove(username);
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
-    public String generateTokenForPasswordReset(String username) {
-        String token = getAlphaNumericString(50);
-        recoveryToken.put(username,token);
-        return token;
-    }
-
-    public boolean updatePassword(String password, String username) {
+    public boolean updatePassword(String username, String password) {
         int allRowAffect = 0;
 
-        String salt = getAlphaNumericString(50);
+        String salt = getAlphaNumericString(50); // TODO secure random?
 
         try {
             String updatefirstname = "UPDATE general_user " +
                     "SET password = ? " +
-                    ",salt = ? " +
+                    ", salt = ? " +
                     "WHERE username = " + "'" + username + "'";
 
             if (!password.equals("")) {
                 PreparedStatement statementForUpdate = DatabaseInitialiser.getCon().prepareStatement(updatefirstname);
-                statementForUpdate.setString(1, DataExporter.getSHA256(password + salt));
+                statementForUpdate.setString(1, getSHA256(password + salt));
                 statementForUpdate.setString(2, salt);
 
                 int rowAffect = statementForUpdate.executeUpdate();
                 allRowAffect += rowAffect;
             }
-
-
-
         } catch (SQLException se) {
             se.printStackTrace();
         }
+
         System.out.println("success update password: " + (allRowAffect > 0));
         return allRowAffect > 0;
     }
 
 
 
-
-
     public boolean register(String username, String firstName, String lastName, String email, String password) {
         try {
-            String salt = getAlphaNumericString(50);
+            String salt = getAlphaNumericString(50); // TODO secure random?
 
             String query = "INSERT INTO general_user (username, first_name, last_name, email, password, salt) VALUES (?, ?, ?, ?, ?, ?) ";
 
@@ -307,7 +301,7 @@ public enum UserDao {
             statement.setString(2, firstName);
             statement.setString(3, lastName);
             statement.setString(4, email);
-            statement.setString(5, DataExporter.getSHA256(password + salt));
+            statement.setString(5, getSHA256(password + salt));
             statement.setString(6, salt);
 
             System.out.println(statement);
@@ -329,6 +323,21 @@ public enum UserDao {
         System.out.println("Failed to register the user!");
         return false;
     }
+
+    public String getSHA256(String password) {
+        MessageDigest digest = null;
+        try {
+            digest = MessageDigest.getInstance("SHA-256");
+            byte[] hash = digest.digest(password.getBytes(StandardCharsets.UTF_8));
+            String encoded = Hex.encodeHexString(hash);
+            return encoded;
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+
 //    public String snakeToCamel(String name) {
 //        String[] splitted = name.split("_");
 //

@@ -154,4 +154,49 @@ public enum StepDao {
 
         return null;
     }
+
+    public GraphPoints getStepsWithParaAndRange(String runID, int numberOfStep, String indicator, int startP, int endP) {
+        System.out.println("get run info " + runID);
+        try{
+
+            String indicator_left = indicator + "_left";
+            String indicator_right = indicator + "_right";
+
+
+            String query =  "SELECT DISTINCT  s.step_no, s." + indicator_left + ", s." + indicator_right + " FROM step s, run " +
+                    "WHERE s.run_id = ? " +
+                    "AND run.id = s.run_id " +
+                    "AND MOD(s.step_no - 1, DIV((? - ?),?)) = 0 " +
+                    "AND s.step_no > ? - 2 " +
+                    "AND s.step_no < ? + 2 " +
+                    "ORDER BY s.step_no";
+
+            PreparedStatement statement = DatabaseInitialiser.getCon().prepareStatement(query);
+            statement.setInt(1, Integer.parseInt(runID));
+            statement.setInt(2, endP);
+            statement.setInt(3, startP);
+            statement.setInt(4, numberOfStep);
+            statement.setInt(5, startP);
+            statement.setInt(6, endP);
+
+
+            System.out.println(statement.toString());
+
+            ResultSet resultSet = statement.executeQuery();
+
+            GraphPoints graphPoints = new GraphPoints(indicator);
+
+            while(resultSet.next()) {
+
+                graphPoints.getStep_no().add(resultSet.getInt("step_no"));
+                graphPoints.getLeft().add(resultSet.getBigDecimal(2));
+                graphPoints.getRight().add(resultSet.getBigDecimal(3));
+            }
+            return graphPoints;
+        } catch(SQLException sqle) {
+            System.err.println("Error connecting: " + sqle);
+        }
+
+        return null;
+    }
 }

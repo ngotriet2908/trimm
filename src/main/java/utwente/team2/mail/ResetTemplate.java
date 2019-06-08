@@ -1,11 +1,16 @@
 package utwente.team2.mail;
 
+import utwente.team2.dao.UserDao;
+import utwente.team2.model.User;
+
 public class ResetTemplate {
     
 
     public static String createResetEmail(String username, String token) {
+        User user = UserDao.instance.getUserDetails(username);
+
 //        try {
-            return part1 + username + part2 + "http://localhost:8080/runner/password/reset/enter?token=" + token + part3;
+            return part1 + user.getFirstName() + " " + user.getLastName() + part2 + "http://localhost:8080/runner/password/reset/enter?token=" + token + part3;
 //        } catch (UnsupportedEncodingException ue) {
 //            ue.printStackTrace();
 //        }

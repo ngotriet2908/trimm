@@ -215,8 +215,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
     $("#password-reset-enter button").on("click", function() {
         var recoveryToken = getQueryParam("token");
-        var recoveryPassword = $("#password-reset-enter form input:nth-child(2)").val().trim();
-        var recoveryPasswordConfirm = $("#password-reset-enter form input:nth-child(3)").val().trim();
+        var recoveryPassword = $("#password-reset-enter form input[name=password]").val().trim();
+        var recoveryPasswordConfirm = $("#password-reset-enter form input[name=confirm-password]").val().trim();
 
         if( recoveryToken !== "" && recoveryPassword !== "" && recoveryPassword === recoveryPasswordConfirm){
             var passwordsha;
@@ -238,9 +238,13 @@ document.addEventListener('DOMContentLoaded', function () {
                             window.location.replace("/runner/login"); // TODO
                         } else if (http.status === 401) {
                             console.log("code 401");
+                            $("#login-error").text("Access not allowed.");
                             $("#login-error").removeClass("login-error-hidden");
                             // $("#login input[type='text']").addClass("incorrect");
                             // $("#login input[type='password']").addClass("incorrect");
+                        } else if (http.status === 404) {
+                            $("#login-error").text("Password reset link is invalid.");
+                            $("#login-error").removeClass("login-error-hidden");
                         } else {
                             console.log("something else...");
                         }
@@ -260,7 +264,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     $("#password-reset-request button").on("click", function() {
-        var username = $("#password-reset-request form input:nth-child(2)").val().trim();
+        var username = $("#password-reset-request form input").val().trim();
         if(username !== ""){
 
             var param = "username=" + username;

@@ -171,6 +171,15 @@ public class Runs {
         return res;
     }
 
+    @Path("/{run_id}/graph/{numberOfStep}/{indicator}/{startP}/{endP}")
+    @GET
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    public GraphPoints getListOfStepWithParaAndRange(@PathParam("run_id") String run_id, @PathParam("numberOfStep") String numberOfStep,
+                                                     @PathParam("indicator") String indicator, @PathParam("startP") String startP, @PathParam("endP") String endP) {
+        GraphPoints res = StepDao.instance.getStepsWithParaAndRange(run_id, Integer.parseInt(numberOfStep), indicator, Integer.parseInt(startP), Integer.parseInt(endP));
+        return res;
+    }
+
     @Path("/{run_id}/info")
     @GET
     @Produces(MediaType.APPLICATION_JSON)

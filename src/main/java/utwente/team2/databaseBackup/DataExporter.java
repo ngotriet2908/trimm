@@ -1,13 +1,9 @@
 package utwente.team2.databaseBackup;
 
-import org.apache.commons.codec.binary.Hex;
 import org.apache.poi.ss.usermodel.*;
 import utwente.team2.dao.UserDao;
 
 import java.io.*;
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.sql.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -173,18 +169,6 @@ public class DataExporter {
         }
     }
 
-    public static String getSHA256(String password) {
-        MessageDigest digest = null;
-        try {
-            digest = MessageDigest.getInstance("SHA-256");
-            byte[] hash = digest.digest(password.getBytes(StandardCharsets.UTF_8));
-            String encoded = Hex.encodeHexString(hash);
-            return encoded;
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
 
     public void insertUsers() {
         String query = "INSERT INTO general_user(username, first_name, last_name, email, password, salt) "
@@ -199,7 +183,7 @@ public class DataExporter {
             statement.setString(2, "Christian");
             statement.setString(3, "Van Den Berge");
             statement.setString(4, "khavronayevhen@gmail.com");
-            statement.setString(5, getSHA256(getSHA256("Password7")+ salt));
+            statement.setString(5, UserDao.instance.getSHA256(UserDao.instance.getSHA256("Password7")+ salt));
             statement.setString(6, salt);
             statement.execute();
 
@@ -209,7 +193,7 @@ public class DataExporter {
             statement.setString(2, "Johnny");
             statement.setString(3, "Frankenstein");
             statement.setString(4, "ngotriet2908@gmail.com");
-            statement.setString(5, getSHA256(getSHA256("Password7")+ salt));
+            statement.setString(5, UserDao.instance.getSHA256(UserDao.instance.getSHA256("Password7")+ salt));
             statement.setString(6, salt);
 
             statement.execute();
