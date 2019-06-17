@@ -4,6 +4,9 @@ import org.apache.commons.codec.binary.Hex;
 import utwente.team2.DatabaseInitialiser;
 import utwente.team2.model.User;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -14,6 +17,8 @@ import java.sql.SQLException;
 public enum UserDao {
 
     instance;
+
+
 
     public User getUserDetails(String username, User user) {
         try {
@@ -41,6 +46,30 @@ public enum UserDao {
                 }
 
                 return user;
+            } else {
+                return null;
+            }
+        } catch (SQLException se) {
+            se.printStackTrace();
+        }
+
+        return null;
+    }
+
+    public byte[] getUserImage(String username) {
+        try {
+            String query = "SELECT picture " +
+                    "FROM user_picture AS u " +
+                    "WHERE u.username = ? ";
+
+            PreparedStatement statement = DatabaseInitialiser.getCon().prepareStatement(query);
+            statement.setString(1, username);
+
+            ResultSet resultSet = statement.executeQuery();
+
+            // should be only one row
+            if (resultSet.next()) {
+                return resultSet.getBytes(1);
             } else {
                 return null;
             }
@@ -233,6 +262,50 @@ public enum UserDao {
         }
         return allRowAffect > 0;
     }
+
+
+    public static byte[] toByteArray(InputStream in) throws IOException {
+
+        ByteArrayOutputStream os = new ByteArrayOutputStream();
+
+        byte[] buffer = new byte[1024];
+        int len;
+
+        // read bytes from the input stream and store them in buffer
+        while ((len = in.read(buffer)) != -1) {
+            // write bytes from the buffer into output stream
+            os.write(buffer, 0, len);
+        }
+
+        return os.toByteArray();
+    }
+
+
+
+    public boolean updateProfileImage(String username, InputStream image) {
+        int allRowAffect = 0;
+
+        try {
+            String query = "UPDATE user_picture " +
+                    "SET picture = ?"
+                    + "WHERE username = ? ";
+
+            PreparedStatement statementForUpdate = DatabaseInitialiser.getCon().prepareStatement(query);
+
+            statementForUpdate.setString(2, username);
+            statementForUpdate.setBytes(1, toByteArray(image));
+            int rowAffect = statementForUpdate.executeUpdate();
+
+            return rowAffect > 0;
+
+        } catch (SQLException se) {
+            se.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return allRowAffect > 0;
+    }
+
 
 
     public String getAlphaNumericString(int n) {

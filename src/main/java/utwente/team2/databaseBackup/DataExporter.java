@@ -169,6 +169,21 @@ public class DataExporter {
         }
     }
 
+    public static byte [] ImageToByte(File file) throws FileNotFoundException{
+        FileInputStream fis = new FileInputStream(file);
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        byte[] buf = new byte[1024];
+        try {
+            for (int readNum; (readNum = fis.read(buf)) != -1;) {
+                bos.write(buf, 0, readNum);
+                //System.out.println("read " + readNum + " bytes,");
+            }
+        } catch (IOException ex) {
+        }
+        byte[] bytes = bos.toByteArray();
+        return bytes;
+    }
+
 
     public void insertUsers() {
         String query = "INSERT INTO general_user(username, first_name, last_name, email, password, salt) "
@@ -199,6 +214,31 @@ public class DataExporter {
             statement.execute();
         } catch (SQLException se) {
             se.printStackTrace();
+        }
+    }
+
+    public void insertImageUsers() {
+        String query = "INSERT INTO user_picture(username, picname, picture) "
+                + "VALUES(?,?,?)";
+
+        try {
+            PreparedStatement statement = conn.prepareStatement(query);
+
+
+            statement.setString(1, "CvdB");
+            statement.setString(2, "Christian");
+            statement.setBytes(3, ImageToByte(new File("src/main/webapp/img/profile_green.jpg")));
+            statement.execute();
+
+
+            statement.setString(1, "JF");
+            statement.setString(2, "Johnny");
+            statement.setBytes(3, ImageToByte(new File("src/main/webapp/img/profile_red.jpg")));
+            statement.execute();
+        } catch (SQLException se) {
+            se.printStackTrace();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
         }
     }
 
@@ -408,7 +448,11 @@ public class DataExporter {
                     }
                 }
                 statement.setString(13, "{\"count\":24,\"layout\":[{\"typeName\":\"individual\",\"indicatorName\":\"axtibacc_left\"},{\"typeName\":\"individual\",\"indicatorName\":\"axtibacc_right\"},{\"typeName\":\"individual\",\"indicatorName\":\"tibimpact_left\"},{\"typeName\":\"individual\",\"indicatorName\":\"tibimpact_right\"},{\"typeName\":\"individual\",\"indicatorName\":\"axsacacc_left\"},{\"typeName\":\"individual\",\"indicatorName\":\"axsacacc_right\"},{\"typeName\":\"individual\",\"indicatorName\":\"sacimpact_left\"},{\"typeName\":\"individual\",\"indicatorName\":\"sacimpact_right\"},{\"typeName\":\"individual\",\"indicatorName\":\"brakingforce_left\"},{\"typeName\":\"individual\",\"indicatorName\":\"brakingforce_right\"},{\"typeName\":\"individual\",\"indicatorName\":\"pushoffpower_left\"},{\"typeName\":\"individual\",\"indicatorName\":\"pushoffpower_right\"},{\"typeName\":\"individual\",\"indicatorName\":\"tibintrot_left\"},{\"typeName\":\"individual\",\"indicatorName\":\"tibintrot_right\"},{\"typeName\":\"individual\",\"indicatorName\":\"vll_left\"},{\"typeName\":\"individual\",\"indicatorName\":\"vll_right\"},{\"typeName\":\"graph\",\"indicatorName\":\"axtibacc\"},{\"typeName\":\"graph\",\"indicatorName\":\"tibimpact\"},{\"typeName\":\"graph\",\"indicatorName\":\"axsacacc\"},{\"typeName\":\"graph\",\"indicatorName\":\"sacimpact\"},{\"typeName\":\"graph\",\"indicatorName\":\"brakingforce\"},{\"typeName\":\"graph\",\"indicatorName\":\"pushoffpower\"},{\"typeName\":\"graph\",\"indicatorName\":\"tibintrot\"},{\"typeName\":\"graph\",\"indicatorName\":\"vll\"}]}");
-                statement.setString(12, "Typical Run");
+
+
+                String[] namee = {"Typical run", "Morning Run", "Exercise", "Run with friends", "Training", "Run for fun", "Run to school"};
+
+                statement.setString(12, namee[(int)(Math.random() * 7)]);
                 statement.execute();
             }
         } catch (IOException ioe) {
@@ -493,9 +537,9 @@ public class DataExporter {
                 pd.insertUsers();
                 pd.insertPremiums();
                 pd.insertRuns();
+                pd.insertImageUsers();
                 pd.insertSteps();
                 pd.addStepsCountToRun();
-
                 System.out.println("Done!");
 
                 pd.conn.close();

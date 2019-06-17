@@ -155,6 +155,40 @@ public enum StepDao {
         return null;
     }
 
+    public GraphPoints getAllSteps(String runID, String indicator) {
+        System.out.println("get run info " + runID);
+        try{
+            String query =  "SELECT DISTINCT  s.step_no, s." + indicator + " FROM step s, run " +
+                    "WHERE s.run_id = ? " +
+                    "AND run.id = s.run_id " +
+                    "ORDER BY s.step_no";
+
+            PreparedStatement statement = DatabaseInitialiser.getCon().prepareStatement(query);
+            statement.setInt(1, Integer.parseInt(runID));
+
+
+            System.out.println(statement.toString());
+
+            ResultSet resultSet = statement.executeQuery();
+
+            GraphPoints graphPoints = new GraphPoints(indicator);
+
+            while(resultSet.next()) {
+                if (resultSet.getBigDecimal(2) == null) {
+                    continue;
+                }
+                graphPoints.getStep_no().add(resultSet.getInt("step_no"));
+                graphPoints.getLeft().add(resultSet.getBigDecimal(2));
+            }
+            return graphPoints;
+        } catch(SQLException sqle) {
+            System.err.println("Error connecting: " + sqle);
+        }
+
+        return null;
+    }
+
+
     public GraphPoints getStepsWithParaAndRange(String runID, int numberOfStep, String indicator, int startP, int endP) {
         System.out.println("get run info " + runID);
         try{

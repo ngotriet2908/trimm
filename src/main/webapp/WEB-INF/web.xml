@@ -6,6 +6,18 @@
          version="3.1">
 	<servlet>
 		<servlet-name>javax.ws.rs.core.Application</servlet-name>
+		<servlet-class>org.glassfish.jersey.servlet.ServletContainer</servlet-class>
+		<init-param>
+			<param-name>jersey.config.server.provider.packages</param-name>
+			<param-value>utwente.team2.resource</param-value>
+		</init-param>
+		<init-param>
+			<param-name>jersey.config.server.provider.classnames</param-name>
+			<param-value>
+				org.glassfish.jersey.media.multipart.MultiPartFeature;
+				utwente.team2.filter.AuthenticationFilter</param-value>
+		</init-param>
+		<load-on-startup>1</load-on-startup>
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>javax.ws.rs.core.Application</servlet-name>

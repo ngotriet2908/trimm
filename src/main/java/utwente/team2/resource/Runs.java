@@ -5,8 +5,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import utwente.team2.dao.RunDao;
 import utwente.team2.dao.StepDao;
 import utwente.team2.filter.Secured;
+import utwente.team2.mail.MailAPI;
 import utwente.team2.model.*;
 
+import javax.mail.MessagingException;
+import javax.mail.internet.AddressException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.*;
@@ -139,6 +142,15 @@ public class Runs {
                 } else if (typeName.equals("graph")) {
                     GraphPoints gp = StepDao.instance.getStepsWithPara(run_id, 50, jsonNode.get("layout").get(i).get("indicatorName").textValue());
                     ld.getCards().add(gp);
+                } else if (typeName.equals("distribution")) {
+                    GraphPoints gp = StepDao.instance.getAllSteps(run_id, jsonNode.get("layout").get(i).get("indicatorName").textValue());
+
+                    if (gp != null) {
+                        Distribution distribution = new Distribution(gp.getLeft(), gp.getName());
+                        distribution.getDistribution();
+
+                        ld.getCards().add(distribution);
+                    }
                 }
             }
 
@@ -180,10 +192,51 @@ public class Runs {
         return res;
     }
 
+    @Path("/{run_id}/distribution/{indicator}")
+    @GET
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    public Distribution getDistribution(@PathParam("run_id") String run_id, @PathParam("indicator") String indicator) {
+
+        GraphPoints steps = StepDao.instance.getAllSteps(run_id, indicator);
+
+        Distribution distribution = new Distribution(steps.getLeft(), steps.getName());
+        distribution.getDistribution();
+        return distribution;
+    }
+
+
     @Path("/{run_id}/info")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public Run showRunInfo(@PathParam("run_id") String run_id) {
         return RunDao.instance.getRunsOverviewByID(Integer.parseInt(run_id));
     }
+
+    @Path("/{run_id}/export/kindle")
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    public String sendToKindle(@PathParam("run_id") String run_id) {
+
+        System.out.println("send to kindle run#" + run_id);
+
+        Run run = RunDao.instance.getRunsOverviewByID(Integer.parseInt(run_id));
+        ImageProcessing imageProcessing = new ImageProcessing(
+                run.getName(),
+                run.getDate().toString() ,
+                "Salomon",
+                run.getDuration().toString(),
+                run.getDistance().toString(),
+                run.getSteps().toString());
+        try {
+            System.out.println("here");
+            MailAPI.generateAndSendEmailWithAttachtMent("hello", "send to kindle",
+                    "ngohungminhtriet@free.kindle.com", imageProcessing.generate());
+        }catch (AddressException e) {
+            e.printStackTrace();
+        } catch (MessagingException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
 }

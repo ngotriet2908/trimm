@@ -5,6 +5,8 @@ DROP TABLE IF EXISTS shoes CASCADE;
 DROP TABLE IF EXISTS term CASCADE;
 DROP TABLE IF EXISTS run CASCADE;
 DROP TABLE IF EXISTS step CASCADE;
+DROP TABLE IF EXISTS user_picture CASCADE;
+
 
 CREATE TABLE general_user (
     username VARCHAR(30),
@@ -14,6 +16,14 @@ CREATE TABLE general_user (
     password text, -- when we know the actual length of salted hash, better replace with CHAR(fixed_limit)
     salt text,
     PRIMARY KEY (username)
+);
+
+CREATE TABLE user_picture (
+    username VARCHAR(30),
+    picname VARCHAR(30),
+    picture BYTEA,
+    PRIMARY KEY (username),
+    FOREIGN KEY (username) REFERENCES general_user(username)
 );
 
 CREATE TABLE premium_user (

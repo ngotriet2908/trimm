@@ -18,9 +18,6 @@
 		<li class="nav-logo">
 			<a class="font-bold" href="/">runner</a>
 		</li>
-		<!--<li class="nav-item">-->
-		<!--<a href="/runner/login">login</a>-->
-		<!--</li>-->
 	</ul>
 	<div class="nav-opacity-overlay">
 	</div>
@@ -31,22 +28,82 @@
 	</div>
 
 	<div id="registration-form">
-		<form>
-			<!--<h1>Register</h1>-->
+		<form action="/" method="POST" novalidate class="input-form">
+			<h1>Sign up</h1>
 
-				<input type="text" placeholder="username" name="username" pattern="[a-z]{1,15}" required/>
-				<input type="email" placeholder="email" name="email" required/>
+			<p id="response-message" class="response-message-hidden"></p>
 
-				<input type="text" placeholder="first name" name="firstName" required/>
-				<input type="text" placeholder="last name" name="lastName" required/>
+				<!--<input type="text" placeholder="username" name="username" pattern="[a-z]{1,15}" required/>-->
+				<!--<input type="email" placeholder="email" name="email" required/>-->
 
-				<input type="password" placeholder="password" name="password"
-					   pattern="^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z]{8,}$" required/>
-				<input type="password" placeholder="confirm password" name="confirmPassword"
-					   pattern="^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z]{8,}$" required/>
+				<!--<input type="text" placeholder="first name" name="firstName" required/>-->
+				<!--<input type="text" placeholder="last name" name="lastName" required/>-->
 
-				<button type="submit"><span>Sign up</span></button>
+				<!--<input type="password" placeholder="password" name="password"-->
+					   <!--pattern="^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z]{8,}$" required/>-->
+				<!--<input type="password" placeholder="confirm password" name="confirmPassword"-->
+					   <!--pattern="^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z]{8,}$" required/>-->
+
+				<!--<button type="submit"><span>Sign up</span></button>-->
+				<!--<p>Already have an account? <a href="/runner/login">Sign in</a></p>-->
+
+
+			<div class="input-group">
+				<input id="username" type="text" name="username"
+					   autocomplete="new-password" required>
+				<label for="username">Username</label>
+
+				<!--<span class="input-error">-->
+					<!--<i class="fas fa-exclamation-triangle"></i>-->
+					<!--<div>-->
+						<!--<div class="input-error-tooltip-text"><p>Tooltip text</p></div>-->
+					<!--</div>-->
+				<!--</span>-->
+
+				<!--<div class="messages"></div>-->
+			</div>
+
+			<div class="input-group">
+				<input type="text" id="email" name="email" required>
+				<label for="email">Email</label>
+
+				<!--<div class="messages"></div>-->
+			</div>
+
+			<div class="input-group">
+				<input type="text" id="first-name" name="first-name" required>
+				<label for="first-name">First Name</label>
+
+				<!--<div class="messages"></div>-->
+			</div>
+
+			<div class="input-group">
+				<input type="text" id="last-name" name="last-name" required>
+				<label for="first-name">Last Name</label>
+
+				<!--<div class="messages"></div>-->
+			</div>
+
+			<div class="input-group">
+				<input id="password" type="password" name="password"
+					   autocomplete="new-password" required>
+				<label for="password">Password</label>
+
+				<!--<div class="messages"></div>-->
+			</div>
+
+			<div class="input-group">
+				<input id="confirm-password" type="password"
+					   name="confirm-password" required>
+				<label for="confirm-password">Confirm password</label>
+
+				<!--<div class="messages"></div>-->
+			</div>
+
+
+			<button class="button" type="submit"><span>Sign up</span></button>
 			<p>Already have an account? <a href="/runner/login">Sign in</a></p>
+
 		</form>
 	</div>
 </main>

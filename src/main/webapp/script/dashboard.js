@@ -8,10 +8,10 @@ document.addEventListener('DOMContentLoaded', function () {
     var docElem = document.documentElement;
     var gridElement = document.querySelector('.dashboard-tile-grid');
 
-    var filterField = document.querySelector('.filter-field');
-    var searchField = document.querySelector('.search-field');
-    var sortField = document.querySelector('.sort-field');
-    var layoutField = document.querySelector('.layout-field');
+    var filterField = document.querySelector('.control-filter-field');
+    var searchField = document.querySelector('.control-search-field');
+    var sortField = document.querySelector('.control-sort-field');
+    // var layoutField = document.querySelector('.layout-field');
 
     var filterFieldValue;
     var sortFieldValue;
@@ -40,10 +40,6 @@ document.addEventListener('DOMContentLoaded', function () {
             dragStartPredicate: function (item, event) {
                 var isMap = event.target.id === "mapid";
 
-                // console.log(event.target.id);
-                // console.log(item);
-                // console.log(event);
-
                 var isDraggable = sortFieldValue === 'order';
                 var isRemoveAction = elementMatches(event.target, '.dashboard-card-remove, .dashboard-card-remove i');
                 return (isDraggable && !isRemoveAction && !isMap) ? Muuri.ItemDrag.defaultStartPredicate(item, event) : false;
@@ -66,44 +62,8 @@ document.addEventListener('DOMContentLoaded', function () {
             })
             .on('sort', updateIndices);
 
-        // get layout
-        // var layout = window.localStorage.getItem('layout');
-        //
-        // if (layout) {
-        //     loadLayout(grid, layout);
-        // } else {
-        //     grid.layout(true);
-        // }
-
         getLayoutFromServer();
     }
-
-    // attach listener to "reload layout" button
-    $('#dashboard-reload-layout-button').on('click', function(event) {
-        // console.log("restoring order...");
-        //
-        // var layout = window.localStorage.getItem('layout');
-        //
-        // console.log(layout);
-        //
-        // if (layout) {
-        //     console.log("layout available...");
-        //     loadLayout(grid, layout);
-        // } else {
-        //     grid.layout(true);
-        // }
-
-        var items = document.querySelectorAll(".dashboard-card");
-
-        console.log(items[0]);
-        //
-        for (var i = 0; i < items.length; i++) {
-            removeItem(items[i]);
-        }
-        //
-        console.log("removed layout.")
-    });
-
 
     // save layout
     function serializeLayout(grid) {
@@ -120,7 +80,7 @@ document.addEventListener('DOMContentLoaded', function () {
             return card;
         });
         //
-        var itemIds = {
+        itemIds = {
             "count": counter,
             "layout": itemIds
         };
@@ -210,6 +170,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 addItem(item.cardTypeName, item.name, item, true)
             } else if (item.cardTypeName === "individual") {
                 addItem(item.cardTypeName, item.name, item, true)
+            } else if (item.cardTypeName === "distribution") {
+                addItem(item.cardTypeName, item.name, item, true)
             }
 
             console.log("added: " + item);
@@ -222,7 +184,7 @@ document.addEventListener('DOMContentLoaded', function () {
         grid.filter(function (item) {
             var element = item.getElement();
             var isSearchMatch = !searchFieldValue ? true : (element.getAttribute('data-title') || '').toLowerCase().indexOf(searchFieldValue) > -1;
-            var isFilterMatch = !filterFieldValue ? true : (element.getAttribute('data-color') || '') === filterFieldValue;
+            var isFilterMatch = !filterFieldValue ? true : (element.getAttribute('data-type') || '') === filterFieldValue;
             return isSearchMatch && isFilterMatch;
         });
     }
@@ -279,8 +241,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
         if (typeName === "graph") {
             http.open("GET", window.location.href + "/graph/50/" + indicatorName, true);
+        } else if (typeName === "distribution") {
+            http.open("GET", window.location.href + "/distribution/" + indicatorName, true); // TODO
         } else {
-            http.open("GET", window.location.href + "/indicator/" + indicatorName, true);
+            http.open("GET", window.location.href + "/indicator/" + indicatorName, true); // TODO
         }
 
         http.setRequestHeader('Accept', 'application/json');
@@ -323,11 +287,12 @@ document.addEventListener('DOMContentLoaded', function () {
             initMap();
         } else if (typeName === "graph") {
             initGraph(newElement, data);
+        } else if (typeName === "distribution") {
+            initDistribution(newElement, data); // TODO
         }
     }
 
     function removeItem(e) {
-
         var elem;
         if (e.target === undefined) {
             elem = e;
@@ -353,16 +318,16 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // change the layout type
-    function changeLayout() {
-        layoutFieldValue = layoutField.value;
-        grid._settings.layout = {
-            horizontal: false,
-            alignRight: layoutFieldValue.indexOf('right') > -1,
-            alignBottom: layoutFieldValue.indexOf('bottom') > -1,
-            fillGaps: layoutFieldValue.indexOf('fillgaps') > -1
-        };
-        grid.layout();
-    }
+    // function changeLayout() {
+    //     layoutFieldValue = layoutField.value;
+    //     grid._settings.layout = {
+    //         horizontal: false,
+    //         alignRight: layoutFieldValue.indexOf('right') > -1,
+    //         alignBottom: layoutFieldValue.indexOf('bottom') > -1,
+    //         fillGaps: layoutFieldValue.indexOf('fillgaps') > -1
+    //     };
+    //     grid.layout();
+    // }
 
     function generateElement(id, title, color, type, data) {
         var itemElem = document.createElement('div');
@@ -466,6 +431,21 @@ document.addEventListener('DOMContentLoaded', function () {
                 // TODO load graph
 
                 break;
+            case "distribution": // TODO
+                height = 2;
+                width = 2;
+                innerContent = '<div class="dashboard-card-front dashboard-card-front-graph">' + // TODO
+                    '<header>' +
+                    '<h3 class="dashboard-card-id">' + data.name +
+                    '' +
+                    '</h3>' +
+                    '<button class="dashboard-card-remove"><i class="material-icons">&#xE5CD;</i></button>' +
+                    '</header>' +
+                    '<div class="dashboard-card-content dashboard-card-graph">' + // TODO
+                    '<canvas></canvas>' +
+                    '</div>' +
+                    '</div>';
+                break;
             case "map":
                 height = 2;
                 width = 2;
@@ -490,7 +470,7 @@ document.addEventListener('DOMContentLoaded', function () {
         var classNames = 'dashboard-card h' + height + ' w' + width;
 
         var itemTemplate = '' +
-            '<div class="' + classNames + '" data-id="' + id + '" data-color="' + color + '" data-title="' + data.name + '" data-type="' + type + '">' +
+            '<div class="' + classNames + '" data-id="' + id + '" data-title="' + data.name + '" data-type="' + type + '">' +
             '<div class="dashboard-card-inner">' + innerContent +
             '</div>' +
             '</div>';
@@ -504,18 +484,6 @@ document.addEventListener('DOMContentLoaded', function () {
         return collection[Math.floor(Math.random() * collection.length)];
     }
 
-    function getRandomInt(min, max) {
-        return Math.floor(Math.random() * (max - min + 1) + min);
-    }
-
-    function generateRandomWord(length) {
-        var ret = '';
-        for (var i = 0; i < length; i++) {
-            ret += getRandomItem(characters);
-        }
-        return ret;
-    }
-
     // sorting and filtering functions
     function compareItemTitle(a, b) {
         var aVal = a.getElement().getAttribute('data-title') || '';
@@ -524,16 +492,18 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function compareItemColor(a, b) {
-        var aVal = a.getElement().getAttribute('data-color') || '';
-        var bVal = b.getElement().getAttribute('data-color') || '';
+        var aVal = a.getElement().getAttribute('data-type') || '';
+        var bVal = b.getElement().getAttribute('data-type') || '';
         return aVal < bVal ? -1 : aVal > bVal ? 1 : compareItemTitle(a, b);
     }
 
     // updating ids of items when layout changes
     function updateIndices() {
+        var maxIndex = 1;
         grid.getItems().forEach(function (item, i) {
             item.getElement().setAttribute('data-id', i + 1);
             // item.getElement().querySelector('.dashboard-card-id').innerHTML = i + 1;
+            maxIndex = i + 1;
         });
     }
 
@@ -560,16 +530,16 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function initControls() {
         // Reset field values.
-        searchField.value = '';
-        [sortField, filterField, layoutField].forEach(function (field) {
+        searchField.value = "";
+        [sortField, filterField].forEach(function (field) {
             field.value = field.querySelectorAll('option')[0].value;
         });
 
-        // Set inital search query, active filter, active sort value and active layout.
+        // Set initial search query, active filter, active sort value and active layout.
         searchFieldValue = searchField.value.toLowerCase();
         filterFieldValue = filterField.value;
         sortFieldValue = sortField.value;
-        layoutFieldValue = layoutField.value;
+        // layoutFieldValue = layoutField.value;
 
         // Search field binding.
         searchField.addEventListener('keyup', function () {
@@ -583,56 +553,15 @@ document.addEventListener('DOMContentLoaded', function () {
         // Filter, sort and layout bindings.
         filterField.addEventListener('change', filter);
         sortField.addEventListener('change', sort);
-        layoutField.addEventListener('change', changeLayout);
+        // layoutField.addEventListener('change', changeLayout);
     }
 
     // Add/remove items bindings.
     // addItemsElement.addEventListener('click', addItems);
-
     gridElement.addEventListener('click', function (e) {
         if (elementMatches(e.target, '.dashboard-card-remove, .dashboard-card-remove i')) {
             removeItem(e);
         }
-    });
-
-
-    // attach listener to "save layout" button
-    $('#dashboard-edit-layout-button').on('click', function(event) {
-        // console.log("saving layout...");
-        // order = grid.getItems().map(item => item.getElement().getAttribute('data-type'));
-        // console.log(order);
-    });
-
-
-    var isAddFooterOpen = false;
-
-    // "add card" button listener
-    $('#add-card-button').on('click', function(event) {
-        console.log("Opening add menu.");
-
-        isAddFooterOpen = !isAddFooterOpen;
-
-        $('#add-card-container').toggleClass("open");
-    });
-
-
-    // add specific type of card listener
-    document.querySelector("#add-card-container button").addEventListener("click", function(event) {
-        var selectFieldTypeValue = document.querySelector("#add-card-container #select-type").value;
-        var selectFieldIndicatorValue = document.querySelector("#add-card-container #select-indicator").value;
-
-        var selectFieldSideValue = $("input[name='select-side']:checked").val();
-
-        // var selectFieldSideValue = document.querySelector("#add-card-container #select-side").value;
-
-        if (selectFieldTypeValue !== "graph") {
-            selectFieldIndicatorValue += selectFieldSideValue;
-        }
-
-        console.log(selectFieldTypeValue);
-        console.log(selectFieldIndicatorValue);
-
-        requestDataForIndicator(selectFieldTypeValue, selectFieldIndicatorValue, false);
     });
 
     // start
@@ -725,25 +654,162 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
 
-    // password confirmation checker
-    // var check = function() {
-    //     if (document.getElementById('password').value ===
-    //         document.getElementById('confirm_password').value) {
-    //         document.getElementById('message').style.color = 'green';
-    //         document.getElementById('message').innerHTML = 'matching';
-    //     } else {
-    //         document.getElementById('message').style.color = 'red';
-    //         document.getElementById('message').innerHTML = 'not matching';
-    //     }
-    // }
+    function initDistribution(element, data) {
+        var ctx = element.querySelector("canvas").getContext('2d');
 
-    $("#select-type").on("change", function(event) {
-        if ($("#select-type").val() === "graph") {
-            console.log("hidden");
-            $("#select-side").addClass("select-hidden");
-        } else {
-            $("#select-side").removeClass("select-hidden");
+        var barChartData = {
+            labels: data.pointX,
+            datasets: [{
+                borderColor: 'rgb(54, 162, 235)',
+                backgroundColor: 'rgb(54, 162, 235)',
+                borderWidth: 1,
+                data: data.pointY
+            }]
+
+        };
+
+
+        var myBarChart = new Chart(ctx, {
+            type: 'bar',
+            data: barChartData,
+            responsive: true,
+            options: {
+                legend: {
+                    display: false
+                },
+                tooltips: {
+                    callbacks: {
+                        label: function(tooltipItem) {
+                            return tooltipItem.yLabel;
+                        }
+                    }
+                },
+                scales: {
+                    xAxes: [{
+                        barPercentage: 0.5,
+                        barThickness: 6,
+                        maxBarThickness: 8,
+                        minBarLength: 2,
+                        gridLines: {
+                            offsetGridLines: true
+                        }
+                    }],
+                    yAxes: [{
+                        scaleLabel: {
+                            display: true,
+                            labelString: 'steps'
+                        }
+                    }]
+                },
+            }
+        })
+    }
+
+
+    $(".popup-overlay").on("click", function(event) {
+        // hide
+        document.querySelector(".popup-overlay").classList.add("hidden");
+
+        // remove all dialogs
+        document.querySelector(".remove-all-dialog").classList.add("hidden");
+        document.querySelector(".add-dialog").classList.add("hidden");
+        document.querySelector(".eink-sent-dialog").classList.add("hidden");
+    });
+
+    $("#controls #add").on("click", function(event) {
+        // show overlay
+        document.querySelector(".popup-overlay").classList.remove("hidden");
+
+        // show popup
+        document.querySelector(".add-dialog").classList.remove("hidden");
+    });
+
+
+    $(".add-dialog .add").on("click", function(event) {
+        var selectFieldTypeValue = document.querySelector(".add-dialog #select-type").value;
+        var selectFieldIndicatorValue = document.querySelector(".add-dialog #select-indicator").value;
+
+        var selectFieldSideValue = $(".add-dialog input[name='select-side']:checked").val();
+
+        if (selectFieldTypeValue !== "graph") {
+            selectFieldIndicatorValue += selectFieldSideValue;
         }
-    })
+
+        console.log(selectFieldTypeValue);
+        console.log(selectFieldIndicatorValue);
+
+        requestDataForIndicator(selectFieldTypeValue, selectFieldIndicatorValue, false);
+    });
+
+
+    $('#controls #export-eink button').on('click', function(event) {
+        var http = new XMLHttpRequest();
+
+        http.onreadystatechange = function () {
+            if (http.readyState === XMLHttpRequest.DONE) {
+                if (http.status === 200 || http.status === 204) {
+                    console.log("code 200");
+                    // TODO show email sent!
+
+                    // show overlay
+                    document.querySelector(".popup-overlay").classList.remove("hidden");
+
+                    // show popup
+                    document.querySelector(".eink-sent-dialog").classList.remove("hidden");
+
+                } else if (http.status === 401) {
+                    console.log("code 401");
+
+
+                } else {
+                    console.log("something else...");
+                }
+            }
+        };
+
+        http.open("GET", window.location.href + "/export/kindle", true);
+        http.setRequestHeader('Cache-Control', 'no-store');
+        http.send();
+
+    });
+
+
+    $("#controls #remove-all").on("click", function(event) {
+        // show overlay
+        document.querySelector(".popup-overlay").classList.remove("hidden");
+
+        // show popup
+        document.querySelector(".remove-all-dialog").classList.remove("hidden");
+    });
+
+    // remove all button
+    $('.remove-all-dialog .remove-all').on('click', function(event) {
+        var items = document.querySelectorAll(".dashboard-card");
+
+        console.log(items[0]);
+        //
+        for (var i = 0; i < items.length; i++) {
+            removeItem(items[i]);
+        }
+        //
+        console.log("removed layout.");
+
+        // hide popup
+        document.querySelector(".remove-all-dialog").classList.add("hidden");
+
+        // hide overlay
+        document.querySelector(".popup-overlay").classList.add("hidden");
+    });
+
+    $(".cancel").on("click", function(event) {
+        // hide
+        document.querySelector(".popup-overlay").classList.add("hidden");
+
+        // remove all dialogs
+        document.querySelector(".remove-all-dialog").classList.add("hidden");
+        document.querySelector(".add-dialog").classList.add("hidden");
+        document.querySelector(".eink-sent-dialog").classList.add("hidden");
+    });
+
 });
 

@@ -12,28 +12,40 @@
 </head>
 <body id="profile">
 
-<div id="profile-top">
+<div class="profile-top">
 		<nav>
 			<ul>
-				<li class="nav-logo">
-					<a class="font-bold" href="/">runner</a>
+
+				<!--<div id="nav-items">-->
+					<li class="nav-logo">
+						<a class="font-bold" href="/">runner</a>
+					</li>
+					<li class="nav-item">
+						<a href="/runner/settings">settings</a>
+					</li>
+					<li class="nav-item">
+						<a href="/runner/logout">sign out</a>
+					</li>
+				<!--</div>-->
+
+
+				<li class="nav-button">
+					<a class="font-bold" href="/"><i class="fas fa-bars"></i></a>
 				</li>
-				<li class="nav-item">
-					<a href="/runner/settings">settings</a>
-				</li>
-				<li class="nav-item">
-					<a href="/runner/logout">sign out</a>
-				</li>
+
 			</ul>
 		</nav>
 		<div class="nav-opacity-overlay"></div>
 </div>
 
-<main>
-	<div id="profile-picture-container">
+<main class="profile-main">
+
+	<div id="profile-picture-container" class="profile-card">
+
 		<div id="profile-picture-img">
-			<img src="/img/profile_bluer.png" alt="profile picture">
+			<img id="profile-profile-picture" src="../img/profile_bluer.png" alt="profile picture">
 		</div>
+
 		<div id="profile-picture-general">
 			<div class="profile-picture-general-item">
 				<p>
@@ -62,16 +74,21 @@
 		</div>
 	</div>
 
+
 	<div id="profile-right">
-		<div id="profile-name">
-			<span></span>
-			<!--<span id="pro">PRO</span>-->
+
+		<div id="profile-name-container">
+			<div>
+				<span></span>
+				<!--<span>Christian Van Den Berge</span>-->
+			</div>
+			<!--<div id="pro">-->
+				<!--<span>PRO</span>-->
+			<!--</div>-->
 		</div>
 
-		<div id="overview-container" class="data-container">
-			<header>
-				<h2>Overview</h2>
-			</header>
+
+		<div id="overview-container" class="profile-card">
 			<div id="overview-data-container">
 				<div class="overview-data-item" id="overview-distance">
 					<h3>
@@ -79,7 +96,7 @@
 						<span>distance</span>
 					</h3>
 					<p>
-						<span></span><span>km</span>
+						<span>44334 </span><span>km</span>
 					</p>
 				</div>
 				<div class="overview-data-item" id="overview-time">
@@ -88,7 +105,7 @@
 						<span>time</span>
 					</h3>
 					<p>
-						<span></span><span>h</span>
+						<span>434 </span><span>h</span>
 					</p>
 				</div>
 				<div class="overview-data-item" id="overview-steps">
@@ -97,26 +114,26 @@
 						<span>steps</span>
 					</h3>
 					<p>
-						<span></span>
+						<span>344334</span>
 					</p>
 				</div>
 			</div>
 		</div>
 
-		<div id="activity-container" class="data-container">
-			<header>
-				<h2 id="profile-dashboard-gateway">Runs</h2>
-			</header>
-			<div id="activity-data-container">
+		<!--<div id="activity-container" class="data-container">-->
+			<!--<header>-->
+				<!--<h2>Runs</h2>-->
+			<!--</header>-->
+			<!--<div id="activity-data-container">-->
 
-				<table>
-					<tr>
-						<th>date</th>
-						<th>title</th>
-						<th>distance</th>
-						<th>time</th>
-						<th>steps</th>
-					</tr>
+				<!--<table>-->
+					<!--<tr>-->
+						<!--<th>date</th>-->
+						<!--<th>title</th>-->
+						<!--<th>distance</th>-->
+						<!--<th>time</th>-->
+						<!--<th>steps</th>-->
+					<!--</tr>-->
 					<!--<tr>-->
 						<!--<td>Tue, 13/04/2019</td>-->
 						<!--<td>Typical Run</td>-->
@@ -138,7 +155,64 @@
 						<!--<td>06:11:03</td>-->
 						<!--<td>86736</td>-->
 					<!--</tr>-->
-				</table>
+				<!--</table>-->
+			<!--</div>-->
+		<!--</div>-->
+
+
+		<div id="runs-container">
+			<header>
+				<h1>Activity</h1>
+<!--				<div>Date <i class="fas fa-sort-down"></i></div>-->
+				<div>
+					<select id="select-sort-type">
+						<option value="sort ">---sort---</option>
+
+
+						<option value="dateu">Date [A-Z]</option>
+						<option value="dated">Date [Z-A]</option>
+
+						<option value="timeu">Time [A-Z]</option>
+						<option value="timed">Time [Z-A]</option>
+
+						<option value="stepu">Step [A-Z]</option>
+						<option value="stepd">Step [Z-A]</option>
+
+						<option value="distanceu">Distance [A-Z]</option>
+						<option value="distanced">Distance [Z-A]</option>
+
+					</select>
+				</div>
+			</header>
+
+			<div id="runs-data-container">
+
+<!--				<div class="profile-card profile-run-card">-->
+<!--					<div class="run-card-title"><h4><a href="/">Typical Run</a></h4></div>-->
+<!--					<div class="run-card-date">2019-04-13</div>-->
+
+<!--					<div class="run-card-blocks">-->
+<!--						<div class="run-card-distance">-->
+<!--							<div>Distance</div>-->
+<!--							<div>8.7 km</div>-->
+<!--						</div>-->
+
+<!--						<div class="run-card-time">-->
+<!--							<div>Time</div>-->
+<!--							<div>00:55:33</div>-->
+<!--						</div>-->
+
+<!--						<div class="run-card-steps">-->
+<!--							<div>Steps</div>-->
+<!--							<div>11342</div>-->
+<!--						</div>-->
+
+<!--						<div class="run-card-see-more"><a class="button" href="/"><span>More</span></a></div>-->
+<!--					</div>-->
+
+<!--					&lt;!&ndash;<div class="run-card-see-more"><button class="button"><span>See more</span></button></div>&ndash;&gt;-->
+<!--				</div>-->
+
 			</div>
 		</div>
 	</div>
@@ -165,8 +239,9 @@
 		crossorigin="anonymous"></script>
 <!--<script src="/script/jquery.nicescroll.js"></script>-->
 <script src="/script/script.js"></script>
+
+<link rel="stylesheet" href="/script/cropie/croppie.css" />
+<script src="/script/cropie/croppie.js"></script>
+
 </body>
 </html>
-
-
-<!-- password: NoEncryptionForNow -->

@@ -9,11 +9,11 @@
 	<link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
 	<link href="https://fonts.googleapis.com/css?family=Montserrat" rel="stylesheet">
 	<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
-	<link rel="stylesheet" href="/style/style.css">
+	<link rel="stylesheet" href="../style/style.css">
 </head>
 <body id="profile-management">
 
-<div id="profile-management-top">
+<div class="profile-top">
 	<nav>
 		<ul>
 			<li class="nav-logo">
@@ -30,12 +30,14 @@
 	<div class="nav-opacity-overlay"></div>
 </div>
 
-<main>
-	<div id="profile-management-picture-container">
-		<div id="profile-management-picture-img">
-			<img src="/img/profile_bluer.png" alt="profile picture">
+<main class="profile-main">
+	<div id="profile-picture-container" class="profile-card">
+
+		<div id="profile-picture-img">
+			<img id="profile-picture-image" src="../img/profile_bluer.png" alt="profile picture">
 		</div>
-		<div id="profile-management-picture-general">
+
+		<div id="profile-picture-general">
 			<!--<button class="button" type="button" id="replace-profile-image-open"><span><i class="fas fa-image"></i>Change</span></button>-->
 
 			<input type="file" id="profile-image-field" name="profile-image" accept="image/*">
@@ -44,29 +46,47 @@
 		</div>
 	</div>
 
-	<div id="profile-management-right">
-		<div id="profile-management-name">
-			<span></span>
-			<!--Johnny English <span id="pro">PRO</span>-->
+	<div id="profile-right">
+
+		<div id="profile-name-container">
+			<div>
+				<span></span>
+				<!--<span>Christian Van Den Berge</span>-->
+			</div>
+			<!--<div id="pro">-->
+			<!--<span>PRO</span>-->
+			<!--</div>-->
 		</div>
 
-		<div id="profile-management-my-information-container" class="data-container">
+		<div id="profile-management-my-information-container" class="profile-card">
 			<header>
 				<h2>My Information</h2>
 			</header>
+
 			<div id="profile-management-my-information-data-container">
-				<label for="first-name-field">First name</label>
-				<input type="text" id="first-name-field" name="username" value="Johnny">
 
-				<label for="last-name-field">Last name</label>
-				<input type="text" id="last-name-field" name="username" value="English">
+				<form action="/" method="POST">
 
-				<button class="button" type="button" id="save-my-information"><span>Save</span></button>
+					<div class="input-group">
+						<input type="text" id="first-name-field" name="username" value="Johnny" autocomplete="new-password" required>
+						<label for="first-name-field">First Name</label>
+					</div>
 
-				<button class="button" type="button" id="link-strava"><span><i class="fab fa-strava"></i>
-					<a href="https://www.strava.com/oauth/authorize?client_id=35158&redirect_uri=http://localhost:8080/runner/settings/link_strava&response_type=code&scope=read,read_all,profile:read_all,profile:write,activity:read_all,activity:write">
-						Link Strava</a></span>
-				</button>
+					<div class="input-group">
+						<input type="text" id="last-name-field" name="username" value="English" autocomplete="new-password" required>
+						<label for="first-name-field">Last Name</label>
+					</div>
+
+					<button class="button" type="button" id="save-my-information"><span>Save</span></button>
+
+					<a class="button" type="button" id="link-strava" href="https://www.strava.com/oauth/authorize?client_id=35158&redirect_uri=http://localhost:8080/runner/settings/link_strava&response_type=code&scope=read,read_all,profile:read_all,profile:write,activity:read_all,activity:write">
+						<span>
+							<i class="fab fa-strava"></i>
+							Link Strava
+						</span>
+					</a>
+
+				</form>
 			</div>
 		</div>
 
@@ -112,7 +132,7 @@
 		integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
 		crossorigin="anonymous"></script>
 <!--<script src="/script/jquery.nicescroll.js"></script>-->
-<script src="/script/script.js"></script>
+<script src="../script/script.js"></script>
 </body>
 </html>
 

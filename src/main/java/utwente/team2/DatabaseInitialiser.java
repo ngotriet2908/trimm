@@ -32,16 +32,6 @@ public class DatabaseInitialiser implements ServletContextListener
 
         try {
             con = DriverManager.getConnection(url, "di154", "8OlI3B/V");
-//            System.out.println("SQL: have connection");
-//            Statement statement = con.createStatement();
-//            String query =  "SELECT DISTINCT u.username, s.password FROM userr u, security_details s " +
-//                    "WHERE u.username = s.username";
-//            ResultSet resultSet = statement.executeQuery(query);
-//            while (resultSet.next()) {
-//                String username = resultSet.getString("username");
-//                String password = resultSet.getString("password");
-//                System.out.println("SQL: User: " + username + " ,password: " + password);
-//            }//end contextInitialized method
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -54,5 +44,5 @@ public class DatabaseInitialiser implements ServletContextListener
         } catch (SQLException e) {
             e.printStackTrace();
         }
-    }//end constextDestroyed method
+    }
 }

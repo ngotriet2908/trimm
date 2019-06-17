@@ -1,5 +1,7 @@
 package utwente.team2.resource;
 
+import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
+import org.glassfish.jersey.media.multipart.FormDataParam;
 import utwente.team2.dao.RunDao;
 import utwente.team2.dao.UserDao;
 import utwente.team2.filter.Secured;
@@ -9,9 +11,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.*;
 import javax.ws.rs.core.*;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.security.Principal;
+import java.util.Base64;
 
 
 @Path("/profiles")
@@ -29,11 +31,14 @@ public class Profiles {
 
     @Path("/{username}/picture")
     @POST
-    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    @Consumes({MediaType.APPLICATION_FORM_URLENCODED, MediaType.MULTIPART_FORM_DATA})
     // save a new profile picture and respond with 200
     public void savePicture(@PathParam("username") String username,
-                            @FormParam("picture") String picture, @Context HttpServletResponse servletResponse,
+                            @FormDataParam("picture") InputStream picture,
+                            @FormDataParam("picture") FormDataContentDisposition pictureInfo,
+                            @Context HttpServletResponse servletResponse,
                             @Context HttpServletRequest servletRequest) throws IOException {
+        System.out.println("begin processing image");
 
         Principal principal = securityContext.getUserPrincipal();
         String tokenUsername = principal.getName();
@@ -42,12 +47,53 @@ public class Profiles {
             servletResponse.sendRedirect("/runner/login");
         }
 
-        // extract image
+        UserDao.instance.updateProfileImage(username, picture);
+    }
 
-        // save to userdao/database
+    @Path("/{username}/picture")
+    @GET
+    @Produces("image/png")
+    // save a new profile picture and respond with 200
+    public Response getPicture(@PathParam("username") String username,
+                                @Context HttpServletResponse servletResponse,
+                                @Context HttpServletRequest servletRequest) throws IOException {
+        System.out.println("begin processing image");
 
-        // respond 200/204
+        Principal principal = securityContext.getUserPrincipal();
+        String tokenUsername = principal.getName();
 
+        if (!tokenUsername.equals(username)) {
+            servletResponse.sendRedirect("/runner/login");
+        }
+
+        byte[] imageData = UserDao.instance.getUserImage(username);
+        return Response.ok(imageData).build();
+    }
+
+    @Path("/{username}/picture")
+    @GET
+    @Produces(MediaType.TEXT_PLAIN)
+    // save a new profile picture and respond with 200
+    public Response getPictureBase64(@PathParam("username") String username,
+                               @Context HttpServletResponse servletResponse,
+                               @Context HttpServletRequest servletRequest) throws IOException {
+        System.out.println("begin processing image");
+
+        Principal principal = securityContext.getUserPrincipal();
+        String tokenUsername = principal.getName();
+
+        if (!tokenUsername.equals(username)) {
+            servletResponse.sendRedirect("/runner/login");
+        }
+
+        byte[] imageData = UserDao.instance.getUserImage(username);
+        String encoded = Base64.getEncoder().encodeToString(imageData);
+        System.out.println(encoded);
+        // uncomment line below to send non-streamed
+        return Response.ok(encoded).build();
+
+        // uncomment line below to send streamed
+//         return Response.ok(new ByteArrayInputStream(imageData)).build();
     }
 
 

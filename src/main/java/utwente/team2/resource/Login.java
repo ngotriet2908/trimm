@@ -36,12 +36,14 @@ public class Login {
     @GET
     @Produces(MediaType.TEXT_HTML)
     public InputStream showLoginPage(@Context HttpServletResponse response, @Context HttpServletRequest request,
-                                     @QueryParam("error") String error) throws IOException {
-
-        System.out.println(error);
+                                     @QueryParam("error") String error, @QueryParam("message") String message) throws IOException {
 
         if (error != null) {
             response.addHeader("error", error);
+        }
+
+        if (message != null) {
+            response.addHeader("message", message);
         }
 
         ClassLoader classLoader = getClass().getClassLoader();
@@ -69,7 +71,7 @@ public class Login {
             Map<String,Object> claims = new HashMap<>();
             claims.put("iss", "runner");
             claims.put("sub", username);
-            claims.put("exp", String.valueOf(LocalDateTime.now().plusMinutes(1).atZone(zoneId).toEpochSecond()));
+            claims.put("exp", String.valueOf(LocalDateTime.now().plusMinutes(10).atZone(zoneId).toEpochSecond()));
             claims.put("iat", String.valueOf(LocalDateTime.now().atZone(zoneId)));
 
 

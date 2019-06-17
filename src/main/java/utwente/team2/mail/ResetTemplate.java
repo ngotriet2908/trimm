@@ -386,10 +386,10 @@ public class ResetTemplate {
             "</div>" +
             "</div>" +
             "<div style=\"background-color:#283C4B;\">" +
-            "<div class=\"block-grid\" style=\"Margin: 0 auto; min-width: 320px; max-width: 600px; overflow-wrap: break-word; word-wrap: break-word; word-break: break-word; background-color: #3AAEE0;;\">" +
-            "<div style=\"border-collapse: collapse;display: table;width: 100%;background-color:#3AAEE0;\">" +
-            "<!--[if (mso)|(IE)]><table width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" style=\"background-color:#283C4B;\"><tr><td align=\"center\"><table cellpadding=\"0\" cellspacing=\"0\" border=\"0\" style=\"width:600px\"><tr class=\"layout-full-width\" style=\"background-color:#3AAEE0\"><![endif]-->" +
-            "<!--[if (mso)|(IE)]><td align=\"center\" width=\"600\" style=\"background-color:#3AAEE0;width:600px; border-top: 0px solid transparent; border-left: 0px solid transparent; border-bottom: 0px solid transparent; border-right: 0px solid transparent;\" valign=\"top\"><table width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\"><tr><td style=\"padding-right: 0px; padding-left: 0px; padding-top:0px; padding-bottom:0px;\"><![endif]-->" +
+            "<div class=\"block-grid\" style=\"Margin: 0 auto; min-width: 320px; max-width: 600px; overflow-wrap: break-word; word-wrap: break-word; word-break: break-word; background-color: #296785;;\">" +
+            "<div style=\"border-collapse: collapse;display: table;width: 100%;background-color:#296785;\">" +
+            "<!--[if (mso)|(IE)]><table width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" style=\"background-color:#283C4B;\"><tr><td align=\"center\"><table cellpadding=\"0\" cellspacing=\"0\" border=\"0\" style=\"width:600px\"><tr class=\"layout-full-width\" style=\"background-color:#296785\"><![endif]-->" +
+            "<!--[if (mso)|(IE)]><td align=\"center\" width=\"600\" style=\"background-color:#296785;width:600px; border-top: 0px solid transparent; border-left: 0px solid transparent; border-bottom: 0px solid transparent; border-right: 0px solid transparent;\" valign=\"top\"><table width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\"><tr><td style=\"padding-right: 0px; padding-left: 0px; padding-top:0px; padding-bottom:0px;\"><![endif]-->" +
             "<div class=\"col num12\" style=\"min-width: 320px; max-width: 600px; display: table-cell; vertical-align: top;;\">" +
             "<div style=\"width:100% !important;\">" +
             "<!--[if (!mso)&(!IE)]><!-->" +
@@ -442,10 +442,10 @@ public class ResetTemplate {
             "<!--[if mso]></td></tr></table><![endif]-->" +
             "<div align=\"center\" class=\"button-container\" style=\"padding-top:25px;padding-right:0px;padding-bottom:0px;padding-left:0px;\">" +
 
-            "<!--[if mso]><table width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" style=\"border-spacing: 0; border-collapse: collapse; mso-table-lspace:0pt; mso-table-rspace:0pt;\"><tr><td style=\"padding-top: 25px; padding-right: 0px; padding-bottom: 0px; padding-left: 0px\" align=\"center\"><v:roundrect xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:w=\"urn:schemas-microsoft-com:office:word\" href=\"http://localhost:8080/\" style=\"height:39pt; width:199.5pt; v-text-anchor:middle;\" arcsize=\"8%\" stroke=\"false\" fillcolor=\"#3AAEE0\"><w:anchorlock/><v:textbox inset=\"0,0,0,0\"><center style=\"color:#ffffff; font-family:Arial, sans-serif; font-size:16px\"><![endif]--><a href=\"";
+            "<!--[if mso]><table width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" style=\"border-spacing: 0; border-collapse: collapse; mso-table-lspace:0pt; mso-table-rspace:0pt;\"><tr><td style=\"padding-top: 25px; padding-right: 0px; padding-bottom: 0px; padding-left: 0px\" align=\"center\"><v:roundrect xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:w=\"urn:schemas-microsoft-com:office:word\" href=\"http://localhost:8080/\" style=\"height:39pt; width:199.5pt; v-text-anchor:middle;\" arcsize=\"8%\" stroke=\"false\" fillcolor=\"#296785\"><w:anchorlock/><v:textbox inset=\"0,0,0,0\"><center style=\"color:#ffffff; font-family:Arial, sans-serif; font-size:16px\"><![endif]--><a href=\"";
 
 
-    private static String part3 = "\" style=\"-webkit-text-size-adjust: none; text-decoration: none; display: inline-block; color: #ffffff; background-color: #3AAEE0; border-radius: 4px; -webkit-border-radius: 4px; -moz-border-radius: 4px; width: auto; width: auto; border-top: 1px solid #3AAEE0; border-right: 1px solid #3AAEE0; border-bottom: 1px solid #3AAEE0; border-left: 1px solid #3AAEE0; padding-top: 10px; padding-bottom: 10px; font-family: Arial, 'Helvetica Neue', Helvetica, sans-serif; text-align: center; mso-border-alt: none; word-break: keep-all;\" target=\"_blank\"><span style=\"padding-left:20px;padding-right:20px;font-size:16px;display:inline-block;\">" +
+    private static String part3 = "\" style=\"-webkit-text-size-adjust: none; text-decoration: none; display: inline-block; color: #ffffff; background-color: #296785; border-radius: 4px; -webkit-border-radius: 4px; -moz-border-radius: 4px; width: auto; width: auto; border-top: 1px solid #296785; border-right: 1px solid #296785; border-bottom: 1px solid #296785; border-left: 1px solid #296785; padding-top: 10px; padding-bottom: 10px; font-family: Arial, 'Helvetica Neue', Helvetica, sans-serif; text-align: center; mso-border-alt: none; word-break: keep-all;\" target=\"_blank\"><span style=\"padding-left:20px;padding-right:20px;font-size:16px;display:inline-block;\">" +
             "<span style=\"font-size: 16px; line-height: 32px;\"><span style=\"font-size: 16px; line-height: 32px;\">RESET YOUR PASSWORD</span></span>" +
             "</span></a>" +
             "<!--[if mso]></center></v:textbox></v:roundrect></td></tr></table><![endif]-->" +
@@ -453,7 +453,7 @@ public class ResetTemplate {
             "<!--[if mso]><table width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\"><tr><td style=\"padding-right: 20px; padding-left: 20px; padding-top: 20px; padding-bottom: 30px; font-family: Arial, sans-serif\"><![endif]-->" +
             "<div style=\"color:#555555;font-family:Arial, 'Helvetica Neue', Helvetica, sans-serif;line-height:120%;padding-top:20px;padding-right:20px;padding-bottom:30px;padding-left:20px;\">" +
             "<div style=\"font-family: Arial, 'Helvetica Neue', Helvetica, sans-serif; font-size: 12px; line-height: 14px; color: #555555;\">" +
-            "<p style=\"font-size: 14px; line-height: 16px; text-align: center; margin: 0;\"><span style=\"font-size: 14px; line-height: 16px;\"><a href=\"http://localhost:8080/\" rel=\"noopener\" style=\"text-decoration: underline; color: #3AAEE0;\" target=\"_blank\" title=\"website\">Or go to our website</a></span></p>" +
+            "<p style=\"font-size: 14px; line-height: 16px; text-align: center; margin: 0;\"><span style=\"font-size: 14px; line-height: 16px;\"><a href=\"http://localhost:8080/\" rel=\"noopener\" style=\"text-decoration: underline; color: #296785;\" target=\"_blank\" title=\"website\">Or go to our website</a></span></p>" +
             "</div>" +
             "</div>" +
             "<!--[if mso]></td></tr></table><![endif]-->" +

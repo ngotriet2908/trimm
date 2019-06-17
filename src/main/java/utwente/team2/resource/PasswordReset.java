@@ -104,7 +104,7 @@ public class PasswordReset {
 
                 UserDao.instance.updatePassword(username, password);
 
-                servletResponse.sendRedirect("/runner/login"); // TODO later also redirect to some success page "password changed. now sign in"
+                servletResponse.sendRedirect("/runner/login?message=reset_success"); // TODO later also redirect to some success page "password changed. now sign in"
             } else {
                 System.out.println("JWT exception.");
                 servletResponse.sendError(404, "Invalid token."); // TODO
