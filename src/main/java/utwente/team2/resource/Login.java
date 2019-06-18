@@ -63,8 +63,19 @@ public class Login {
 
         User user = UserDao.instance.getUserWithPassword(username, password);
 
+        if (!UserDao.instance.isActivated(username) && user != null) {
+            System.out.println("account is not activated");
+//            servletResponse.sendError(HttpServletResponse.SC_UNAUTHORIZED, "account is not activated");
+            servletResponse.sendError(402, "account is not activated");
+            return;
+        }
+
 
         if (user != null) {
+
+
+
+
             // default timezone
             ZoneId zoneId = ZoneId.systemDefault();
 

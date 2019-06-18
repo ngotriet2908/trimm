@@ -13,92 +13,6 @@
     src: url("../fonts/AvenirNextLTPro-Bold.woff") format("woff"), url("../fonts/AvenirNextLTPro-Bold.ttf")  format("truetype");
 }
 
-html, body {
-    height: 100%;
-    min-height: 100%;
-    width: 100%;
-    margin: 0;
-    padding: 0;
-    font-family: AvenirNext-Regular-D, sans-serif;
-    letter-spacing: 0;
-}
-
-.nav-item-active a {
-    border-bottom: 3px solid var(--green);
-}
-
-#index, #login, #password-reset-enter, #password-reset-request {
-    width: 100vw;
-    height: 100vh;
-
-    display: grid;
-    grid-template-rows: 100%;
-    /*grid-template-columns: repeat(7, 1fr);*/
-    grid-template-columns: 1fr;
-    background: black url("../img/blue_runner.jpg") no-repeat right bottom;
-    background-size: cover;
-}
-
-#index nav, #login nav, #register nav, #password-reset-enter nav, #password-reset-request nav {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 5em;
-
-    z-index: 2;
-}
-
-#index nav ul, #login nav ul,  #profile nav ul, #profile-management nav ul, #dashboard nav ul, #register nav ul,
-#password-reset-enter nav ul, #password-reset-request nav ul {
-    margin: 0;
-    height: 100%;
-    padding: 0;
-
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-}
-
-nav li {
-    border: 3px solid transparent;
-    display: inline-block;
-    list-style-type: none;
-    padding: 0 2rem;
-}
-
-.nav-logo {
-    margin-right: auto;
-}
-
-.nav-logo a {
-    text-transform: uppercase;
-    /*font-weight: bold;*/
-    font-size: 1.875em;
-    text-align: left;
-    text-decoration: none;
-    color: white;
-
-    transition: color 0.8s;
-}
-
-.nav-logo a:hover {
-    color: #24516d;
-}
-
-.nav-item a {
-    color: white;
-    text-transform: capitalize;
-    font-size: 1.625em;
-    text-align: left;
-    text-decoration: none;
-    transition: color 0.5s;
-}
-
-.nav-item a:hover {
-    color: #24516d;
-}
-
 
 /* RESPONSIVE */
 
@@ -456,7 +370,6 @@ nav li {
 }
 
 
-
 /* Desktop Styles */
 @media only screen and (min-width: 961px) {
 
@@ -499,19 +412,18 @@ nav li {
         display: none;
     }
 
-    #index, #login, #password-reset-enter, #password-reset-request {
+    #index, #login, #password-reset-enter, #password-reset-request, #upgrade {
         width: 100vw;
         height: 100vh;
 
         display: grid;
         grid-template-rows: 100%;
-        /*grid-template-columns: repeat(7, 1fr);*/
         grid-template-columns: 1fr;
         background: black url("../img/blue_runner.jpg") no-repeat right bottom;
         background-size: cover;
     }
 
-    #index nav, #login nav, #register nav, #password-reset-enter nav, #password-reset-request nav {
+    #index nav, #login nav, #register nav, #password-reset-enter nav, #password-reset-request nav, #upgrade nav {
         position: absolute;
         top: 0;
         left: 0;
@@ -522,7 +434,7 @@ nav li {
     }
 
     #index nav ul, #login nav ul,  #profile nav ul, #profile-management nav ul, #dashboard nav ul, #register nav ul,
-    #password-reset-enter nav ul, #password-reset-request nav ul {
+    #password-reset-enter nav ul, #password-reset-request nav ul, #upgrade  nav ul {
         margin: 0;
         height: 100%;
         padding: 0;
@@ -546,34 +458,32 @@ nav li {
     .nav-logo a {
         text-transform: uppercase;
         /*font-weight: bold;*/
-        font-size: 1.875em;
+        font-size: 1.8em;
         text-align: left;
         text-decoration: none;
         color: white;
 
-        transition: color 0.8s;
+        transition: all ease-out 0.3s;
     }
 
     .nav-logo a:hover {
-        color: #24516d;
+        /*color: #24516d;*/
+        color: #cccccc;
     }
 
     .nav-item a {
         color: white;
         text-transform: capitalize;
-        font-size: 1.625em;
+        font-size: 1.2em;
         text-align: left;
         text-decoration: none;
-        transition: color 0.5s;
+
+        transition: all ease-out 0.3s;
     }
 
     .nav-item a:hover {
-        color: #24516d;
+        color: #cccccc;
     }
-
-    /*.nav-logo a:hover {*/
-    /*color: var(--green);*/
-    /*}*/
 
     #index main {
         /*margin: 0 0 0 3em;*/
@@ -623,7 +533,7 @@ nav li {
     }
 
     /* - - - - - - LOGIN - - - -  - - - */
-    #login, #register, #password-reset-request, #password-reset-enter {
+    #login, #register, #password-reset-request, #password-reset-enter, #upgrade  {
         grid-template-columns: 100%;
 
         width: 100vw;
@@ -642,7 +552,8 @@ nav li {
         color: white;
     }
 
-    #login main, #register, #password-reset-request, #password-reset-enter {
+    #login main, #register main, #password-reset-request main, #password-reset-enter main,
+    #upgrade main {
         grid-column: 1 / 2;
         grid-row: 1 / 2;
         display: flex;
@@ -667,6 +578,7 @@ nav li {
         position: relative;
         padding: 2em 3em;
         /*overflow: hidden;*/
+        text-align: center;
     }
 
     .input-form h1 {
@@ -745,15 +657,16 @@ nav li {
         -webkit-animation-fill-mode: both;
     }
 
-    .button {
+    .button-raised {
         display: block;
         font-size: 1em;
         background-color: #296785;
         color: #ecf0f1;
-        margin: 0 auto;
+        margin: 0;
         width: 100%;
 
         cursor: pointer;
+        text-transform: uppercase;
 
         font-family: AvenirNext-Regular-D, sans-serif;
         overflow: hidden;
@@ -761,22 +674,24 @@ nav li {
         border-radius: 0.4em;
         box-shadow: 0 1px 1px 0 rgba(0,0,0,0.14), 0 2px 1px -1px rgba(0,0,0,0.12), 0 1px 3px 0 rgba(0,0,0,0.20);
         transition: all .3s ease-out;
+
+        padding: 0;
     }
 
-    .button:focus {
+    .button-raised:focus {
         outline: none !important;
     }
 
-    .button:hover, .button:focus {
+    .button-raised:hover, .button-raised:focus {
         background-color: #317b9c;
         box-shadow: 0 2px 2px 0 rgba(0,0,0,0.14), 0 3px 1px -2px rgba(0,0,0,0.12), 0 1px 5px 0 rgba(0,0,0,0.20);
     }
 
-    .button > * {
+    .button-raised > * {
         position: relative;
     }
 
-    .button span {
+    .button-raised span {
         display: block;
         padding: 0.8rem 1.2rem;
     }
@@ -920,6 +835,14 @@ nav li {
         color: #3c763d;
     }
 
+    .red-text {
+        color: #a94442;
+    }
+
+    .green-text {
+        color: #3c763d;
+    }
+
     #register button {
         margin-bottom: 0;
     }
@@ -987,32 +910,18 @@ nav li {
     }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
     /* - - - - - - PROFILE - - - -  - - - */
-
-
     #profile, #profile-management, #dashboard {
         display:flex;
         flex-direction:column;
         position: relative;
         z-index: 1;
 
-        background-color: rgba(245, 245, 250, 0.77);
+        background-color: rgb(247, 247, 252);
     }
 
     #profile, #profile-management {
-        /*display: none;*/
+        display: none;
     }
 
 
@@ -1038,7 +947,6 @@ nav li {
         z-index: 2;
     }
 
-
     .profile-top .nav-opacity-overlay {
         position: absolute;
         top: 0;
@@ -1048,6 +956,20 @@ nav li {
         background: black;
         opacity: 0.3;
         z-index: -1;
+    }
+
+    .nav-item.upgrade a {
+        box-shadow: none;
+        transition: all ease-out 0.3s;
+
+    }
+
+    .nav-item.upgrade a:hover {
+        color: white;
+    }
+
+    .upgrade.hidden {
+        display: none;
     }
 
     .profile-main {
@@ -1062,7 +984,6 @@ nav li {
 
     .profile-card {
         border-radius: 0.8rem;
-        /*box-shadow: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);*/
         overflow: hidden;
         background-color: white;
         box-shadow: 0 1px 1px 0 rgba(0,0,0,0.14), 0 2px 1px -1px rgba(0,0,0,0.12), 0 1px 3px 0 rgba(0,0,0,0.20);
@@ -1071,7 +992,6 @@ nav li {
     #profile-picture-container {
         grid-column: 1 / 3;
         background-color: white;
-        /*height: 30em;*/
 
         margin: 1.5em 1.5em 1.5em 0;
         align-self: start;
@@ -1162,6 +1082,7 @@ nav li {
         font-family: AvenirNext-Regular-D, sans-serif;
         font-size: 1.1em;
         color: #4A4A4A;
+        margin: 0 auto;
     }
 
     .overview-data-item h3 span {
@@ -1185,30 +1106,73 @@ nav li {
         margin-top: 2em;
     }
 
-    #runs-container header {
+    #runs-container > header select, #runs-container header label {
+        background-color: rgb(247, 247, 252);
+    }
+
+    #runs-container > header select {
+        width: 10em;
+    }
+
+    #runs-container > header {
         width: 100%;
         display: flex;
         justify-content: flex-end;
         align-items: center
     }
 
-    #runs-container header > div, #runs-container header > h1 {
+    #runs-container > header > div, #runs-container header > h1 {
         display: inline-block;
     }
 
-    #runs-container header > div {
+    #runs-container > header > div {
         float: left;
-        margin-right: 0.5em;
+        /*margin-right: 0.5em;*/
     }
 
-    #runs-container header > h1 {
-        margin: 0 auto 0 0.5em;
+    #runs-container > header > div .input-group {
+        margin: 0;
+    }
+
+    #runs-container > header > h1 {
+        margin: 0 auto 0 0em;
         color: #4A4A4A;
     }
 
     .profile-run-card {
         margin: 1em 0;
     }
+
+    .profile-run-card header {
+        /*display: grid;*/
+        /*grid-template-columns: auto auto;*/
+        /*grid-template-rows: auto auto;*/
+        /*width: 100%;*/
+    }
+
+    /*.run-card-icon {*/
+        /*grid-column: 1 / 2;*/
+        /*grid-row: 1 / 3;*/
+        /*width: auto;*/
+        /*display: inline-block;*/
+        /*font-size: 1.2em;*/
+    /*}*/
+
+    /*.run-card-icon i {*/
+        /*border: 1px solid black;*/
+        /*border-radius: 50%;*/
+        /*padding: 0.5em;*/
+    /*}*/
+
+    /*.run-card-title {*/
+        /*grid-column: 2 / 3;*/
+        /*grid-row: 1 / 2;*/
+    /*}*/
+
+    /*.run-card-date {*/
+        /*grid-column: 2 / 3;*/
+        /*grid-row: 2 / 3;*/
+    /*}*/
 
     .run-card-title h4 {
         font-size: 1.5em;
@@ -1226,10 +1190,24 @@ nav li {
     }
 
     .run-card-blocks {
-        margin-top: 0.5em;
+        /*margin-top: 0.5em;*/
         display: grid;
-        grid-template-columns: repeat(4, 1fr);
+        grid-template-columns: 35% repeat(4, 1fr) auto;
         justify-content: center;
+        align-items: end;
+        justify-items: center;
+    }
+
+    .run-card-blocks > div {
+        padding: 0;
+    }
+
+    .run-card-blocks > div:nth-of-type(1) {
+        justify-self: left;
+    }
+
+    .run-card-blocks > div:last-child {
+        justify-self: end;
     }
 
     .run-card-blocks div div:nth-of-type(2) {
@@ -1237,27 +1215,12 @@ nav li {
         font-weight: bold;
     }
 
-    .profile-run-card .button {
-        /*margin: 0.5em;*/
-        width: auto;
-    }
-
-    .profile-run-card .button {
-        /*background-color: white;*/
-        /*border: none;*/
-        /*box-shadow: none;*/
-        /*color: black;*/
-        display: inline-block;
-    }
-
-    .profile-run-card .button i {
-        /*line-height: inherit;*/
-        /*padding-top: 2px;*/
-        /*vertical-align: middle;*/
-    }
-
     .profile-run-card a {
         text-decoration: none;
+    }
+
+    .run-card-see-more {
+        padding: 0;
     }
 
 
@@ -1322,7 +1285,6 @@ nav li {
     }
 
 
-
     /* - - - - DASHBOARD - - - - */
 
     #dashboard {
@@ -1354,7 +1316,6 @@ nav li {
         z-index: 3;
     }
 
-
     #dashboard .nav-opacity-overlay {
         position: absolute;
         top: 0;
@@ -1382,7 +1343,6 @@ nav li {
     }
 
     .dashboard-overview-item p:nth-of-type(2) {
-        /*padding: 0.5em 0 1em 0;*/
         font-weight: bold;
         margin: 0 0 1em 0;
     }
@@ -1484,7 +1444,6 @@ nav li {
     }
 
     /* radio buttons */
-
     @keyframes ripple {
         0% {
             box-shadow: 0 0 0 1px rgba(0, 0, 0, 0);
@@ -1505,12 +1464,16 @@ nav li {
         display: inline-block;
     }
 
+    .option-group div {
+        margin-bottom: 0.5em;
+    }
+
     .option-group input[type="radio"] {
         display: none;
     }
 
     .option-group input[type="radio"]:checked + label:before {
-        border-color: #337ab7;
+        border-color: #296785;
         animation: ripple 0.2s linear forwards;
     }
 
@@ -1520,9 +1483,9 @@ nav li {
 
     .option-group label {
         display: inline-block;
-        height: 20px;
+        height: 1.25em;
         position: relative;
-        padding: 0 30px;
+        padding: 0 1.8em;
         margin-bottom: 0;
         cursor: pointer;
         vertical-align: bottom;
@@ -1539,24 +1502,30 @@ nav li {
     .option-group label:before {
         left: 0;
         top: 0;
-        width: 20px;
-        height: 20px;
+        width: 1.25em;
+        height: 1.25em;
         border: 2px solid rgba(0, 0, 0, 0.54);
         box-sizing: border-box;
     }
+
     .option-group label:after {
         top: 5px;
         left: 5px;
         width: 10px;
         height: 10px;
         transform: scale(0);
-        background: #337ab7;
+        background: #296785;
         box-sizing: border-box;
     }
 
+    .option-group.disabled {
+        opacity: 0.4;
+    }
 
 
-
+    #select-side.option-group {
+        margin-top: 0;
+    }
 
     /* grid */
     .dashboard-tile-grid {
@@ -1671,15 +1640,6 @@ nav li {
         color: inherit;
     }
 
-    .dashboard-card.red .dashboard-card-front {
-        color: #f94a7a;
-    }
-    .dashboard-card.green .dashboard-card-front {
-        color: #2ac06d;
-    }
-    .dashboard-card.blue .dashboard-card-front {
-        color: #4A9FF9;
-    }
 
     .dashboard-card-front:hover .dashboard-card-remove {
         -moz-transform: scale(1);
@@ -1784,6 +1744,10 @@ nav li {
         z-index: 7;
     }
 
+    .dashboard-dialog h1, .dashboard-dialog p {
+        text-align: center;
+    }
+
     .dashboard-dialog.hidden {
         display: none;
     }
@@ -1800,12 +1764,148 @@ nav li {
         box-shadow: 0 24px 38px 3px rgba(0,0,0,0.14), 0 9px 46px 8px rgba(0,0,0,0.12), 0 11px 15px -7px rgba(0,0,0,0.20);
     }
 
+    .dashboard-dialog > div div {
+        display: block;
+    }
+
     .dashboard-dialog button {
-        margin: 0.5em 0;
+        margin-left: 0.5em;
+    }
+
+    .dashboard-dialog .option-group div {
+        /*display: inline-block;*/
+    }
+
+    .dashboard-dialog button {
+        width: auto;
+        float: right;
+    }
+
+    .button-text {
+        display: block;
+        font-size: 1em;
+        background-color: transparent;
+        color: #296785;
+        margin: 0 auto;
+        width: 100%;
+
+        text-transform: uppercase;
+
+        cursor: pointer;
+
+        font-family: AvenirNext-Regular-D, sans-serif;
+        overflow: hidden;
+        border: 0 none;
+        border-radius: 0.4em;
+        box-shadow: none;
+        transition: all .3s ease-out;
+
+        padding: 0;
+    }
+
+    .button-text:focus {
+        outline: none !important;
+    }
+
+    .button-text:hover, .button-text:focus {
+        background-color: #f8f5fe;
+        box-shadow: none;
+    }
+
+    .button-text > * {
+        position: relative;
+    }
+
+    .button-text span {
+        display: block;
+        padding: 0.8rem 1.2rem;
     }
 
 
 
 
+    /* UPGRADE */
+    #upgrade {
+
+    }
+
+    .upgrade-card {
+        width: 30rem;
+        background: white;
+        border-radius: 0.8rem;
+        box-shadow: 0 1px 1px 0 rgba(0,0,0,0.14), 0 2px 1px -1px rgba(0,0,0,0.12), 0 1px 3px 0 rgba(0,0,0,0.20);
+        position: relative;
+        padding: 2em 3em;
+        /*overflow: hidden;*/
+        text-align: center;
+    }
+
+
+    .title-label span {
+        background-color: #303f4e;
+        border-radius: 0.4em;
+        width: auto;
+        color: white;
+        padding: 0.5em;
+        letter-spacing: 0.5em;
+        text-transform: uppercase;
+        font-size: 0.8em;
+    }
+
+
+    .upgrade-card h1 {
+        font-weight: normal;
+        font-size: 1.8em;
+        margin: 0.5em 0 0 0;
+        color: #4A4A4A;
+    }
+
+    .upgrade-card > p {
+
+    }
+
+    #upgrade-features {
+        display: flex;
+        flex-flow: row wrap;
+        position: relative;
+    }
+
+    .upgrade-feature {
+        width: 50%;
+        margin: 1em auto;
+    }
+
+    .upgrade-feature i {
+        font-size: 1.5em;
+    }
+
+    .upgrade-feature:nth-of-type(1) i {
+        color: #375569;
+    }
+
+    .upgrade-feature:nth-of-type(2) i {
+        color: #887063;
+    }
+
+    .upgrade-feature:nth-of-type(3) i {
+        color: #b181e2;
+    }
+
+    .upgrade-feature:nth-of-type(4) i {
+        color: #7b5569;
+    }
+
+    .upgrade-feature h4 {
+        margin: 0.2em auto 0.4em;
+        /*color: #4A4A4A;*/
+    }
+
+    .upgrade-feature p {
+        margin: 0;
+    }
+
+    .upgrade-card button {
+        margin-top: 1.5em;
+    }
 
 }

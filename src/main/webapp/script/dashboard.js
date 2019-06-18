@@ -20,7 +20,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
     var addItemsElement = document.querySelector('.add-more-items');
     var characters = 'abcdefghijklmnopqrstuvwxyz';
-    var filterOptions = ['red', 'blue', 'green'];
     var dragOrder = [];
     var uuid = 0;
 
@@ -72,7 +71,7 @@ document.addEventListener('DOMContentLoaded', function () {
         var itemIds = grid.getItems().map(function (item) {
             counter++;
 
-            var card  = {
+            var card = {
                 "typeName": item.getElement().getAttribute('data-type'),
                 "indicatorName": item.getElement().getAttribute('data-title')
             };
@@ -93,7 +92,7 @@ document.addEventListener('DOMContentLoaded', function () {
     function getLayoutFromServer() {
         var http = new XMLHttpRequest();
 
-        http.onreadystatechange = function() {
+        http.onreadystatechange = function () {
             if (http.readyState === XMLHttpRequest.DONE) {
                 if (http.status === 200) {
                     console.log("code 200");
@@ -134,7 +133,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         var http = new XMLHttpRequest();
 
-        http.onreadystatechange = function() {
+        http.onreadystatechange = function () {
             if (http.readyState === XMLHttpRequest.DONE) {
                 if (http.status === 200) {
                     console.log("code 200");
@@ -220,7 +219,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         var http = new XMLHttpRequest();
 
-        http.onreadystatechange = function() {
+        http.onreadystatechange = function () {
             if (http.readyState === XMLHttpRequest.DONE) {
                 if (http.status === 200) {
                     console.log("code 200");
@@ -257,7 +256,7 @@ document.addEventListener('DOMContentLoaded', function () {
         // Generate new elements.
         console.log("generating element with id: " + (uuid + 1) + " of type: " + typeName);
 
-        var newElement = generateElement(++uuid, indicatorName, getRandomItem(["red", "green", "blue"]), typeName, data);
+        var newElement = generateElement(++uuid, indicatorName, typeName, data);
 
         // Set the display of the new elements to "none" so it will be hidden by
         // default.
@@ -285,10 +284,12 @@ document.addEventListener('DOMContentLoaded', function () {
 
         if (typeName === "map") {
             initMap();
-        } else if (typeName === "graph") {
+        } else if (typeName === "graph" && indicatorName !== "speed") {
             initGraph(newElement, data);
         } else if (typeName === "distribution") {
             initDistribution(newElement, data); // TODO
+        } else if (indicatorName === "speed") {
+            initSpeedGraph(newElement, data); // TODO
         }
     }
 
@@ -329,18 +330,20 @@ document.addEventListener('DOMContentLoaded', function () {
     //     grid.layout();
     // }
 
-    function generateElement(id, title, color, type, data) {
+    function generateElement(id, title, type, data) {
         var itemElem = document.createElement('div');
 
         var height, width, innerContent;
+        var nameSplit = data.name.split("_");
 
-        switch(type) {
+        switch (type) {
             case "individual":
                 height = 1;
                 width = 1;
+
                 innerContent = '<div class="dashboard-card-front">' +
                     '<header>' +
-                    '<h3 class="dashboard-card-id">' + data.name + // here was an id TODO
+                    '<h3 class="dashboard-card-id">' + nameSplit[0] + " " + nameSplit[1] + // here was an id TODO
                     '</h3>' +
                     '<button class="dashboard-card-remove"><i class="material-icons">&#xE5CD;</i></button>' +
                     '</header>' +
@@ -418,7 +421,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 width = 2;
                 innerContent = '<div class="dashboard-card-front dashboard-card-front-graph">' +
                     '<header>' +
-                    '<h3 class="dashboard-card-id">' + data.name +
+                    '<h3 class="dashboard-card-id">' + nameSplit[0] + " Graph" +
                     '' +
                     '</h3>' +
                     '<button class="dashboard-card-remove"><i class="material-icons">&#xE5CD;</i></button>' +
@@ -436,7 +439,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 width = 2;
                 innerContent = '<div class="dashboard-card-front dashboard-card-front-graph">' + // TODO
                     '<header>' +
-                    '<h3 class="dashboard-card-id">' + data.name +
+                    '<h3 class="dashboard-card-id">' + nameSplit[0] + " Distribution" +
                     '' +
                     '</h3>' +
                     '<button class="dashboard-card-remove"><i class="material-icons">&#xE5CD;</i></button>' +
@@ -607,14 +610,13 @@ document.addEventListener('DOMContentLoaded', function () {
                 fill: false,
                 data: data.left,
                 yAxisID: 'y-axis-1'
-            },
-                {
+            }, {
                 label: "right",
                 borderColor: 'rgb(54, 162, 235)',
                 backgroundColor: 'rgb(54, 162, 235)',
                 fill: false,
                 data: data.right,
-                yAxisID: 'y-axis-2'
+                yAxisID: 'y-axis-1'
             }]
         };
 
@@ -626,9 +628,9 @@ document.addEventListener('DOMContentLoaded', function () {
                 hoverMode: 'index',
                 stacked: false,
                 elements: {
-                   point: {
-                       radius: 0
-                   }
+                    point: {
+                        radius: 0
+                    }
                 },
                 scales: {
                     yAxes: [{
@@ -636,16 +638,6 @@ document.addEventListener('DOMContentLoaded', function () {
                         display: true,
                         position: 'left',
                         id: 'y-axis-1',
-                    }, {
-                        type: 'linear',
-                        display: true,
-                        position: 'right',
-                        id: 'y-axis-2',
-
-                        // grid line settings
-                        gridLines: {
-                            drawOnChartArea: false,
-                        },
                     }],
                 }
             }
@@ -679,7 +671,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 },
                 tooltips: {
                     callbacks: {
-                        label: function(tooltipItem) {
+                        label: function (tooltipItem) {
                             return tooltipItem.yLabel;
                         }
                     }
@@ -705,8 +697,59 @@ document.addEventListener('DOMContentLoaded', function () {
         })
     }
 
+    // add graph
+    function initSpeedGraph(element, data) {
+        var ctx = element.querySelector("canvas").getContext('2d');
 
-    $(".popup-overlay").on("click", function(event) {
+        var lineChartData = {
+            labels: data.step_no,
+            datasets: [{
+                label: "speed",
+                borderColor: 'rgb(255, 99, 132)',
+                backgroundColor: 'rgb(255, 99, 132)',
+                fill: false,
+                data: data.left,
+                yAxisID: 'y-axis-1'
+            }]
+        };
+
+        window.myLine = Chart.Line(ctx, {
+            data: lineChartData,
+            options: {
+                legend: {
+                    display: false
+                },
+                tooltips: {
+                    callbacks: {
+                        label: function (tooltipItem) {
+                            return tooltipItem.yLabel;
+                        }
+                    }
+                },
+                responsive: true,
+                spanGaps: true,
+                hoverMode: 'index',
+                stacked: false,
+                elements: {
+                    point: {
+                        radius: 0
+                    }
+                },
+                scales: {
+                    yAxes: [{
+                        type: 'linear',
+                        display: true,
+                        position: 'left',
+                        id: 'y-axis-1',
+                    }],
+                }
+            }
+        });
+
+    }
+
+
+    $(".popup-overlay").on("click", function (event) {
         // hide
         document.querySelector(".popup-overlay").classList.add("hidden");
 
@@ -716,7 +759,7 @@ document.addEventListener('DOMContentLoaded', function () {
         document.querySelector(".eink-sent-dialog").classList.add("hidden");
     });
 
-    $("#controls #add").on("click", function(event) {
+    $("#controls #add").on("click", function (event) {
         // show overlay
         document.querySelector(".popup-overlay").classList.remove("hidden");
 
@@ -724,14 +767,62 @@ document.addEventListener('DOMContentLoaded', function () {
         document.querySelector(".add-dialog").classList.remove("hidden");
     });
 
+    $("#select-type").on("change", function (event) {
+        var typeField = document.querySelector("#select-type");
+        var indicatorField = document.querySelector("#select-indicator");
 
-    $(".add-dialog .add").on("click", function(event) {
+        if (typeField.value === "individual") {
+            indicatorField.querySelector("option[value='speed']").remove();
+
+            $("#select-side input").attr("disabled", false);
+            $("#select-side div:nth-of-type(1) input").attr("checked", true);
+            document.querySelector("#select-side").classList.remove("disabled");
+        } else if (typeField.value === "graph" || typeField.value === "distribution") {
+
+            if (indicatorField.querySelector("option[value='speed']") == null) {
+                var newOption = document.createElement("option");
+                newOption.setAttribute("value", "speed");
+                newOption.textContent = "Speed";
+                indicatorField.appendChild(newOption);
+            }
+
+            if (typeField.value === "graph" || indicatorField.value === "speed") {
+                $("#select-side input").attr("disabled", true);
+                $("#select-side input").attr("checked", false);
+                document.querySelector("#select-side").classList.add("disabled");
+            } else {
+                $("#select-side input").attr("disabled", false);
+                $("#select-side div:nth-of-type(1) input").attr("checked", true);
+                document.querySelector("#select-side").classList.remove("disabled");
+            }
+        }
+    });
+
+    $("#select-indicator").on("change", function (event) {
+        var typeField = document.querySelector("#select-type");
+        var indicatorField = document.querySelector("#select-indicator");
+
+        if (typeField.value === "distribution") {
+
+            if (indicatorField.value !== "speed") {
+                $("#select-side input").attr("disabled", false);
+                $("#select-side div:nth-of-type(1) input").attr("checked", true);
+                document.querySelector("#select-side").classList.remove("disabled");
+            } else {
+                $("#select-side input").attr("disabled", true);
+                $("#select-side input").attr("checked", false);
+                document.querySelector("#select-side").classList.add("disabled");
+            }
+        }
+    });
+
+    $(".add-dialog .add").on("click", function (event) {
         var selectFieldTypeValue = document.querySelector(".add-dialog #select-type").value;
         var selectFieldIndicatorValue = document.querySelector(".add-dialog #select-indicator").value;
 
         var selectFieldSideValue = $(".add-dialog input[name='select-side']:checked").val();
 
-        if (selectFieldTypeValue !== "graph") {
+        if (selectFieldTypeValue !== "graph" && !(selectFieldTypeValue === "distribution" && selectFieldIndicatorValue === "speed")) {
             selectFieldIndicatorValue += selectFieldSideValue;
         }
 
@@ -742,39 +833,45 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
 
-    $('#controls #export-eink button').on('click', function(event) {
-        var http = new XMLHttpRequest();
+    $('#controls #export-eink button').on('click', function (event) {
+        // show overlay
+        document.querySelector(".popup-overlay").classList.remove("hidden");
 
-        http.onreadystatechange = function () {
-            if (http.readyState === XMLHttpRequest.DONE) {
-                if (http.status === 200 || http.status === 204) {
-                    console.log("code 200");
-                    // TODO show email sent!
-
-                    // show overlay
-                    document.querySelector(".popup-overlay").classList.remove("hidden");
-
-                    // show popup
-                    document.querySelector(".eink-sent-dialog").classList.remove("hidden");
-
-                } else if (http.status === 401) {
-                    console.log("code 401");
-
-
-                } else {
-                    console.log("something else...");
-                }
-            }
-        };
-
-        http.open("GET", window.location.href + "/export/kindle", true);
-        http.setRequestHeader('Cache-Control', 'no-store');
-        http.send();
-
+        // show popup
+        document.querySelector(".eink-sent-dialog").classList.remove("hidden");
     });
 
 
-    $("#controls #remove-all").on("click", function(event) {
+    $(".eink-sent-dialog button.export-eink").on('click', function (event) {
+        var email = $(".eink-sent-dialog input").val();
+        console.log(email);
+        if (email !== "") {
+            var http = new XMLHttpRequest();
+
+            http.onreadystatechange = function () {
+                if (http.readyState === XMLHttpRequest.DONE) {
+                    if (http.status === 200 || http.status === 204) {
+                        console.log(http.status);
+                        // TODO show email sent!
+                        console.log("sent");
+                    } else if (http.status === 401) {
+                        console.log("code 401");
+
+
+                    } else {
+                        console.log("something else...");
+                    }
+                }
+            };
+
+            http.open("GET", window.location.href + "/export/kindle?email=" + email, true);
+            http.setRequestHeader('Cache-Control', 'no-store');
+            http.send();
+        }
+    });
+
+
+    $("#controls #remove-all").on("click", function (event) {
         // show overlay
         document.querySelector(".popup-overlay").classList.remove("hidden");
 
@@ -783,7 +880,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     // remove all button
-    $('.remove-all-dialog .remove-all').on('click', function(event) {
+    $('.remove-all-dialog .remove-all').on('click', function (event) {
         var items = document.querySelectorAll(".dashboard-card");
 
         console.log(items[0]);
@@ -801,7 +898,7 @@ document.addEventListener('DOMContentLoaded', function () {
         document.querySelector(".popup-overlay").classList.add("hidden");
     });
 
-    $(".cancel").on("click", function(event) {
+    $(".cancel").on("click", function (event) {
         // hide
         document.querySelector(".popup-overlay").classList.add("hidden");
 
@@ -809,7 +906,40 @@ document.addEventListener('DOMContentLoaded', function () {
         document.querySelector(".remove-all-dialog").classList.add("hidden");
         document.querySelector(".add-dialog").classList.add("hidden");
         document.querySelector(".eink-sent-dialog").classList.add("hidden");
+        document.querySelector(".restore-layout-dialog").classList.add("hidden");
     });
 
+    $("#controls #reset-to-default").on("click", function (event) {
+        // show overlay
+        document.querySelector(".popup-overlay").classList.remove("hidden");
+
+        // show popup
+        document.querySelector(".restore-layout-dialog").classList.remove("hidden");
+    });
+
+    $('.restore-layout-dialog .restore').on('click', function (event) {
+        var http = new XMLHttpRequest();
+
+        http.onreadystatechange = function () {
+            if (http.readyState === XMLHttpRequest.DONE) {
+                if (http.status === 200 || http.status === 204) {
+
+                    location.reload();
+                    console.log("restored to default.")
+
+                } else if (http.status === 401) {
+                    console.log("code 401");
+
+
+                } else {
+                    console.log("something else...");
+                }
+            }
+        };
+
+        http.open("GET", window.location.href + "/layout/reset", true);
+        http.setRequestHeader('Cache-Control', 'no-store');
+        http.send();
+    });
 });
 

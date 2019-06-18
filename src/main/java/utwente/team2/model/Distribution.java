@@ -3,6 +3,7 @@ package utwente.team2.model;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -111,7 +112,72 @@ public class Distribution implements Card {
         List<BigDecimal> pointYtmp = new ArrayList<>();
 
         for(int i = 0; i < MAX_POINT; i++) {
-            pointXtmp.add(segment.multiply(BigDecimal.valueOf(i)).add(minP));
+            if (segment.compareTo(BigDecimal.ONE) < 0) {
+                pointXtmp.add(segment.multiply(BigDecimal.valueOf(i)).add(minP).setScale(3, BigDecimal.ROUND_UP));
+            } else {
+                pointXtmp.add(segment.multiply(BigDecimal.valueOf(i)).add(minP).setScale(0, BigDecimal.ROUND_UP));
+            }
+
+            pointYtmp.add(BigDecimal.valueOf(number[i]));
+        }
+        pointX = pointXtmp;
+        pointY = pointYtmp;
+    }
+
+    public void getSpeedDistribution() {
+
+        int MAX_POINT = 50;
+
+        System.out.println("get speed ditribution");
+        pointX.remove(pointX.size() - 1);
+
+        System.out.println(Arrays.toString(pointX.toArray()));
+
+
+        BigDecimal minP = pointX.get(0);
+        BigDecimal maxP = pointX.get(pointX.size() - 1);
+        BigDecimal segment = (maxP.subtract(minP)).divide(BigDecimal.valueOf(MAX_POINT), BigDecimal.ROUND_UP);
+
+        System.out.println("min: " + minP);
+        System.out.println("max: " + maxP);
+        System.out.println("segment: " + segment);
+
+
+        int[] number = new int[MAX_POINT];
+
+        for(int i = 0; i < MAX_POINT; i++) {
+            number[i] = 0;
+        }
+
+        for(int i = 0; i < pointX.size(); i++) {
+            for(int j = 0; j < MAX_POINT; j++) {
+
+                BigDecimal tmp = minP;
+                tmp = tmp.add(segment.multiply(BigDecimal.valueOf(j)));
+
+                BigDecimal tmpp = minP;
+                tmpp = tmpp.add(segment.multiply(BigDecimal.valueOf(j + 1)));
+
+                if (((pointX.get(i).compareTo(tmp) > 0) && (pointX.get(i).compareTo(tmpp) < 0)) ||
+                        (pointX.get(i).compareTo(tmp)) == 0 ||
+                        (pointX.get(i).compareTo(tmpp)) == 0) {
+
+                    number[j]++;
+                    break;
+                }
+            }
+        }
+
+        List<BigDecimal> pointXtmp = new ArrayList<>();
+        List<BigDecimal> pointYtmp = new ArrayList<>();
+
+        for(int i = 0; i < MAX_POINT; i++) {
+            if (segment.compareTo(BigDecimal.ONE) < 0) {
+                pointXtmp.add(segment.multiply(BigDecimal.valueOf(i)).add(minP).setScale(3, BigDecimal.ROUND_UP));
+            } else {
+                pointXtmp.add(segment.multiply(BigDecimal.valueOf(i)).add(minP).setScale(0, BigDecimal.ROUND_UP));
+            }
+
             pointYtmp.add(BigDecimal.valueOf(number[i]));
         }
         pointX = pointXtmp;

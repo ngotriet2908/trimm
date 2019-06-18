@@ -10,6 +10,7 @@ import java.math.RoundingMode;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -179,6 +180,89 @@ public enum StepDao {
                 }
                 graphPoints.getStep_no().add(resultSet.getInt("step_no"));
                 graphPoints.getLeft().add(resultSet.getBigDecimal(2));
+            }
+            return graphPoints;
+        } catch(SQLException sqle) {
+            System.err.println("Error connecting: " + sqle);
+        }
+
+        return null;
+    }
+
+    public GraphPoints getTime(String runID, int numberOfSteps) {
+        System.out.println("get run info " + runID);
+        try{
+            String query =  "SELECT DISTINCT  s.step_no, s.time FROM step s, run " +
+                    "WHERE s.run_id = ? " +
+                    "AND run.id = s.run_id " +
+                    "AND MOD(s.step_no - 1, DIV(run.steps,?)) = 0 " +
+                    "ORDER BY s.step_no";
+
+            PreparedStatement statement = DatabaseInitialiser.getCon().prepareStatement(query);
+            statement.setInt(1, Integer.parseInt(runID));
+            statement.setInt(2, numberOfSteps);
+
+
+            System.out.println(statement.toString());
+
+            ResultSet resultSet = statement.executeQuery();
+
+            GraphPoints graphPoints = new GraphPoints("speed");
+
+            while(resultSet.next()) {
+
+                graphPoints.getStep_no().add(resultSet.getInt("step_no"));
+
+                java.util.Date date = null;
+                Timestamp timestamp = resultSet.getTimestamp(2);
+                if (timestamp != null)
+                    date = new java.util.Date(timestamp.getTime());
+
+                long second = date.getTime() / 1000;
+//                System.out.println(second);
+                graphPoints.getLeft().add(BigDecimal.valueOf(second).setScale(10, BigDecimal.ROUND_UP));
+
+            }
+            return graphPoints;
+        } catch(SQLException sqle) {
+            System.err.println("Error connecting: " + sqle);
+        }
+
+        return null;
+    }
+
+    public GraphPoints getAllTime(String runID) {
+        System.out.println("get run info " + runID);
+        try{
+            String query =  "SELECT DISTINCT  s.step_no, s.time FROM step s, run " +
+                    "WHERE s.run_id = ? " +
+                    "AND run.id = s.run_id " +
+                    "AND MOD(s.step_no - 1, 50) = 0 " +
+                    "ORDER BY s.step_no";
+
+            PreparedStatement statement = DatabaseInitialiser.getCon().prepareStatement(query);
+            statement.setInt(1, Integer.parseInt(runID));
+
+
+            System.out.println(statement.toString());
+
+            ResultSet resultSet = statement.executeQuery();
+
+            GraphPoints graphPoints = new GraphPoints("speed");
+
+            while(resultSet.next()) {
+
+                graphPoints.getStep_no().add(resultSet.getInt("step_no"));
+
+                java.util.Date date = null;
+                Timestamp timestamp = resultSet.getTimestamp(2);
+                if (timestamp != null)
+                    date = new java.util.Date(timestamp.getTime());
+
+                long second = date.getTime() / 1000;
+//                System.out.println(second);
+                graphPoints.getLeft().add(BigDecimal.valueOf(second).setScale(10, BigDecimal.ROUND_UP));
+
             }
             return graphPoints;
         } catch(SQLException sqle) {

@@ -4,6 +4,7 @@ import utwente.team2.DatabaseInitialiser;
 import utwente.team2.model.Run;
 import utwente.team2.model.User;
 
+import java.math.BigDecimal;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -124,6 +125,65 @@ public enum RunDao {
     }
 
 
+    public String getDefaultLayout(int runId) {
+        try {
+            String query = "SELECT r.default_layout " +
+                    "FROM run AS r " +
+                    "WHERE r.id = ? ";
+
+            PreparedStatement statement = DatabaseInitialiser.getCon().prepareStatement(query);
+            statement.setInt(1, runId);
+
+            ResultSet resultSet = statement.executeQuery();
+
+            if (resultSet.next()) {
+                return resultSet.getString(1);
+            } else {
+                return "{\"layout\": \"unavailable\"}";
+            }
+        } catch (SQLException se) {
+            se.printStackTrace();
+        }
+
+        return null;
+    }
+
+    public BigDecimal getSpeed(int runId) {
+        try {
+            String query = "SELECT r.distance, r.steps " +
+                    "FROM run AS r " +
+                    "WHERE r.id = ? ";
+
+            PreparedStatement statement = DatabaseInitialiser.getCon().prepareStatement(query);
+            statement.setInt(1, runId);
+
+            ResultSet resultSet = statement.executeQuery();
+
+            System.out.println(statement);
+
+            if (resultSet.next()) {
+
+                String distance = resultSet.getString(1);
+                String steps = resultSet.getString(2);
+                if (distance == null) {
+                    return BigDecimal.valueOf(1.88);
+                } else {
+                    return BigDecimal.valueOf(Double.parseDouble(distance) / Double.parseDouble(steps));
+                }
+
+
+            } else {
+                return BigDecimal.valueOf(1.88);
+            }
+        } catch (SQLException se) {
+            se.printStackTrace();
+        }
+
+        return null;
+    }
+
+
+
     public boolean saveLayout(int runId, String layout) {
         try {
             String query = "UPDATE run " +
@@ -146,19 +206,58 @@ public enum RunDao {
     }
 
 
-    public Run getRunsOverviewByID(int runid) {
+
+    public String getShoes(int runid) {
         try {
             // date
             // name
             // distance
             // time
             // steps
-            String query = "SELECT * " +
-                    "FROM run AS r " +
-                    "WHERE r.id =  " + runid;
+            String query = "SELECT s.brand || ' ' || s.model as shoesname " +
+                    "FROM run AS r, shoes AS s " +
+                    "WHERE r.id =  ? " +
+                    "AND r.shoes_id = s.id ";
 
             PreparedStatement statement = DatabaseInitialiser.getCon().prepareStatement(query);
+            statement.setInt(1, runid);
+            ResultSet resultSet = statement.executeQuery();
 
+
+            // multiple rows
+            if (resultSet.next()) {
+                String shoesname = resultSet.getString("shoesname");
+                if (shoesname != null) {
+                    return shoesname;
+                } else {
+                    return "Mixed/No Shoes";
+                }
+            }
+
+            return "Mixed/No Shoes";
+
+        } catch (SQLException se) {
+            se.printStackTrace();
+        }
+
+        return null;
+    }
+
+    public Run getRunsOverviewByID(int runid) {
+        String shoesname = getShoes(runid);
+
+        try {
+            // date
+            // name
+            // distance
+            // time
+            // steps
+            String query = "SELECT r.id, r.date, r.name, r.distance, r.duration, r.steps " +
+                    "FROM run AS r " +
+                    "WHERE r.id =  ? ";
+
+            PreparedStatement statement = DatabaseInitialiser.getCon().prepareStatement(query);
+            statement.setInt(1, runid);
             ResultSet resultSet = statement.executeQuery();
 
 
@@ -172,6 +271,9 @@ public enum RunDao {
                 runOverviewModel.setDistance(resultSet.getInt("distance"));
                 runOverviewModel.setDuration(resultSet.getInt("duration"));
                 runOverviewModel.setSteps(resultSet.getInt("steps"));
+                runOverviewModel.setShoesname(shoesname);
+
+
                 return runOverviewModel;
             }
 

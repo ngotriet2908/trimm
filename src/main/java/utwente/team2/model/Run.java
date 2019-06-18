@@ -16,6 +16,33 @@ public class Run {
 
     private Integer shoesId;
     private Integer surfaceId;
+    private String shoesname;
+
+    public Run(Integer id, String username, Date date, String name, String bodypackfile, Integer distance, Integer duration, Integer steps, Integer shoesId,
+               Integer surfaceId, String shoesname, String description, String remarks, String stravaLink) {
+        this.id = id;
+        this.username = username;
+        this.date = date;
+        this.name = name;
+        this.bodypackfile = bodypackfile;
+        this.distance = distance;
+        this.duration = duration;
+        this.steps = steps;
+        this.shoesId = shoesId;
+        this.surfaceId = surfaceId;
+        this.shoesname = shoesname;
+        this.description = description;
+        this.remarks = remarks;
+        this.stravaLink = stravaLink;
+    }
+
+    public String getShoesname() {
+        return shoesname;
+    }
+
+    public void setShoesname(String shoesname) {
+        this.shoesname = shoesname;
+    }
 
     private String description;
     private String remarks;

@@ -93,54 +93,54 @@ public class DataExporter {
                 rowsFound++;
 
                 // insert in database
-                    for (int i = 0; i < attributeList.size(); i++) {
-                        statement.setTimestamp(3, new Timestamp(DATE_FORMAT.parse(attributeList.get(i)[0]).getTime()));
+                for (int i = 0; i < attributeList.size(); i++) {
+                    statement.setTimestamp(3, new Timestamp(DATE_FORMAT.parse(attributeList.get(i)[0]).getTime()));
 
-                        statement.setInt(2, Integer.parseInt(attributeList.get(i)[1]));
+                    statement.setInt(2, Integer.parseInt(attributeList.get(i)[1]));
 
-                        statement.setInt(1, Integer.parseInt(attributeList.get(i)[3]));
+                    statement.setInt(1, Integer.parseInt(attributeList.get(i)[3]));
 
-                        // surface
-                        if (!attributeList.get(i)[4].equals("")) {
-                            statement.setInt(4, Integer.parseInt(attributeList.get(i)[4]));
+                    // surface
+                    if (!attributeList.get(i)[4].equals("")) {
+                        statement.setInt(4, Integer.parseInt(attributeList.get(i)[4]));
+                    } else {
+                        statement.setInt(4, 0);
+                    }
+
+                    // right
+                    for (int k = 5; k <= 6; k++) {
+                        if (!attributeList.get(i)[k].equals("")) {
+                            statement.setTimestamp(k, new Timestamp(DATE_FORMAT.parse(attributeList.get(i)[k]).getTime()));
                         } else {
-                            statement.setInt(4, 0);
-                        }
-
-                        // right
-                        for (int k = 5; k <= 6; k++) {
-                            if (!attributeList.get(i)[k].equals("")) {
-                                statement.setTimestamp(k, new Timestamp(DATE_FORMAT.parse(attributeList.get(i)[k]).getTime()));
-                            } else {
-                                statement.setNull(k, Types.TIMESTAMP);
-                            }
-                        }
-
-                        for (int k = 7; k <= 14; k++) {
-                            if (!attributeList.get(i)[k].equals("")) {
-                                statement.setDouble(k, Double.parseDouble(attributeList.get(i)[k]));
-                            } else {
-                                statement.setNull(k, Types.NUMERIC);
-                            }
-                        }
-
-                        // left
-                        for (int k = 15; k <= 16; k++) {
-                            if (!attributeList.get(i)[k].equals("")) {
-                                statement.setTimestamp(k, new Timestamp(DATE_FORMAT.parse(attributeList.get(i)[k]).getTime()));
-                            } else {
-                                statement.setNull(k, Types.TIMESTAMP);
-                            }
-                        }
-
-                        for (int k = 17; k <= 24; k++) {
-                            if (!attributeList.get(i)[k].equals("")) {
-                                statement.setDouble(k, Double.parseDouble(attributeList.get(i)[k]));
-                            } else {
-                                statement.setNull(k, Types.NUMERIC);
-                            }
+                            statement.setNull(k, Types.TIMESTAMP);
                         }
                     }
+
+                    for (int k = 7; k <= 14; k++) {
+                        if (!attributeList.get(i)[k].equals("")) {
+                            statement.setDouble(k, Double.parseDouble(attributeList.get(i)[k]));
+                        } else {
+                            statement.setNull(k, Types.NUMERIC);
+                        }
+                    }
+
+                    // left
+                    for (int k = 15; k <= 16; k++) {
+                        if (!attributeList.get(i)[k].equals("")) {
+                            statement.setTimestamp(k, new Timestamp(DATE_FORMAT.parse(attributeList.get(i)[k]).getTime()));
+                        } else {
+                            statement.setNull(k, Types.TIMESTAMP);
+                        }
+                    }
+
+                    for (int k = 17; k <= 24; k++) {
+                        if (!attributeList.get(i)[k].equals("")) {
+                            statement.setDouble(k, Double.parseDouble(attributeList.get(i)[k]));
+                        } else {
+                            statement.setNull(k, Types.NUMERIC);
+                        }
+                    }
+                }
 
                 statement.addBatch();
 
@@ -186,8 +186,8 @@ public class DataExporter {
 
 
     public void insertUsers() {
-        String query = "INSERT INTO general_user(username, first_name, last_name, email, password, salt) "
-                + "VALUES(?,?,?,?,?,?)";
+        String query = "INSERT INTO general_user(username, first_name, last_name, email, password, salt, is_activated) "
+                + "VALUES(?,?,?,?,?,?,?)";
 
         try {
             PreparedStatement statement = conn.prepareStatement(query);
@@ -200,6 +200,7 @@ public class DataExporter {
             statement.setString(4, "khavronayevhen@gmail.com");
             statement.setString(5, UserDao.instance.getSHA256(UserDao.instance.getSHA256("Password7")+ salt));
             statement.setString(6, salt);
+            statement.setBoolean(7, true);
             statement.execute();
 
             salt = UserDao.instance.getAlphaNumericString(50);
@@ -210,6 +211,8 @@ public class DataExporter {
             statement.setString(4, "ngotriet2908@gmail.com");
             statement.setString(5, UserDao.instance.getSHA256(UserDao.instance.getSHA256("Password7")+ salt));
             statement.setString(6, salt);
+            statement.setBoolean(7, true);
+
 
             statement.execute();
         } catch (SQLException se) {
@@ -365,8 +368,10 @@ public class DataExporter {
 
     public void insertRuns() {
         String query = "INSERT INTO run(date, bodypackFile, id, username, distance, duration," +
-                "shoes_id, surface_id, description, remarks, stravaLink, name, layout) "
+                "shoes_id, surface_id, description, remarks, stravaLink, name, default_layout) "
                 + "VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)";
+
+        int rowsAdded = 0;
 
         try {
             Workbook workbook = WorkbookFactory.create(new File("RA-data/BodyPackRuns.xlsx"));
@@ -380,6 +385,7 @@ public class DataExporter {
                 if (row == null) {
                     continue;
                 }
+
                 for (int j = row.getFirstCellNum(); j <= row.getFirstCellNum() + 10; j++) {
                     Cell cell = row.getCell(j);
 
@@ -447,12 +453,13 @@ public class DataExporter {
 
                     }
                 }
-                statement.setString(13, "{\"count\":24,\"layout\":[{\"typeName\":\"individual\",\"indicatorName\":\"axtibacc_left\"},{\"typeName\":\"individual\",\"indicatorName\":\"axtibacc_right\"},{\"typeName\":\"individual\",\"indicatorName\":\"tibimpact_left\"},{\"typeName\":\"individual\",\"indicatorName\":\"tibimpact_right\"},{\"typeName\":\"individual\",\"indicatorName\":\"axsacacc_left\"},{\"typeName\":\"individual\",\"indicatorName\":\"axsacacc_right\"},{\"typeName\":\"individual\",\"indicatorName\":\"sacimpact_left\"},{\"typeName\":\"individual\",\"indicatorName\":\"sacimpact_right\"},{\"typeName\":\"individual\",\"indicatorName\":\"brakingforce_left\"},{\"typeName\":\"individual\",\"indicatorName\":\"brakingforce_right\"},{\"typeName\":\"individual\",\"indicatorName\":\"pushoffpower_left\"},{\"typeName\":\"individual\",\"indicatorName\":\"pushoffpower_right\"},{\"typeName\":\"individual\",\"indicatorName\":\"tibintrot_left\"},{\"typeName\":\"individual\",\"indicatorName\":\"tibintrot_right\"},{\"typeName\":\"individual\",\"indicatorName\":\"vll_left\"},{\"typeName\":\"individual\",\"indicatorName\":\"vll_right\"},{\"typeName\":\"graph\",\"indicatorName\":\"axtibacc\"},{\"typeName\":\"graph\",\"indicatorName\":\"tibimpact\"},{\"typeName\":\"graph\",\"indicatorName\":\"axsacacc\"},{\"typeName\":\"graph\",\"indicatorName\":\"sacimpact\"},{\"typeName\":\"graph\",\"indicatorName\":\"brakingforce\"},{\"typeName\":\"graph\",\"indicatorName\":\"pushoffpower\"},{\"typeName\":\"graph\",\"indicatorName\":\"tibintrot\"},{\"typeName\":\"graph\",\"indicatorName\":\"vll\"}]}");
+                statement.setString(13, "{\"count\":42,\"layout\":[{\"typeName\":\"individual\",\"indicatorName\":\"axtibacc_left\"},{\"typeName\":\"individual\",\"indicatorName\":\"axtibacc_right\"},{\"typeName\":\"individual\",\"indicatorName\":\"tibimpact_left\"},{\"typeName\":\"individual\",\"indicatorName\":\"tibimpact_right\"},{\"typeName\":\"individual\",\"indicatorName\":\"axsacacc_left\"},{\"typeName\":\"individual\",\"indicatorName\":\"axsacacc_right\"},{\"typeName\":\"individual\",\"indicatorName\":\"sacimpact_left\"},{\"typeName\":\"individual\",\"indicatorName\":\"sacimpact_right\"},{\"typeName\":\"individual\",\"indicatorName\":\"brakingforce_left\"},{\"typeName\":\"individual\",\"indicatorName\":\"brakingforce_right\"},{\"typeName\":\"individual\",\"indicatorName\":\"pushoffpower_left\"},{\"typeName\":\"individual\",\"indicatorName\":\"pushoffpower_right\"},{\"typeName\":\"individual\",\"indicatorName\":\"tibintrot_left\"},{\"typeName\":\"individual\",\"indicatorName\":\"tibintrot_right\"},{\"typeName\":\"individual\",\"indicatorName\":\"vll_left\"},{\"typeName\":\"individual\",\"indicatorName\":\"vll_right\"},{\"typeName\":\"graph\",\"indicatorName\":\"axtibacc\"},{\"typeName\":\"graph\",\"indicatorName\":\"tibimpact\"},{\"typeName\":\"graph\",\"indicatorName\":\"axsacacc\"},{\"typeName\":\"graph\",\"indicatorName\":\"sacimpact\"},{\"typeName\":\"graph\",\"indicatorName\":\"brakingforce\"},{\"typeName\":\"graph\",\"indicatorName\":\"pushoffpower\"},{\"typeName\":\"graph\",\"indicatorName\":\"tibintrot\"},{\"typeName\":\"graph\",\"indicatorName\":\"vll\"},{\"typeName\":\"distribution\",\"indicatorName\":\"axtibacc_left\"},{\"typeName\":\"distribution\",\"indicatorName\":\"axtibacc_right\"},{\"typeName\":\"distribution\",\"indicatorName\":\"tibimpact_left\"},{\"typeName\":\"distribution\",\"indicatorName\":\"tibimpact_right\"},{\"typeName\":\"distribution\",\"indicatorName\":\"axsacacc_left\"},{\"typeName\":\"distribution\",\"indicatorName\":\"axsacacc_right\"},{\"typeName\":\"distribution\",\"indicatorName\":\"sacimpact_left\"},{\"typeName\":\"distribution\",\"indicatorName\":\"sacimpact_right\"},{\"typeName\":\"distribution\",\"indicatorName\":\"brakingforce_left\"},{\"typeName\":\"distribution\",\"indicatorName\":\"brakingforce_right\"},{\"typeName\":\"distribution\",\"indicatorName\":\"pushoffpower_left\"},{\"typeName\":\"distribution\",\"indicatorName\":\"pushoffpower_right\"},{\"typeName\":\"distribution\",\"indicatorName\":\"tibintrot_left\"},{\"typeName\":\"distribution\",\"indicatorName\":\"tibintrot_right\"},{\"typeName\":\"distribution\",\"indicatorName\":\"vll_left\"},{\"typeName\":\"distribution\",\"indicatorName\":\"vll_right\"},{\"typeName\":\"graph\",\"indicatorName\":\"speed\"},{\"typeName\":\"distribution\",\"indicatorName\":\"speed\"}]}\t");
 
 
-                String[] namee = {"Typical run", "Morning Run", "Exercise", "Run with friends", "Training", "Run for fun", "Run to school"};
+                String[] names = {"Typical run", "Morning run", "Exercise", "Run with friends", "Training", "Run for fun", "Run to school", "Zombie run", "Boring run"};
 
-                statement.setString(12, namee[(int)(Math.random() * 7)]);
+                statement.setString(12, names[rowsAdded]);
+                rowsAdded++;
                 statement.execute();
             }
         } catch (IOException ioe) {

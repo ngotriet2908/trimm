@@ -4,29 +4,93 @@
 	<meta name="viewport" content="width=device-width,initial-scale=1.0">
 	<meta charset="UTF-8">
 	<title>Upgrade</title>
-	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css" integrity="sha384-oS3vJWv+0UjzBfQzYUhtDYW+Pj2yciDJxpsK1OYPAYjqT085Qq/1cq5FLXAZQ7Ay" crossorigin="anonymous">
+	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css"
+		  integrity="sha384-oS3vJWv+0UjzBfQzYUhtDYW+Pj2yciDJxpsK1OYPAYjqT085Qq/1cq5FLXAZQ7Ay" crossorigin="anonymous">
 	<link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
 	<link href="https://fonts.googleapis.com/css?family=Montserrat" rel="stylesheet">
-	<link rel="stylesheet" href="../style/style.css">
+	<link rel="stylesheet" href="/style/style.css">
 </head>
 <body id="upgrade">
+
 <nav>
 	<ul>
 		<li class="nav-logo">
 			<a class="font-bold" href="/">runner</a>
 		</li>
+		<li class="nav-item">
+			<a href="/runner/profiles">profile</a>
+		</li>
+		<li class="nav-item">
+			<a href="/runner/logout">sign out</a>
+		</li>
+
+		<li class="nav-button">
+			<a class="font-bold" href="/"><i class="fas fa-bars"></i></a>
+		</li>
 	</ul>
+	<div class="nav-opacity-overlay">
+	</div>
 </nav>
 
-
 <main>
+	<div id="upgrade-container">
 
+		<div class="upgrade-card">
+			<div class="title-label"><span>upgrade</span></div>
+			<h1>Become a premium member and unlock all these cool features</h1>
+			<!--<div>-->
+				<!--<span>$</span>-->
+				<!--<span>29</span>-->
+				<!--<span>/month</span>-->
+			<!--</div>-->
+			<p>
+				Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+				Proin convallis tellus vel risus vulputate, id hendrerit nibh malesuada.
+				Vivamus hendrerit turpis ac arcu porta vehicula.
+			</p>
+
+			<div id="upgrade-features">
+
+				<div class="upgrade-feature">
+					<i class="fas fa-dragon"></i>
+					<h4>Cool styles</h4>
+					<p>Create, save and share your runs with anyone.</p>
+				</div>
+
+				<div class="upgrade-feature">
+					<i class="fas fa-layer-group"></i>
+					<h4>Pre-defined cards</h4>
+					<p>Create, save and share your runs with anyone.</p>
+				</div>
+
+				<div class="upgrade-feature">
+					<i class="fab fa-mix"></i>
+					<h4>Drag and drop sections</h4>
+					<p>Create, save and share your runs with anyone.</p>
+				</div>
+
+				<div class="upgrade-feature">
+					<i class="fas fa-tv"></i>
+					<h4>More analysis</h4>
+					<p>Create, save and share your runs with anyone.</p>
+				</div>
+
+			</div>
+
+			<button class="button-raised"><span>upgrade now</span></button>
+
+			<p class="upgrade-price">for only $299.99</p>
+		</div>
+
+
+	</div>
 </main>
 
 <script src="https://code.jquery.com/jquery-3.4.1.min.js"
 		integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
 		crossorigin="anonymous"></script>
 <!--<script src="/script/jquery.nicescroll.js"></script>-->
-<script src="../script/script.js"></script>
+<script src="/script/script.js"></script>
+
 </body>
 </html>

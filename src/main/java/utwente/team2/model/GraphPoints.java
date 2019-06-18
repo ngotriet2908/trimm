@@ -8,7 +8,6 @@ import java.util.List;
 @XmlRootElement
 public class GraphPoints implements Card {
     private String cardTypeName;
-
     private String name;
 
     public String getName() {
@@ -62,4 +61,21 @@ public class GraphPoints implements Card {
     public void setStep_no(List<Integer> step_no) {
         this.step_no = step_no;
     }
+
+    public void reprocessSpeed(BigDecimal stepDistance) {
+
+        System.out.println(stepDistance);
+        List<BigDecimal> timeStamp = new ArrayList<>();
+        for(int i = 0; i < getLeft().size() - 1; i++) {
+            timeStamp.add((getLeft().get(i + 1).subtract(getLeft().get(i))
+                    .divide(stepDistance.multiply(BigDecimal.valueOf(getStep_no().get(i + 1) - getStep_no().get(i))), BigDecimal.ROUND_UP))
+                    .setScale(3, BigDecimal.ROUND_UP));
+        }
+        setLeft(timeStamp);
+        step_no.remove(0);
+
+        System.out.println(step_no.size() + " " + getLeft().size());
+
+    }
+
 }

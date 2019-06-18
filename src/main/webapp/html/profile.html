@@ -13,29 +13,35 @@
 <body id="profile">
 
 <div class="profile-top">
-		<nav>
-			<ul>
+	<nav>
+		<ul>
 
-				<!--<div id="nav-items">-->
-					<li class="nav-logo">
-						<a class="font-bold" href="/">runner</a>
-					</li>
-					<li class="nav-item">
-						<a href="/runner/settings">settings</a>
-					</li>
-					<li class="nav-item">
-						<a href="/runner/logout">sign out</a>
-					</li>
-				<!--</div>-->
+			<!--<div id="nav-items">-->
+			<li class="nav-logo">
+				<a class="font-bold" href="/">runner</a>
+			</li>
+
+			<!-- TODO show only for free users-->
+			<li class="nav-item upgrade hidden">
+				<a class="button-raised" href="/runner/premium/join"><span>upgrade</span></a>
+			</li>
+
+			<li class="nav-item">
+				<a href="/runner/settings">settings</a>
+			</li>
+			<li class="nav-item">
+				<a href="/runner/logout">sign out</a>
+			</li>
+			<!--</div>-->
 
 
-				<li class="nav-button">
-					<a class="font-bold" href="/"><i class="fas fa-bars"></i></a>
-				</li>
+			<li class="nav-button">
+				<a class="font-bold" href="/"><i class="fas fa-bars"></i></a>
+			</li>
 
-			</ul>
-		</nav>
-		<div class="nav-opacity-overlay"></div>
+		</ul>
+	</nav>
+	<div class="nav-opacity-overlay"></div>
 </div>
 
 <main class="profile-main">
@@ -43,7 +49,8 @@
 	<div id="profile-picture-container" class="profile-card">
 
 		<div id="profile-picture-img">
-			<img id="profile-profile-picture" src="../img/profile_bluer.png" alt="profile picture">
+			<!--<img id="profile-profile" src="../img/profile_bluer.png" alt="profile picture">-->
+			<img id="profile-picture" src="" alt="profile picture">
 		</div>
 
 		<div id="profile-picture-general">
@@ -83,7 +90,7 @@
 				<!--<span>Christian Van Den Berge</span>-->
 			</div>
 			<!--<div id="pro">-->
-				<!--<span>PRO</span>-->
+			<!--<span>PRO</span>-->
 			<!--</div>-->
 		</div>
 
@@ -121,97 +128,113 @@
 		</div>
 
 		<!--<div id="activity-container" class="data-container">-->
-			<!--<header>-->
-				<!--<h2>Runs</h2>-->
-			<!--</header>-->
-			<!--<div id="activity-data-container">-->
+		<!--<header>-->
+		<!--<h2>Runs</h2>-->
+		<!--</header>-->
+		<!--<div id="activity-data-container">-->
 
-				<!--<table>-->
-					<!--<tr>-->
-						<!--<th>date</th>-->
-						<!--<th>title</th>-->
-						<!--<th>distance</th>-->
-						<!--<th>time</th>-->
-						<!--<th>steps</th>-->
-					<!--</tr>-->
-					<!--<tr>-->
-						<!--<td>Tue, 13/04/2019</td>-->
-						<!--<td>Typical Run</td>-->
-						<!--<td>8.7 km</td>-->
-						<!--<td>00:55:33</td>-->
-						<!--<td>11342</td>-->
-					<!--</tr>-->
-					<!--<tr>-->
-						<!--<td>Thu, 09/12/2018</td>-->
-						<!--<td>A Bit Bad Run</td>-->
-						<!--<td>0.1 km</td>-->
-						<!--<td>00:00:59</td>-->
-						<!--<td>139</td>-->
-					<!--</tr>-->
-					<!--<tr>-->
-						<!--<td>Thu, 09/12/2018</td>-->
-						<!--<td>A Too Long Run</td>-->
-						<!--<td>63 km</td>-->
-						<!--<td>06:11:03</td>-->
-						<!--<td>86736</td>-->
-					<!--</tr>-->
-				<!--</table>-->
-			<!--</div>-->
+		<!--<table>-->
+		<!--<tr>-->
+		<!--<th>date</th>-->
+		<!--<th>title</th>-->
+		<!--<th>distance</th>-->
+		<!--<th>time</th>-->
+		<!--<th>steps</th>-->
+		<!--</tr>-->
+		<!--<tr>-->
+		<!--<td>Tue, 13/04/2019</td>-->
+		<!--<td>Typical Run</td>-->
+		<!--<td>8.7 km</td>-->
+		<!--<td>00:55:33</td>-->
+		<!--<td>11342</td>-->
+		<!--</tr>-->
+		<!--<tr>-->
+		<!--<td>Thu, 09/12/2018</td>-->
+		<!--<td>A Bit Bad Run</td>-->
+		<!--<td>0.1 km</td>-->
+		<!--<td>00:00:59</td>-->
+		<!--<td>139</td>-->
+		<!--</tr>-->
+		<!--<tr>-->
+		<!--<td>Thu, 09/12/2018</td>-->
+		<!--<td>A Too Long Run</td>-->
+		<!--<td>63 km</td>-->
+		<!--<td>06:11:03</td>-->
+		<!--<td>86736</td>-->
+		<!--</tr>-->
+		<!--</table>-->
+		<!--</div>-->
 		<!--</div>-->
 
 
 		<div id="runs-container">
 			<header>
 				<h1>Activity</h1>
-<!--				<div>Date <i class="fas fa-sort-down"></i></div>-->
+				<!--				<div>Date <i class="fas fa-sort-down"></i></div>-->
 				<div>
-					<select id="select-sort-type">
-						<option value="sort ">---sort---</option>
+					<div class="input-group input-select">
+						<select id="select-sort-type">
+							<!--<option value="sort ">-&#45;&#45;sort-&#45;&#45;</option>-->
 
+							<option value="dateu">Date [A-Z]</option>
+							<option value="dated">Date [Z-A]</option>
 
-						<option value="dateu">Date [A-Z]</option>
-						<option value="dated">Date [Z-A]</option>
+							<option value="timeu">Time [A-Z]</option>
+							<option value="timed">Time [Z-A]</option>
 
-						<option value="timeu">Time [A-Z]</option>
-						<option value="timed">Time [Z-A]</option>
+							<option value="stepu">Steps [A-Z]</option>
+							<option value="stepd">Steps [Z-A]</option>
 
-						<option value="stepu">Step [A-Z]</option>
-						<option value="stepd">Step [Z-A]</option>
+							<option value="distanceu">Distance [A-Z]</option>
+							<option value="distanced">Distance [Z-A]</option>
 
-						<option value="distanceu">Distance [A-Z]</option>
-						<option value="distanced">Distance [Z-A]</option>
-
-					</select>
+						</select>
+						<label class="select-label">Sort</label>
+					</div>
 				</div>
 			</header>
 
 			<div id="runs-data-container">
 
-<!--				<div class="profile-card profile-run-card">-->
-<!--					<div class="run-card-title"><h4><a href="/">Typical Run</a></h4></div>-->
-<!--					<div class="run-card-date">2019-04-13</div>-->
+				<!--<div class="profile-card profile-run-card">-->
+				<!--&lt;!&ndash;<header>&ndash;&gt;-->
+				<!--&lt;!&ndash;<div class="run-card-icon">&ndash;&gt;-->
+				<!--&lt;!&ndash;<i class="fas fa-running"></i>&ndash;&gt;-->
+				<!--&lt;!&ndash;</div>&ndash;&gt;-->
+				<!--&lt;!&ndash;<div class="run-card-title">&ndash;&gt;-->
+				<!--&lt;!&ndash;<h4><a href="/">Typical Run</a></h4>&ndash;&gt;-->
+				<!--&lt;!&ndash;</div>&ndash;&gt;-->
+				<!--&lt;!&ndash;<div class="run-card-date">2019-04-13</div>&ndash;&gt;-->
+				<!--&lt;!&ndash;</header>&ndash;&gt;-->
 
-<!--					<div class="run-card-blocks">-->
-<!--						<div class="run-card-distance">-->
-<!--							<div>Distance</div>-->
-<!--							<div>8.7 km</div>-->
-<!--						</div>-->
+				<!--<div class="run-card-blocks">-->
+				<!--<div>-->
+				<!--<div class="run-card-title">-->
+				<!--<h4><a href="/">Typical Run</a></h4>-->
+				<!--</div>-->
+				<!--<div class="run-card-date">2019-04-13</div>-->
+				<!--</div>-->
 
-<!--						<div class="run-card-time">-->
-<!--							<div>Time</div>-->
-<!--							<div>00:55:33</div>-->
-<!--						</div>-->
+				<!--<div class="run-card-distance">-->
+				<!--<div>Distance</div>-->
+				<!--<div>8.7 km</div>-->
+				<!--</div>-->
 
-<!--						<div class="run-card-steps">-->
-<!--							<div>Steps</div>-->
-<!--							<div>11342</div>-->
-<!--						</div>-->
+				<!--<div class="run-card-time">-->
+				<!--<div>Time</div>-->
+				<!--<div>00:55:33</div>-->
+				<!--</div>-->
 
-<!--						<div class="run-card-see-more"><a class="button" href="/"><span>More</span></a></div>-->
-<!--					</div>-->
+				<!--<div class="run-card-steps">-->
+				<!--<div>Steps</div>-->
+				<!--<div>11342</div>-->
+				<!--</div>-->
 
-<!--					&lt;!&ndash;<div class="run-card-see-more"><button class="button"><span>See more</span></button></div>&ndash;&gt;-->
-<!--				</div>-->
+				<!--<div class="run-card-see-more"><a class="button-raised" href="/"><span><i class="fas fa-angle-right"></i></span></a></div>-->
+
+				<!--</div>-->
+				<!--</div>-->
+
 
 			</div>
 		</div>
@@ -239,9 +262,6 @@
 		crossorigin="anonymous"></script>
 <!--<script src="/script/jquery.nicescroll.js"></script>-->
 <script src="/script/script.js"></script>
-
-<link rel="stylesheet" href="/script/cropie/croppie.css" />
-<script src="/script/cropie/croppie.js"></script>
 
 </body>
 </html>

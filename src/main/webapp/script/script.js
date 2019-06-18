@@ -150,14 +150,14 @@ document.addEventListener('DOMContentLoaded', function () {
             var username = $("#login input[type='text']").val().trim();
             var password = $("#login input[type='password']").val().trim();
             if (username !== "" && password !== "") {
-                var passwordsha;
+                // var passwordsha;
 
-                digestMessage(password).then(digestValue => {
-                    return (hexString(digestValue));
-                }).then(hashPassword => {
-                    console.log(hashPassword);
+                // digestMessage(password).then(digestValue => {
+                //     return (hexString(digestValue));
+                // }).then(hashPassword => {
+                //     console.log(hashPassword);
 
-                    var params = "username=" + username + "&password=" + hashPassword;
+                    var params = "username=" + username + "&password=" + password;
 
                     var http = new XMLHttpRequest();
 
@@ -177,6 +177,14 @@ document.addEventListener('DOMContentLoaded', function () {
                                 // $("#login input[type='text']").addClass("incorrect");
                                 // $("#login input[type='password']").addClass("incorrect");
 
+                            } else if (http.status === 402) {
+                                console.log("code 402");
+
+                                $("#response-message").text("Account is not activated");
+                                $("#response-message").removeClass("response-message-hidden");
+                                // $("#login input[type='text']").addClass("incorrect");
+                                // $("#login input[type='password']").addClass("incorrect");
+
                             } else {
                                 console.log("something else...");
                             }
@@ -188,7 +196,6 @@ document.addEventListener('DOMContentLoaded', function () {
                     http.setRequestHeader('Accept', 'text/html');
                     http.setRequestHeader('Cache-Control', 'no-store');
                     http.send(params);
-                });
             } else {
                 // fields are empty TODO
 
@@ -225,6 +232,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
                 if (message === "reset_success") {
                     message = "Password was successfully reset."
+                } else if (message === "activate_success") {
+                    message = "Account was successfully activated."
                 }
 
                 // insert error into the page
@@ -250,14 +259,14 @@ document.addEventListener('DOMContentLoaded', function () {
                 var recoveryPasswordConfirm = $("#password-reset-enter form input[name=confirm-password]").val().trim();
 
                 if (recoveryToken !== "" && recoveryPassword !== "" && recoveryPassword === recoveryPasswordConfirm) {
-                    var passwordsha;
+                    // var passwordsha;
 
-                    digestMessage(recoveryPassword).then(digestValue => {
-                        return (hexString(digestValue));
-                    }).then(hashPassword => {
-                        console.log(hashPassword);
+                    // digestMessage(recoveryPassword).then(digestValue => {
+                    //     return (hexString(digestValue));
+                    // }).then(hashPassword => {
+                    //     console.log(hashPassword);
 
-                        var params = "token=" + recoveryToken + "&password=" + hashPassword;
+                        var params = "token=" + recoveryToken + "&password=" + recoveryPassword;
 
                         var http = new XMLHttpRequest();
 
@@ -270,6 +279,10 @@ document.addEventListener('DOMContentLoaded', function () {
                                 } else if (http.status === 401) {
                                     console.log("code 401");
                                     $("#response-message").text("Access not allowed.");
+                                    $("#response-message").removeClass("response-message-hidden");
+                                } else if (http.status === 402) {
+                                    console.log("code 401");
+                                    $("#response-message").text("Account is not activate");
                                     $("#response-message").removeClass("response-message-hidden");
                                 } else if (http.status === 404) {
                                     $("#response-message").text("Password reset link is invalid.");
@@ -285,7 +298,6 @@ document.addEventListener('DOMContentLoaded', function () {
                         http.setRequestHeader('Accept', 'text/html');
                         http.setRequestHeader('Cache-Control', 'no-store');
                         http.send(params);
-                    });
                 } else {
                     // fields are empty TODO
 
@@ -386,7 +398,17 @@ document.addEventListener('DOMContentLoaded', function () {
                     $("#profile-name-container span")[0].innerText = parsedResponse.firstName + " " + parsedResponse.lastName;
 
                     if (parsedResponse.isPremium === 1) {
-                        $("#profile-name-container").append('<div id="pro"><span>PRO</span></div>');
+                        // show pro tag
+                        $("#profile-name-container").append('<span id="pro">PRO</span>');
+                    } else {
+                        // show upgrade button
+                        // var referenceNode = document.querySelector("#profile-top ul .nav-logo");
+                        // var newNode = document.createElement("li");
+                        // newNode.classList.add("nav-item");
+                        // newNode.classList.add("nav-item");
+                        // newNode.innerHTML = '<a href="/runner/premium/join">upgrade</a>';
+                        // referenceNode.parentNode.insertBefore(newNode, referenceNode.nextSibling);
+                        document.querySelector(".nav-item.upgrade").classList.remove("hidden");
                     }
 
                     // convert to km
@@ -398,7 +420,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
                     document.querySelector("#profile-picture-general div:nth-child(1) p span:nth-child(2)").innerText = parsedResponse.totalRuns;
-                    document.querySelector("#profile-picture-general div:nth-child(2) p span:nth-child(2)").innerText = Math.round(parsedResponse.totalDistance / 1000) + "km";
+                    document.querySelector("#profile-picture-general div:nth-child(2) p span:nth-child(2)").innerText = parsedResponse.totalDistance + "m";
                     document.querySelector("#profile-picture-general div:nth-child(3) p span:nth-child(2)").innerText = parsedResponse.totalSteps;
 
                     if (parsedResponse.runsList.length > 0) {
@@ -420,26 +442,28 @@ document.addEventListener('DOMContentLoaded', function () {
 
                             var runDate = new Date(parsedResponse.runsList[i].date);
 
-                            $container.append('<div class="profile-card profile-run-card">\n' +
-                                '<div class="run-card-title"><h4><a href="/">' + parsedResponse.runsList[i].name + '</a></h4></div>\n' +
-                                '<div class="run-card-date">' + runDate.toDateString() + '</div>\n' +
-                                '<div class="run-card-blocks">\n' +
-                                '<div class="run-card-distance">\n' +
-                                '<div>Distance</div>\n' +
-                                '<div>' + roundTo(parsedResponse.runsList[i].distance / 1000, 2) + ' km</div>\n' +
-                                '</div>\n' +
-                                '<div class="run-card-time">\n' +
-                                '<div>Time</div>\n' +
-                                '<div>' + convertTime(parsedResponse.runsList[i].duration) + '</div>\n' +
-                                '</div>\n' +
-                                '<div class="run-card-steps">\n' +
-                                '<div>Steps</div>\n' +
-                                '<div>' + parsedResponse.runsList[i].steps + '</div>\n' +
-                                '</div>\n' +
-                                '<div class="run-card-see-more"><a class="button" href="' +
-                                "/runner/runs/" + parsedResponse.runsList[i].id + '"><span>More</span></a></div>\n' +
-                                '</div>\n' +
-                                '</div>');
+                            $container.append('<div class="profile-card profile-run-card">' +
+                                // '<div class="run-card-title"><h4><a href="/">' + parsedResponse.runsList[i].name + '</a></h4></div>\n' +
+                                // '<div class="run-card-date">' + runDate.toDateString() + '</div>\n' +
+                                // '<div class="run-card-blocks">\n' +
+                                // '<div class="run-card-distance">\n' +
+                                // '<div>Distance</div>\n' +
+                                // '<div>' + roundTo(parsedResponse.runsList[i].distance / 1000, 2) + ' km</div>\n' +
+                                // '</div>\n' +
+                                // '<div class="run-card-time">\n' +
+                                // '<div>Time</div>\n' +
+                                // '<div>' + convertTime(parsedResponse.runsList[i].duration) + '</div>\n' +
+                                // '</div>\n' +
+                                // '<div class="run-card-steps">\n' +
+                                // '<div>Steps</div>\n' +
+                                // '<div>' + parsedResponse.runsList[i].steps + '</div>\n' +
+                                // '</div>\n' +
+                                // '<div class="run-card-see-more"><a class="button-raised" href="' +
+                                // "/runner/runs/" + parsedResponse.runsList[i].id + '"><span>More</span></a></div>\n' +
+                                // '</div>\n' +
+                                // '</div>');
+
+                            '<div class="run-card-blocks"><div><div class="run-card-title"><h4><a href="/">' + parsedResponse.runsList[i].name + '</a></h4></div><div class="run-card-date">' + runDate.toDateString() + '</div></div><div class="run-card-distance"><div>Distance</div><div>' + roundTo(parsedResponse.runsList[i].distance / 1000, 2) + ' km</div></div><div class="run-card-time"><div>Time</div><div>' + convertTime(parsedResponse.runsList[i].duration) + '</div></div><div class="run-card-steps"><div>Steps</div><div>' + parsedResponse.runsList[i].steps + '</div></div><div class="run-card-see-more"><a class="button-raised" href="/runner/runs/' + parsedResponse.runsList[i].id + '"><span><i class="fas fa-angle-right"></i></span></a></div></div></div>');
                         }
 
                     } else {
@@ -692,8 +716,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 processData: false,
                 contentType: false,
                 success: function (response) {
-
-
+                    location.reload();
                 },
                 error: function (xhr, status, errorMessage) {
                     console.log(errorMessage);
@@ -722,7 +745,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     // create an image
                     // var outputImg = document.createElement('img');
                     // outputImg.src = 'data:image/png;base64,'+b64Response;
-                    document.getElementById("profile-profile-picture").src = 'data:image/png;base64,' + http.responseText;
+                    document.getElementById("profile-picture").src = 'data:image/png;base64,' + http.responseText;
                     console.log(http.response);
 
 
@@ -755,7 +778,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     // create an image
                     // var outputImg = document.createElement('img');
                     // outputImg.src = 'data:image/png;base64,'+b64Response;
-                    document.getElementById("profile-picture-image").src = 'data:image/png;base64,' + http.responseText;
+                    document.getElementById("profile-picture").src = 'data:image/png;base64,' + http.responseText;
                     console.log(http.response);
 
 
@@ -1018,19 +1041,19 @@ document.addEventListener('DOMContentLoaded', function () {
             var email = $("#register form input[name='email']").val().trim();
             var password = $("#register form input[name='password']").val().trim();
 
-            digestMessage(password).then(digestValue => {
-                return (hexString(digestValue));
-            }).then(hashPassword => {
+            // digestMessage(password).then(digestValue => {
+            //     return (hexString(digestValue));
+            // }).then(hashPassword => {
 
 
                 console.log(username);
                 console.log(firstName);
                 console.log(lastName);
                 console.log(email);
-                console.log(hashPassword);
+                console.log(password);
 
                 if (username !== "" && password !== "") { // etc. TODO
-                    var params = "username=" + username + "&password=" + hashPassword +
+                    var params = "username=" + username + "&password=" + password +
                         "&first_name=" + firstName + "&last_name=" + lastName + "&email=" + email;
 
                     var http = new XMLHttpRequest();
@@ -1058,7 +1081,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     http.setRequestHeader('Cache-Control', 'no-store');
                     http.send(params);
                 }
-            })
+
         }
 
 
@@ -1084,7 +1107,19 @@ document.addEventListener('DOMContentLoaded', function () {
                     $("#profile-name-container span")[0].innerText = parsedResponse.firstName + " " + parsedResponse.lastName;
 
                     if (parsedResponse.isPremium === 1) {
+                        // show pro tag
                         $("#profile-name-container").append('<span id="pro">PRO</span>');
+                    } else {
+                        // show upgrade button
+                        // var referenceNode = document.querySelector("#profile-top ul .nav-logo");
+                        // var newNode = document.createElement("li");
+                        // newNode.classList.add("nav-item");
+                        // newNode.classList.add("nav-item");
+                        // newNode.innerHTML = '<a href="/runner/premium/join">upgrade</a>';
+                        // referenceNode.parentNode.insertBefore(newNode, referenceNode.nextSibling);
+
+
+                        document.querySelector(".nav-item.upgrade").classList.remove("hidden");
                     }
 
                     // populate first and last name fields
@@ -1119,10 +1154,43 @@ document.addEventListener('DOMContentLoaded', function () {
                     document.querySelector("#dashboard-overview-container-grid div:nth-child(4) p:nth-of-type(2) span").innerText = convertTime(parsedResponse.duration);
                     document.querySelector("#dashboard-overview-container-grid div:nth-child(6) p:nth-of-type(2) span").innerText = parsedResponse.steps;
                     document.querySelector("#dashboard-overview-container-grid div:nth-child(1) p:nth-of-type(2) span").innerText = parsedResponse.name; // TODO
+                    document.querySelector("#dashboard-overview-container-grid div:nth-child(3) p:nth-of-type(2) span").innerText = parsedResponse.shoesname;
+
                 }
             };
             http.send();
         }
+
+        $("#upgrade button.upgrade").on("click", function(event) {
+            upgradeToPremium();
+        });
+
+        // send ajax request for user to register
+        function upgradeToPremium() {
+                var http = new XMLHttpRequest();
+
+                http.onreadystatechange = function () {
+                    if (http.readyState === XMLHttpRequest.DONE) {
+                        if (http.status === 200) {
+                            console.log("code 200");
+
+                            window.location.replace("/runner/profiles"); // TODO
+                        } else if (http.status === 401) {
+                            console.log("code 400");
+
+                            // unauthorized
+                        } else {
+                            console.log("something else...");
+                        }
+                    }
+                };
+
+                http.open("POST", "/runner/upgrade/join", true);
+                http.setRequestHeader('Accept', 'text/html');
+                http.setRequestHeader('Cache-Control', 'no-store');
+                http.send();
+        }
+
 
     }
 );

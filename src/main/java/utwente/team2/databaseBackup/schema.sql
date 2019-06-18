@@ -15,6 +15,7 @@ CREATE TABLE general_user (
     email VARCHAR(255),
     password text, -- when we know the actual length of salted hash, better replace with CHAR(fixed_limit)
     salt text,
+    is_activated boolean,
     PRIMARY KEY (username)
 );
 
@@ -74,6 +75,7 @@ CREATE TABLE run (
     remarks VARCHAR(255),
     stravalink VARCHAR(255),
     layout text,
+    default_layout text,
     PRIMARY KEY (id),
     FOREIGN KEY (shoes_id) REFERENCES shoes(id),
     FOREIGN KEY (surface_id) REFERENCES surface(id)

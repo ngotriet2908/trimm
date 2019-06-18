@@ -5,6 +5,7 @@ import org.glassfish.jersey.media.multipart.FormDataParam;
 import utwente.team2.dao.RunDao;
 import utwente.team2.dao.UserDao;
 import utwente.team2.filter.Secured;
+import utwente.team2.model.PieChart;
 import utwente.team2.model.User;
 
 import javax.servlet.http.HttpServletRequest;
@@ -14,6 +15,7 @@ import javax.ws.rs.core.*;
 import java.io.*;
 import java.security.Principal;
 import java.util.Base64;
+import java.util.List;
 
 
 @Path("/profiles")
@@ -87,6 +89,14 @@ public class Profiles {
         }
 
         byte[] imageData = UserDao.instance.getUserImage(username);
+
+        if (imageData == null) {
+            ClassLoader classLoader = getClass().getClassLoader();
+            InputStream inputStream = classLoader.getResourceAsStream("../../img/No-profile.jpg");
+            imageData = UserDao.toByteArray(inputStream);
+        }
+
+
         String encoded = Base64.getEncoder().encodeToString(imageData);
         System.out.println(encoded);
         // uncomment line below to send non-streamed
@@ -94,6 +104,22 @@ public class Profiles {
 
         // uncomment line below to send streamed
 //         return Response.ok(new ByteArrayInputStream(imageData)).build();
+    }
+
+
+    @Path("/{username}/shoespiechart")
+    @GET
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    public PieChart getPieChart(@PathParam("username") String username) {
+
+        List<String> res = UserDao.instance.getShoes(username);
+
+        if (res == null) {
+            return null;
+        }
+
+        PieChart pieChart = new PieChart(res,"shoes");
+        return pieChart;
     }
 
 

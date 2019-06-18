@@ -44,6 +44,22 @@ public class PasswordReset {
         return inputStream;
     }
 
+    @Path("/activate/enter")
+    @GET
+    @Produces(MediaType.TEXT_HTML)
+    public void showResetRequestPage(@QueryParam("token") String token, @Context HttpServletResponse servletResponse) throws IOException {
+
+        Jws<Claims> jws = Jwts.parser().require("purpose", "activate")
+                .setSigningKey(Login.KEY).parseClaimsJws(token);
+        System.out.println("Password reset JWT is valid.");
+        String username = Login.getTokenClaims(token).getBody().getSubject();
+
+
+        UserDao.instance.activateAccount(username);
+
+        servletResponse.sendRedirect("/runner/login?message=activate_success");
+    }
+
     @Path("/reset")
     @POST
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
