@@ -418,15 +418,12 @@
 		</div>
 
 		<div id="select-layout">
-			<i class="fas fa-star star"></i>
 			<button type="button" class="button-raised"><span><i class="fas fa-layer-group"></i></span></button>
 		</div>
 
 		<div id="select-favorite-layout">
-			<i class="fas fa-star star"></i>
 			<button type="button" class="button-raised"><span><i class="fas fa-bookmark"></i></span></button>
 		</div>
-
 
 		<div id="reset-to-default">
 			<button type="button" class="button-raised"><span><i class="fas fa-sync"></i></span></button>
@@ -493,6 +490,7 @@
 			<button type="button" class="button-text cancel"><span>Close</span></button>
 			<button type="button" class="button-raised add"><span>Add</span></button>
 		</div>
+
 	</div>
 </section>
 
@@ -502,14 +500,12 @@
 		<h1>Remove all cards</h1>
 		<p>Are you sure you want to remove all cards from the dashboard?</p>
 		<p class="red-text">This action is irreversible.</p>
-
 		<div class="button-group">
 			<button type="button" class="button-text cancel"><span>Cancel</span></button>
 			<button type="button" class="button-raised remove-all"><span>Remove</span></button>
 		</div>
 	</div>
 </section>
-
 
 <section class="eink-sent-dialog hidden dashboard-dialog">
 	<div>
@@ -531,13 +527,11 @@
 	</div>
 </section>
 
-
 <section class="restore-layout-dialog hidden dashboard-dialog">
 	<div>
 		<h1>Restore default layout</h1>
 		<p>Are you sure you want to restore your dashboard to default view?</p>
 		<p class="red-text">This action is irreversible.</p>
-
 		<div class="button-group">
 			<button type="button" class="button-text cancel"><span>Cancel</span></button>
 			<button type="button" class="button-raised restore"><span>Restore</span></button>
@@ -545,38 +539,73 @@
 	</div>
 </section>
 
-<section class="select-layout-dialog hidden dashboard-dialog premium-required">
+<section class="select-layout-dialog hidden dashboard-dialog">
 	<div>
-		<h1>You discovered a premium feature!</h1>
 
-		<p>With RunnerPro you can create up to 5 different dashboard layouts for every run.</p>
+		<h1>Select layout</h1>
 
-		<p>
-			Upgrading to Runner Premium will unlock it.
-		</p>
+		<div>
+			<div class="input-group">
+				<input id='save-layout-name-field' type="text" name="layout_name" autocomplete="off" required>
+				<label>Name</label>
+			</div>
 
-		<div class="button-group">
-			<button type="button" class="button-text cancel"><span>Later</span></button>
-			<button type="button" class="button-raised"><span>get premium now</span></button>
+			<div class="button-group">
+				<button id='save-layout-name' type="button" class="button-raised save"><span>Save name</span></button>
+			</div>
 		</div>
+
+		<div>
+			<div class="input-group input-select">
+				<select id="select-layout-selection">
+
+				</select>
+				<label class="select-label">Layout</label>
+			</div>
+
+			<div class="button-group">
+				<button type="button" class="button-text cancel"><span>Cancel</span></button>
+				<button type="button" class="button-raised select"><span>Select</span></button>
+			</div>
+		</div>
+
 
 	</div>
 </section>
 
-<section class="favorite-layout-dialog hidden dashboard-dialog premium-required">
+<section class="favorite-layout-dialog hidden dashboard-dialog">
 	<div>
-		<h1>You discovered a premium feature!</h1>
+		<h1>Favorite layouts</h1>
 
-		<p>With RunnerPro you can store your favourite layouts and use them to show your desired dashboard in no time.</p>
+		<h3>Rename favourite layout</h3>
 
-		<p>
-			Upgrading to Runner Premium will unlock it.
-		</p>
+		<div>
+			<div class="input-group">
+				<input id='favorite-layout-name-field' type="text" name="layout_name" autocomplete="off" required>
+				<label>Name</label>
+			</div>
 
-		<div class="button-group">
-			<button type="button" class="button-text cancel"><span>Later</span></button>
-			<a class="button-raised" href="/runner/premium/join"><span>get premium now</span></a>
+			<div class="button-group">
+				<button id='favorite-layout-name' type="button" class="button-raised"><span>Save name</span></button>
+			</div>
 		</div>
+
+		<h3>Select favourite layout</h3>
+
+		<div>
+
+			<div class="input-group input-select">
+				<select id="favorite-layout-selection">
+				</select>
+			</div>
+
+			<div class="button-group">
+				<button type="button" class="button-text cancel"><span>Cancel</span></button>
+				<button type="button" class="button-raised restore"><span>Load</span></button>
+				<button id='favorite-layout-save' type="button" class="button-raised"><span>Save</span></button>
+			</div>
+		</div>
+
 	</div>
 </section>
 

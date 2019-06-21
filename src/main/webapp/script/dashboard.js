@@ -4,9 +4,13 @@ document.addEventListener('DOMContentLoaded', function () {
     // create nicescroll instance
     // $("body").niceScroll({cursorcolor:"#86c232"});
 
+    var currentUrl = window.location.href;
+
     var grid = null;
     var docElem = document.documentElement;
     var gridElement = document.querySelector('.dashboard-tile-grid');
+
+    var dragEnabled;
 
     var filterField = document.querySelector('.control-filter-field');
     var searchField = document.querySelector('.control-search-field');
@@ -23,7 +27,52 @@ document.addEventListener('DOMContentLoaded', function () {
     var dragOrder = [];
     var uuid = 0;
 
+    var tokenJson = getTokenData(getCookieValue("token"));
+    var usernameFromToken;
 
+    if (tokenJson !== null) {
+        usernameFromToken = tokenJson.sub;
+    }
+
+    if (document.querySelector("html").offsetWidth <= 400) {
+        dragEnabled = false;
+    } else {
+        // enable
+        dragEnabled = true;
+    }
+
+
+    function getTokenData(token) {
+        if (token === null) {
+            return null;
+        }
+
+        var encoded = token.split(".")[1];
+
+        console.log(encoded);
+
+        var decoded = atob(encoded);
+
+        var decodedJson = JSON.parse(decoded);
+
+        return decodedJson;
+    }
+    function getCookieValue(cookieName) {
+        var name = cookieName + "=";
+        var cookies = document.cookie.split(';');
+        for (var i = 0; i < cookies.length; i++) {
+            var cookie = cookies[i];
+            while (cookie.charAt(0) === ' ') {
+                cookie = cookie.substring(1, cookie.length);
+            }
+
+            if (cookie.indexOf(name) === 0) {
+                return cookie.substring(name.length, cookie.length);
+            }
+        }
+
+        return null;
+    }
     // initialize grid
     function initGrid() {
         var dragCounter = 0;
@@ -33,7 +82,7 @@ document.addEventListener('DOMContentLoaded', function () {
             layoutOnInit: false, // added
             layoutDuration: 400,
             layoutEasing: 'ease',
-            dragEnabled: true,
+            dragEnabled: dragEnabled,
             dragSortInterval: 50,
             // dragContainer: document.body,
             dragStartPredicate: function (item, event) {
@@ -123,6 +172,15 @@ document.addEventListener('DOMContentLoaded', function () {
         http.send();
     }
 
+
+    function getJSONlayout(grid) {
+        var layout = serializeLayout(grid);
+        // window.localStorage.setItem('layout', layout);
+        console.log("layout saved: " + layout);
+
+        var layoutJson = JSON.stringify(layout);
+        return layoutJson;
+    }
 
     function saveLayout(grid) {
         var layout = serializeLayout(grid);
@@ -293,7 +351,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-    function removeItem(e) {
+    function removeItem(e, saveLayoutFlag) {
         var elem;
         if (e.target === undefined) {
             elem = e;
@@ -312,7 +370,10 @@ document.addEventListener('DOMContentLoaded', function () {
                     }
                 }
 
-                saveLayout(grid);
+                if (saveLayoutFlag) {
+                    saveLayout(grid);
+                }
+
                 updateIndices();
             }
         });
@@ -335,6 +396,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
         var height, width, innerContent;
         var nameSplit = data.name.split("_");
+
+        if (nameSplit[1] === undefined) {
+            nameSplit[1] = "";
+        }
 
         switch (type) {
             case "individual":
@@ -421,7 +486,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 width = 2;
                 innerContent = '<div class="dashboard-card-front dashboard-card-front-graph">' +
                     '<header>' +
-                    '<h3 class="dashboard-card-id">' + nameSplit[0] + " Graph" +
+                    '<h3 class="dashboard-card-id">' + nameSplit[0] + " " + nameSplit[1] + " Graph" +
                     '' +
                     '</h3>' +
                     '<button class="dashboard-card-remove"><i class="material-icons">&#xE5CD;</i></button>' +
@@ -439,7 +504,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 width = 2;
                 innerContent = '<div class="dashboard-card-front dashboard-card-front-graph">' + // TODO
                     '<header>' +
-                    '<h3 class="dashboard-card-id">' + nameSplit[0] + " Distribution" +
+                    '<h3 class="dashboard-card-id">' + nameSplit[0] + " " + nameSplit[1] + " Distribution" +
                     '' +
                     '</h3>' +
                     '<button class="dashboard-card-remove"><i class="material-icons">&#xE5CD;</i></button>' +
@@ -563,7 +628,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // addItemsElement.addEventListener('click', addItems);
     gridElement.addEventListener('click', function (e) {
         if (elementMatches(e.target, '.dashboard-card-remove, .dashboard-card-remove i')) {
-            removeItem(e);
+            removeItem(e, true);
         }
     });
 
@@ -604,14 +669,14 @@ document.addEventListener('DOMContentLoaded', function () {
         var lineChartData = {
             labels: data.step_no,
             datasets: [{
-                label: "left",
+                label: data.name,
                 borderColor: 'rgb(255, 99, 132)',
                 backgroundColor: 'rgb(255, 99, 132)',
                 fill: false,
                 data: data.left,
                 yAxisID: 'y-axis-1'
             }, {
-                label: "right",
+                label: "baseline",
                 borderColor: 'rgb(54, 162, 235)',
                 backgroundColor: 'rgb(54, 162, 235)',
                 fill: false,
@@ -679,7 +744,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 scales: {
                     xAxes: [{
                         barPercentage: 0.5,
-                        barThickness: 6,
+                        barThickness: 4,
                         maxBarThickness: 8,
                         minBarLength: 2,
                         gridLines: {
@@ -770,6 +835,8 @@ document.addEventListener('DOMContentLoaded', function () {
     $("#select-type").on("change", function (event) {
         var typeField = document.querySelector("#select-type");
         var indicatorField = document.querySelector("#select-indicator");
+        console.log(typeField.value);
+        console.log(indicatorField.value);
 
         if (typeField.value === "individual") {
             indicatorField.querySelector("option[value='speed']").remove();
@@ -786,7 +853,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 indicatorField.appendChild(newOption);
             }
 
-            if (typeField.value === "graph" || indicatorField.value === "speed") {
+            if (indicatorField.value === "speed") {
                 $("#select-side input").attr("disabled", true);
                 $("#select-side input").attr("checked", false);
                 document.querySelector("#select-side").classList.add("disabled");
@@ -802,7 +869,7 @@ document.addEventListener('DOMContentLoaded', function () {
         var typeField = document.querySelector("#select-type");
         var indicatorField = document.querySelector("#select-indicator");
 
-        if (typeField.value === "distribution") {
+        if (typeField.value === "distribution" || typeField.value === "graph") {
 
             if (indicatorField.value !== "speed") {
                 $("#select-side input").attr("disabled", false);
@@ -822,7 +889,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
         var selectFieldSideValue = $(".add-dialog input[name='select-side']:checked").val();
 
-        if (selectFieldTypeValue !== "graph" && !(selectFieldTypeValue === "distribution" && selectFieldIndicatorValue === "speed")) {
+        if (!(selectFieldTypeValue === "distribution" && selectFieldIndicatorValue === "speed")
+            && !(selectFieldTypeValue === "graph" && selectFieldIndicatorValue === "speed")) {
             selectFieldIndicatorValue += selectFieldSideValue;
         }
 
@@ -842,6 +910,152 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
 
+
+        $('#controls #select-layout button').on('click', function (event) {
+            if (document.querySelector(".premium-required") == null) {
+                var ss = document.getElementById("select-layout-selection");
+                document.getElementById('save-layout-name-field').value = ss[ss.selectedIndex].value;
+            }
+
+            document.querySelector(".popup-overlay").classList.remove("hidden");
+
+            // show popup
+            document.querySelector(".select-layout-dialog").classList.remove("hidden");
+
+
+        });
+
+
+        $('#controls #select-favorite-layout button').on('click', function (event) {
+
+            if (document.querySelector(".premium-required") == null) {
+                var ss = document.getElementById("favorite-layout-selection");
+
+                if (ss[ss.selectedIndex] !== null && ss[ss.selectedIndex] !== undefined) {
+                    document.getElementById('favorite-layout-name-field').value = ss[ss.selectedIndex].value;
+                }
+            }
+
+            document.querySelector(".popup-overlay").classList.remove("hidden");
+
+            // show popup
+            document.querySelector(".favorite-layout-dialog").classList.remove("hidden");
+
+        });
+
+        $('#select-layout-selection').on('change', function (event) {
+            var ss = document.getElementById("select-layout-selection");
+            document.getElementById('save-layout-name-field').value = ss[ss.selectedIndex].value;
+        });
+
+
+        $('#favorite-layout-selection').on('change', function (event) {
+            var ss = document.getElementById("favorite-layout-selection");
+            document.getElementById('favorite-layout-name-field').value = ss[ss.selectedIndex].value;
+        });
+
+        $('#save-layout-name').on('click', function (event) {
+            var layout_name = $("#save-layout-name-field").val();
+            console.log(layout_name);
+            if (layout_name !== "") {
+                var http = new XMLHttpRequest();
+
+                http.onreadystatechange = function () {
+                    if (http.readyState === XMLHttpRequest.DONE) {
+                        if (http.status === 200 || http.status === 204) {
+                            console.log(http.status);
+                            // TODO show email sent!
+                            console.log("sent");
+                            // location.reload();
+                            ss[ss.selectedIndex].innerText = layout_name;
+
+                        } else if (http.status === 401) {
+                            console.log("code 401");
+
+
+                        } else {
+                            console.log("something else...");
+                        }
+                    }
+                };
+                var ss = document.getElementById("select-layout-selection");
+                http.open("PUT", window.location.href + "/rename_layout/"
+                    + ss[ss.selectedIndex].getAttribute('val') + "/" + layout_name, true);
+                http.setRequestHeader('Cache-Control', 'no-store');
+                http.send();
+            }
+        });
+
+        $('#favorite-layout-save').on("click", function (event) {
+            var http = new XMLHttpRequest();
+
+            http.onreadystatechange = function () {
+                if (http.readyState === XMLHttpRequest.DONE) {
+                    if (http.status === 200 || http.status === 204) {
+
+                        // location.reload();
+                        console.log("restored to default.")
+
+                        document.querySelector(".popup-overlay").classList.add("hidden");
+
+                        // hide popup
+                        document.querySelector(".favorite-layout-dialog").classList.add("hidden");
+
+                    } else if (http.status === 401) {
+                        console.log("code 401");
+
+
+                    } else {
+                        console.log("something else...");
+                    }
+                }
+            };
+
+            var ss = document.getElementById("favorite-layout-selection");
+
+            http.open("PUT", window.location.href + "/save_favorite/" +
+                ss[ss.selectedIndex].getAttribute('val') + "/", true);
+            http.setRequestHeader('Cache-Control', 'no-store');
+            http.send();
+        });
+
+        $('#favorite-layout-name').on('click', function (event) {
+            var layout_name = $("#favorite-layout-name-field").val();
+            console.log(layout_name);
+            if (layout_name !== "") {
+                var http = new XMLHttpRequest();
+
+                http.onreadystatechange = function () {
+                    if (http.readyState === XMLHttpRequest.DONE) {
+                        if (http.status === 200 || http.status === 204) {
+                            console.log(http.status);
+                            // TODO show email sent!
+                            console.log("sent");
+                            // location.reload();
+                            ss[ss.selectedIndex].innerText = layout_name;
+
+                        } else if (http.status === 401) {
+                            console.log("code 401");
+
+
+                        } else {
+                            console.log("something else...");
+                        }
+                    }
+                };
+                var ss = document.getElementById("favorite-layout-selection");
+                http.open("PUT", "/runner/profiles/" + usernameFromToken + "/rename_favorite/"
+                    + ss[ss.selectedIndex].getAttribute('val') + "/" + layout_name, true);
+                http.setRequestHeader('Cache-Control', 'no-store');
+                http.send();
+            }
+        });
+
+
+
+
+
+
     $(".eink-sent-dialog button.export-eink").on('click', function (event) {
         var email = $(".eink-sent-dialog input").val();
         console.log(email);
@@ -854,6 +1068,8 @@ document.addEventListener('DOMContentLoaded', function () {
                         console.log(http.status);
                         // TODO show email sent!
                         console.log("sent");
+
+
                     } else if (http.status === 401) {
                         console.log("code 401");
 
@@ -864,11 +1080,18 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
             };
 
-            http.open("GET", window.location.href + "/export/kindle?email=" + email, true);
+            http.open("GET", window.location.href + "/infographic/email?email=" + email, true);
             http.setRequestHeader('Cache-Control', 'no-store');
             http.send();
+            // hide popup
+            document.querySelector(".eink-sent-dialog").classList.add("hidden");
+
+            // hide overlay
+            document.querySelector(".popup-overlay").classList.add("hidden");
         }
     });
+
+
 
 
     $("#controls #remove-all").on("click", function (event) {
@@ -884,10 +1107,14 @@ document.addEventListener('DOMContentLoaded', function () {
         var items = document.querySelectorAll(".dashboard-card");
 
         console.log(items[0]);
+
         //
         for (var i = 0; i < items.length; i++) {
-            removeItem(items[i]);
+            removeItem(items[i], false);
         }
+
+        saveLayout(grid);
+
         //
         console.log("removed layout.");
 
@@ -907,6 +1134,9 @@ document.addEventListener('DOMContentLoaded', function () {
         document.querySelector(".add-dialog").classList.add("hidden");
         document.querySelector(".eink-sent-dialog").classList.add("hidden");
         document.querySelector(".restore-layout-dialog").classList.add("hidden");
+        document.querySelector(".select-layout-dialog").classList.add("hidden");
+        document.querySelector(".favorite-layout-dialog").classList.add("hidden");
+
     });
 
     $("#controls #reset-to-default").on("click", function (event) {
@@ -916,6 +1146,8 @@ document.addEventListener('DOMContentLoaded', function () {
         // show popup
         document.querySelector(".restore-layout-dialog").classList.remove("hidden");
     });
+
+
 
     $('.restore-layout-dialog .restore').on('click', function (event) {
         var http = new XMLHttpRequest();
@@ -941,5 +1173,78 @@ document.addEventListener('DOMContentLoaded', function () {
         http.setRequestHeader('Cache-Control', 'no-store');
         http.send();
     });
-});
 
+    $('.select-layout-dialog .restore').on('click', function (event) {
+        var http = new XMLHttpRequest();
+
+        http.onreadystatechange = function () {
+            if (http.readyState === XMLHttpRequest.DONE) {
+                if (http.status === 200 || http.status === 204) {
+
+                    location.reload();
+                    console.log("restored to default.")
+
+                } else if (http.status === 401) {
+                    console.log("code 401");
+
+
+                } else {
+                    console.log("something else...");
+                }
+            }
+        };
+
+        var ss = document.getElementById("select-layout-selection");
+
+        http.open("PUT", window.location.href + "/current_layout/" +
+            ss[ss.selectedIndex].getAttribute('val'), true);
+        http.setRequestHeader('Cache-Control', 'no-store');
+        http.send();
+    });
+
+    $('.favorite-layout-dialog .restore').on('click', function (event) {
+        var http = new XMLHttpRequest();
+
+        http.onreadystatechange = function () {
+            if (http.readyState === XMLHttpRequest.DONE) {
+                if (http.status === 200 || http.status === 204) {
+
+                    location.reload();
+                    console.log("restored to default.")
+
+                } else if (http.status === 401) {
+                    console.log("code 401");
+
+
+                } else {
+                    console.log("something else...");
+                }
+            }
+        };
+
+        var ss = document.getElementById("favorite-layout-selection");
+
+        http.open("PUT", window.location.href + "/load_favorite/" +
+            ss[ss.selectedIndex].getAttribute('val'), true);
+        http.setRequestHeader('Cache-Control', 'no-store');
+        http.send();
+    });
+
+    $("#controls #open-menu").on("click", function (event) {
+        document.querySelector("#menu-options").classList.toggle("hidden");
+    });
+
+
+    window.addEventListener('resize', function(event){
+        // if we have a small device - disable muuri's drag and drop
+        if (document.querySelector("html").offsetWidth <= 1023) {
+            grid.dragEnabled = false;
+        } else {
+            // enable
+            grid.dragEnabled = true;
+        }
+    });
+
+    // if (document.querySelector(".premium-required") == null) {
+    document.querySelector("#eink-new-window a").setAttribute('href', currentUrl + "/infographic/browser");
+});

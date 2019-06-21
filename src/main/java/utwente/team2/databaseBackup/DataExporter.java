@@ -2,8 +2,10 @@ package utwente.team2.databaseBackup;
 
 import org.apache.poi.ss.usermodel.*;
 import utwente.team2.dao.UserDao;
+import utwente.team2.model.GraphPoints;
 
 import java.io.*;
+import java.math.BigDecimal;
 import java.sql.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -47,6 +49,123 @@ public class DataExporter {
             se.printStackTrace();
         }
     }
+
+    public GraphPoints getAllSteps(int runID, String indicator) {
+//        System.out.println("get run info " + runID);
+        try{
+            String query =  "SELECT DISTINCT  s.step_no, s." + indicator + " FROM step s, run " +
+                    "WHERE s.run_id = ? " +
+                    "AND run.id = s.run_id " +
+                    "ORDER BY s.step_no";
+
+            PreparedStatement statement = conn.prepareStatement(query);
+            statement.setInt(1, runID);
+
+
+//            System.out.println(statement.toString());
+
+            ResultSet resultSet = statement.executeQuery();
+
+            GraphPoints graphPoints = new GraphPoints(indicator);
+
+            while(resultSet.next()) {
+                if (resultSet.getBigDecimal(2) == null) {
+                    continue;
+                }
+                graphPoints.getStep_no().add(resultSet.getInt("step_no"));
+                graphPoints.getLeft().add(resultSet.getBigDecimal(2));
+            }
+            return graphPoints;
+        } catch(SQLException sqle) {
+            System.err.println("Error connecting: " + sqle);
+        }
+
+        return null;
+    }
+
+    public BigDecimal getAverageFromList(List<BigDecimal> bigDecimals) {
+        BigDecimal bigDecimal = BigDecimal.ZERO;
+
+        for(int i = 0; i < bigDecimals.size(); i++) {
+            bigDecimal = bigDecimal.add(bigDecimals.get(i));
+        }
+
+        return bigDecimal.divide(BigDecimal.valueOf(bigDecimals.size()), BigDecimal.ROUND_UP).setScale(10, BigDecimal.ROUND_UP);
+    }
+
+    public List<BigDecimal> getAverage(GraphPoints graphPoints) {
+        List<BigDecimal> res = new ArrayList<>();
+        int segment = graphPoints.getLeft().size() / 50;
+
+        for(int i = 0; i < 50; i++) {
+            res.add(getAverageFromList(graphPoints.getLeft().subList(segment * i, segment * (i + 1))));
+        }
+        return res;
+    }
+
+    public void UpdateBaseLine(List<BigDecimal> bigDecimals, String indicator) {
+        try {
+            String query = "UPDATE baseline " +
+                    " SET " + indicator + " = ?" +
+                    " WHERE segment = ?";
+
+            PreparedStatement statement = conn.prepareStatement(query);
+            for(int i = 0; i < 50; i++) {
+                statement.setBigDecimal(1, bigDecimals.get(i));
+                statement.setInt(2, i + 1);
+//                System.out.println(statement); //TODO turnoff this one
+                int resultSet = statement.executeUpdate();
+            }
+        } catch (SQLException se) {
+            se.printStackTrace();
+        }
+    }
+
+    public List<BigDecimal> getBaseLine(String indicator) {
+        List<List<BigDecimal>> averageAllRun = new ArrayList<>();
+        List<BigDecimal> res = new ArrayList<>();
+
+        for(int i = 1; i <= 9; i++) {
+            if (i == 8) {
+                continue;
+            }
+            GraphPoints graphPoints = getAllSteps(i, indicator);
+            List<BigDecimal> average = getAverage(graphPoints);
+            averageAllRun.add(average);
+        }
+
+        for(int i = 0; i < 50; i++) {
+            BigDecimal ColResult = BigDecimal.ZERO;
+            for(int j = 0; j < averageAllRun.size(); j++) {
+                ColResult = ColResult.add(averageAllRun.get(j).get(i));
+            }
+
+            res.add(ColResult.divide(BigDecimal.valueOf(averageAllRun.size())).setScale(10,BigDecimal.ROUND_UP));
+        }
+        return res;
+    }
+
+
+
+    public void createBaseLineMole() {
+        String query = "INSERT INTO baseline(segment) "
+                + "VALUES(?)";
+
+        try {
+            PreparedStatement statement = conn.prepareStatement(query);
+            for(int i = 1; i <= 50; i++) {
+                statement.setInt(1, i);
+                statement.execute();
+            }
+        } catch (SQLException se) {
+            se.printStackTrace();
+        }
+    }
+
+
+
+
+
 
     public void insertSteps() {
         List<String[]> attributeList = new ArrayList<>();
@@ -220,6 +339,25 @@ public class DataExporter {
         }
     }
 
+    public void insertFavoriteLayout() {
+        String query = "INSERT INTO favorite_layout(username, lid, name) "
+                + "VALUES(?,?,?)";
+
+        try {
+            PreparedStatement statement = conn.prepareStatement(query);
+
+            for(int i = 1; i < 6; i++) {
+                statement.setString(1, "CvdB");
+                statement.setInt(2, i);
+                statement.setString(3, "Favorite " + i);
+                statement.execute();
+            }
+        } catch (SQLException se) {
+            se.printStackTrace();
+        }
+    }
+
+
     public void insertImageUsers() {
         String query = "INSERT INTO user_picture(username, picname, picture) "
                 + "VALUES(?,?,?)";
@@ -365,11 +503,42 @@ public class DataExporter {
         }
     }
 
+    public void insertLayout(int runs) {
+        String query = "INSERT INTO layout(lid, run_id, name) "
+                + "VALUES(?,?,?)";
 
-    public void insertRuns() {
+        try {
+
+            DataFormatter dataFormatter = new DataFormatter();
+
+            PreparedStatement statement = conn.prepareStatement(query);
+
+            for (int i = 1; i <= runs; i++) {
+
+
+                for(int j = 1; j <= 5; j++) {
+                    if (i == 9 && j > 1) {
+                        continue;
+                    }
+
+
+                    statement.setInt(1, j);
+                    statement.setInt(2, i);
+                    statement.setString(3, "Layout " + j);
+                    statement.execute();
+                }
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    public int insertRuns() {
         String query = "INSERT INTO run(date, bodypackFile, id, username, distance, duration," +
-                "shoes_id, surface_id, description, remarks, stravaLink, name, default_layout) "
-                + "VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)";
+                "shoes_id, surface_id, description, remarks, stravaLink, name, default_layout, current_layout) "
+                + "VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?, ?)";
 
         int rowsAdded = 0;
 
@@ -453,12 +622,12 @@ public class DataExporter {
 
                     }
                 }
-                statement.setString(13, "{\"count\":42,\"layout\":[{\"typeName\":\"individual\",\"indicatorName\":\"axtibacc_left\"},{\"typeName\":\"individual\",\"indicatorName\":\"axtibacc_right\"},{\"typeName\":\"individual\",\"indicatorName\":\"tibimpact_left\"},{\"typeName\":\"individual\",\"indicatorName\":\"tibimpact_right\"},{\"typeName\":\"individual\",\"indicatorName\":\"axsacacc_left\"},{\"typeName\":\"individual\",\"indicatorName\":\"axsacacc_right\"},{\"typeName\":\"individual\",\"indicatorName\":\"sacimpact_left\"},{\"typeName\":\"individual\",\"indicatorName\":\"sacimpact_right\"},{\"typeName\":\"individual\",\"indicatorName\":\"brakingforce_left\"},{\"typeName\":\"individual\",\"indicatorName\":\"brakingforce_right\"},{\"typeName\":\"individual\",\"indicatorName\":\"pushoffpower_left\"},{\"typeName\":\"individual\",\"indicatorName\":\"pushoffpower_right\"},{\"typeName\":\"individual\",\"indicatorName\":\"tibintrot_left\"},{\"typeName\":\"individual\",\"indicatorName\":\"tibintrot_right\"},{\"typeName\":\"individual\",\"indicatorName\":\"vll_left\"},{\"typeName\":\"individual\",\"indicatorName\":\"vll_right\"},{\"typeName\":\"graph\",\"indicatorName\":\"axtibacc\"},{\"typeName\":\"graph\",\"indicatorName\":\"tibimpact\"},{\"typeName\":\"graph\",\"indicatorName\":\"axsacacc\"},{\"typeName\":\"graph\",\"indicatorName\":\"sacimpact\"},{\"typeName\":\"graph\",\"indicatorName\":\"brakingforce\"},{\"typeName\":\"graph\",\"indicatorName\":\"pushoffpower\"},{\"typeName\":\"graph\",\"indicatorName\":\"tibintrot\"},{\"typeName\":\"graph\",\"indicatorName\":\"vll\"},{\"typeName\":\"distribution\",\"indicatorName\":\"axtibacc_left\"},{\"typeName\":\"distribution\",\"indicatorName\":\"axtibacc_right\"},{\"typeName\":\"distribution\",\"indicatorName\":\"tibimpact_left\"},{\"typeName\":\"distribution\",\"indicatorName\":\"tibimpact_right\"},{\"typeName\":\"distribution\",\"indicatorName\":\"axsacacc_left\"},{\"typeName\":\"distribution\",\"indicatorName\":\"axsacacc_right\"},{\"typeName\":\"distribution\",\"indicatorName\":\"sacimpact_left\"},{\"typeName\":\"distribution\",\"indicatorName\":\"sacimpact_right\"},{\"typeName\":\"distribution\",\"indicatorName\":\"brakingforce_left\"},{\"typeName\":\"distribution\",\"indicatorName\":\"brakingforce_right\"},{\"typeName\":\"distribution\",\"indicatorName\":\"pushoffpower_left\"},{\"typeName\":\"distribution\",\"indicatorName\":\"pushoffpower_right\"},{\"typeName\":\"distribution\",\"indicatorName\":\"tibintrot_left\"},{\"typeName\":\"distribution\",\"indicatorName\":\"tibintrot_right\"},{\"typeName\":\"distribution\",\"indicatorName\":\"vll_left\"},{\"typeName\":\"distribution\",\"indicatorName\":\"vll_right\"},{\"typeName\":\"graph\",\"indicatorName\":\"speed\"},{\"typeName\":\"distribution\",\"indicatorName\":\"speed\"}]}\t");
-
+                statement.setString(13, "{\"count\":50,\"layout\":[{\"typeName\":\"individual\",\"indicatorName\":\"axtibacc_left\"},{\"typeName\":\"individual\",\"indicatorName\":\"axtibacc_right\"},{\"typeName\":\"individual\",\"indicatorName\":\"tibimpact_left\"},{\"typeName\":\"individual\",\"indicatorName\":\"tibimpact_right\"},{\"typeName\":\"individual\",\"indicatorName\":\"axsacacc_left\"},{\"typeName\":\"individual\",\"indicatorName\":\"axsacacc_right\"},{\"typeName\":\"individual\",\"indicatorName\":\"sacimpact_left\"},{\"typeName\":\"individual\",\"indicatorName\":\"sacimpact_right\"},{\"typeName\":\"individual\",\"indicatorName\":\"brakingforce_left\"},{\"typeName\":\"individual\",\"indicatorName\":\"brakingforce_right\"},{\"typeName\":\"individual\",\"indicatorName\":\"pushoffpower_left\"},{\"typeName\":\"individual\",\"indicatorName\":\"pushoffpower_right\"},{\"typeName\":\"individual\",\"indicatorName\":\"tibintrot_left\"},{\"typeName\":\"individual\",\"indicatorName\":\"tibintrot_right\"},{\"typeName\":\"individual\",\"indicatorName\":\"vll_left\"},{\"typeName\":\"individual\",\"indicatorName\":\"vll_right\"},{\"typeName\":\"graph\",\"indicatorName\":\"axtibacc_left\"},{\"typeName\":\"graph\",\"indicatorName\":\"axtibacc_right\"},{\"typeName\":\"graph\",\"indicatorName\":\"tibimpact_left\"},{\"typeName\":\"graph\",\"indicatorName\":\"tibimpact_right\"},{\"typeName\":\"graph\",\"indicatorName\":\"axsacacc_left\"},{\"typeName\":\"graph\",\"indicatorName\":\"axsacacc_right\"},{\"typeName\":\"graph\",\"indicatorName\":\"sacimpact_left\"},{\"typeName\":\"graph\",\"indicatorName\":\"sacimpact_right\"},{\"typeName\":\"graph\",\"indicatorName\":\"brakingforce_left\"},{\"typeName\":\"graph\",\"indicatorName\":\"brakingforce_right\"},{\"typeName\":\"graph\",\"indicatorName\":\"pushoffpower_left\"},{\"typeName\":\"graph\",\"indicatorName\":\"pushoffpower_right\"},{\"typeName\":\"graph\",\"indicatorName\":\"tibintrot_left\"},{\"typeName\":\"graph\",\"indicatorName\":\"tibintrot_right\"},{\"typeName\":\"graph\",\"indicatorName\":\"vll_left\"},{\"typeName\":\"graph\",\"indicatorName\":\"vll_right\"},{\"typeName\":\"distribution\",\"indicatorName\":\"axtibacc_left\"},{\"typeName\":\"distribution\",\"indicatorName\":\"axtibacc_right\"},{\"typeName\":\"distribution\",\"indicatorName\":\"tibimpact_left\"},{\"typeName\":\"distribution\",\"indicatorName\":\"tibimpact_right\"},{\"typeName\":\"distribution\",\"indicatorName\":\"axsacacc_left\"},{\"typeName\":\"distribution\",\"indicatorName\":\"axsacacc_right\"},{\"typeName\":\"distribution\",\"indicatorName\":\"sacimpact_left\"},{\"typeName\":\"distribution\",\"indicatorName\":\"sacimpact_right\"},{\"typeName\":\"distribution\",\"indicatorName\":\"brakingforce_left\"},{\"typeName\":\"distribution\",\"indicatorName\":\"brakingforce_right\"},{\"typeName\":\"distribution\",\"indicatorName\":\"pushoffpower_left\"},{\"typeName\":\"distribution\",\"indicatorName\":\"pushoffpower_right\"},{\"typeName\":\"distribution\",\"indicatorName\":\"tibintrot_left\"},{\"typeName\":\"distribution\",\"indicatorName\":\"tibintrot_right\"},{\"typeName\":\"distribution\",\"indicatorName\":\"vll_left\"},{\"typeName\":\"distribution\",\"indicatorName\":\"vll_right\"},{\"typeName\":\"distribution\",\"indicatorName\":\"speed\"},{\"typeName\":\"graph\",\"indicatorName\":\"speed\"}]}\t");
 
                 String[] names = {"Typical run", "Morning run", "Exercise", "Run with friends", "Training", "Run for fun", "Run to school", "Zombie run", "Boring run"};
 
                 statement.setString(12, names[rowsAdded]);
+                statement.setInt(14, 1);
                 rowsAdded++;
                 statement.execute();
             }
@@ -469,6 +638,7 @@ public class DataExporter {
         } catch (SQLException se) {
             se.printStackTrace();
         }
+        return rowsAdded;
     }
 
 
@@ -543,14 +713,25 @@ public class DataExporter {
                 pd.insertTerms();
                 pd.insertUsers();
                 pd.insertPremiums();
-                pd.insertRuns();
+                int runs = pd.insertRuns();
+                pd.insertLayout(runs);
                 pd.insertImageUsers();
                 pd.insertSteps();
                 pd.addStepsCountToRun();
-                System.out.println("Done!");
+                pd.insertFavoriteLayout();
+                pd.createBaseLineMole();
+                String[] indicators = {"axtibacc_right", "tibimpact_right", "axsacacc_right", "sacimpact_right",
+                        "brakingforce_right", "pushoffpower_right", "tibintrot_right", "vll_right",
+                        "axtibacc_left", "tibimpact_left", "axsacacc_left", "sacimpact_left",
+                        "brakingforce_left", "pushoffpower_left", "tibintrot_left", "vll_left"};
 
-                pd.conn.close();
+                for(int i = 0; i < indicators.length; i++) {
+                    pd.UpdateBaseLine(pd.getBaseLine(indicators[i]),indicators[i]);
+                }
             }
+            System.out.println("Done!");
+            pd.conn.close();
+
         } catch (FileNotFoundException e) {
             System.out.println("schema file not found");
         } catch (SQLException se) {

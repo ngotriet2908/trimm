@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="full-height">
 <head>
 	<meta name="viewport" content="width=device-width,initial-scale=1.0">
 	<meta charset="UTF-8">
@@ -9,32 +9,49 @@
 	<link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
 	<link href="https://fonts.googleapis.com/css?family=Montserrat" rel="stylesheet">
 	<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
-	<link rel="stylesheet" href="../style/style.css">
+	<link rel="stylesheet" href="/style/style.css">
 </head>
-<body id="profile-management">
+<body id="profile-management" class="full-height">
+
+<div class="popup-overlay hidden">
+</div>
 
 <div class="profile-top">
-	<nav>
-		<ul>
-			<li class="nav-logo">
-				<a class="font-bold" href="/">runner</a>
+</div>
+
+<nav>
+	<span class="nav-logo">
+			<a class="font-bold" href="/">runner</a>
+	</span>
+
+	<span class="nav-button">
+			<a class="font-bold">
+				<i class="fas fa-bars"></i>
+			</a>
+	</span>
+
+	<div>
+		<ul class="hidden">
+			<li class="nav-item">
+				<a href="/">home</a>
 			</li>
 
-            <!-- TODO show only for free users-->
-            <li class="nav-item upgrade hidden">
-                <a class="button-raised" href="/runner/premium/join"><span>upgrade</span></a>
-            </li>
+			<li class="nav-item upgrade hidden">
+				<a class="button-raised" href="/runner/premium/join"><span>upgrade</span></a>
+			</li>
 
 			<li class="nav-item">
 				<a href="/runner/profiles">profile</a>
 			</li>
+
 			<li class="nav-item">
 				<a href="/runner/logout">sign out</a>
 			</li>
 		</ul>
-	</nav>
-	<div class="nav-opacity-overlay"></div>
-</div>
+	</div>
+</nav>
+
+
 
 <main class="profile-main">
 	<div id="profile-picture-container" class="profile-card">
@@ -47,9 +64,9 @@
 		<div id="profile-picture-general">
 			<!--<button class="button" type="button" id="replace-profile-image-open"><span><i class="fas fa-image"></i>Change</span></button>-->
 
-			<input type="file" id="profile-image-field" name="profile-image" accept="image/*">
+			<!--<input type="file" id="profile-image-field" name="profile-image" accept="image/*">-->
 
-			<button class="button-raised" type="submit" id="save-profile-image"><span><i class="material-icons">save</i></span></button>
+			<button class="button-raised" type="button" id="upload-new-picture"><span>upload new</span></button>
 		</div>
 	</div>
 
@@ -99,25 +116,38 @@
 
 
 		<!--<div id="profile-management-security-container" class="data-container">-->
-			<!--<header>-->
-				<!--<h2>Security</h2>-->
-			<!--</header>-->
-			<!--<div id="profile-management-security-data-container">-->
-				<!--<label for="old-password-field">Old password</label>-->
-				<!--<input type="text" id="old-password-field" name="username">-->
+		<!--<header>-->
+		<!--<h2>Security</h2>-->
+		<!--</header>-->
+		<!--<div id="profile-management-security-data-container">-->
+		<!--<label for="old-password-field">Old password</label>-->
+		<!--<input type="text" id="old-password-field" name="username">-->
 
-				<!--<label for="new-password-field">New password</label>-->
-				<!--<input type="text" id="new-password-field" name="username">-->
+		<!--<label for="new-password-field">New password</label>-->
+		<!--<input type="text" id="new-password-field" name="username">-->
 
-				<!--<label for="repeat-new-password-field">Confirm new password</label>-->
-				<!--<input type="text" id="repeat-new-password-field" name="username">-->
+		<!--<label for="repeat-new-password-field">Confirm new password</label>-->
+		<!--<input type="text" id="repeat-new-password-field" name="username">-->
 
-				<!--<button type="button" id="save-security">Change Password</button>-->
-			<!--</div>-->
+		<!--<button type="button" id="save-security">Change Password</button>-->
+		<!--</div>-->
 		<!--</div>-->
 
 	</div>
 </main>
+
+<section class="upload-new-picture-dialog hidden dashboard-dialog">
+	<div>
+		<h1>Upload new picture</h1>
+		<p>Select new profile picture and save the changes.</p>
+
+		<input type="file" id="profile-image-field" name="profile-image" accept="image/*">
+
+		<button class="button-raised upload" type="submit"><span>save</span></button>
+		<button type="button" class="button-text cancel"><span>Cancel</span></button>
+	</div>
+</section>
+
 
 <footer>
 	<div>
@@ -135,11 +165,10 @@
 	</div>
 </footer>
 
-<script src="https://code.jquery.com/jquery-3.4.1.min.js"
-		integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
-		crossorigin="anonymous"></script>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 <!--<script src="/script/jquery.nicescroll.js"></script>-->
-<script src="../script/script.js"></script>
+<script src="/script/script.js"></script>
 </body>
 </html>
 

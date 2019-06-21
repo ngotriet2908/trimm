@@ -21,8 +21,6 @@ import java.security.Principal;
 @Provider
 @Priority(Priorities.AUTHENTICATION)
 public class AuthenticationFilter implements ContainerRequestFilter {
-    private static final String REALM = "example";
-    private static final String AUTHENTICATION_SCHEME = "Bearer";
 
     @Context
     HttpServletRequest servletRequest;
@@ -34,17 +32,17 @@ public class AuthenticationFilter implements ContainerRequestFilter {
     HttpHeaders headers;
 
     @Override
-    public void filter(ContainerRequestContext requestContext) throws IOException {
-        System.out.println(requestContext.getUriInfo().getPath());
+    public void filter(ContainerRequestContext requestContext) {
+        System.out.println("Filter started...");
+        System.out.println("Resource requested: " + requestContext.getUriInfo().getPath());
 
         Cookie jwsCookie = headers.getCookies().get("token");
 
-        System.out.println("Starting verification.");
-
         if (jwsCookie == null) {
-            System.out.println("Redirecting to login");
+            System.out.println("No cookie with token provided. Redirecting to login.");
             forwardUnauthorized("not_authorized");
             abortWithUnauthorized(requestContext);
+            return;
         }
 
         String jws = jwsCookie.getValue();
@@ -73,22 +71,22 @@ public class AuthenticationFilter implements ContainerRequestFilter {
 
                 @Override
                 public String getAuthenticationScheme() {
-                    return AUTHENTICATION_SCHEME;
+                    return null;
                 }
             });
 
-            System.out.println("Filter passed");
+            System.out.println("Filter passed.");
 
         } catch (JwtException e) {
-            System.out.println("JWT exception.");
+            System.out.println("Filter blocked: token is invalid or expired.");
             forwardUnauthorized("token_expired");
             abortWithUnauthorized(requestContext);
+            return;
         }
     }
 
     private void validateToken(String token) throws JwtException {
         Jws<Claims> jws = Jwts.parser().setSigningKey(Login.KEY).parseClaimsJws(token);
-        System.out.println("We trust this jws.");
     }
 
     private void forwardUnauthorized(String error) {
@@ -105,9 +103,6 @@ public class AuthenticationFilter implements ContainerRequestFilter {
 
     private void abortWithUnauthorized(ContainerRequestContext requestContext) {
         requestContext.abortWith(
-                Response.status(Response.Status.UNAUTHORIZED)
-                        .header(HttpHeaders.WWW_AUTHENTICATE,
-                                AUTHENTICATION_SCHEME + " realm=\"" + REALM + "\"")
-                        .build());
+                Response.status(Response.Status.UNAUTHORIZED).build());
     }
 }

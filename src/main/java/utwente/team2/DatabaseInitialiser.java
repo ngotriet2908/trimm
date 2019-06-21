@@ -30,8 +30,14 @@ public class DatabaseInitialiser implements ServletContextListener
         String myschema = "project_new";
         String url = "jdbc:postgresql://" + host + ":5432/" + dbName + "?currentSchema=" + myschema;
 
+//        String host = "farm02.ewi.uwente.nl";
+//        String dbName = "docker";
+//        String myschema = "project_new";
+//        String url = "jdbc:postgresql://" + host + ":7005/" + dbName; // + "?currentSchema=" + myschema;
+
         try {
             con = DriverManager.getConnection(url, "di154", "8OlI3B/V");
+//            con = DriverManager.getConnection(url, "di02", "1Pu7WY99OW");
         } catch (SQLException e) {
             e.printStackTrace();
         }

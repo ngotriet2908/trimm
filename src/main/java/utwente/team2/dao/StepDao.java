@@ -121,11 +121,7 @@ public enum StepDao {
         System.out.println("get run info " + runID);
         try{
 
-            String indicator_left = indicator + "_left";
-            String indicator_right = indicator + "_right";
-
-
-            String query =  "SELECT DISTINCT  s.step_no, s." + indicator_left + ", s." + indicator_right + " FROM step s, run " +
+            String query =  "SELECT DISTINCT  s.step_no, s." + indicator + " FROM step s, run " +
                     "WHERE s.run_id = ? " +
                     "AND run.id = s.run_id " +
                     "AND MOD(s.step_no - 1, DIV(run.steps,?)) = 0 " +
@@ -146,9 +142,36 @@ public enum StepDao {
 
                 graphPoints.getStep_no().add(resultSet.getInt("step_no"));
                 graphPoints.getLeft().add(resultSet.getBigDecimal(2));
-                graphPoints.getRight().add(resultSet.getBigDecimal(3));
             }
+            graphPoints.setRight(getBaseLine(indicator));
             return graphPoints;
+        } catch(SQLException sqle) {
+            System.err.println("Error connecting: " + sqle);
+        }
+
+        return null;
+    }
+
+    public List<BigDecimal> getBaseLine(String indicator) {
+        try{
+
+            String query =  "SELECT DISTINCT  b.segment, b." + indicator + " FROM baseline b " +
+                    "ORDER BY  b.segment";
+
+
+
+            PreparedStatement statement = DatabaseInitialiser.getCon().prepareStatement(query);
+            System.out.println(statement.toString());
+
+            ResultSet resultSet = statement.executeQuery();
+
+            List<BigDecimal> res = new ArrayList<>();
+
+            while(resultSet.next()) {
+
+                res.add(resultSet.getBigDecimal(2));
+            }
+            return res;
         } catch(SQLException sqle) {
             System.err.println("Error connecting: " + sqle);
         }

@@ -45,6 +45,9 @@ public class Premium {
         // check if user is already a premium user
 
         boolean upgraded = UserDao.instance.upgradeToPremium(tokenUsername);
+
+        System.out.println("Upgrade to pre: " + upgraded);
+
         servletResponse.setStatus(204);
 
         try {

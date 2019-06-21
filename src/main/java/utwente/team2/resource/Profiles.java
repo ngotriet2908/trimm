@@ -1,10 +1,12 @@
 package utwente.team2.resource;
 
+import org.glassfish.jersey.media.multipart.FormDataBodyPart;
 import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 import org.glassfish.jersey.media.multipart.FormDataParam;
 import utwente.team2.dao.RunDao;
 import utwente.team2.dao.UserDao;
 import utwente.team2.filter.Secured;
+import utwente.team2.model.FavoriteOptions;
 import utwente.team2.model.PieChart;
 import utwente.team2.model.User;
 
@@ -12,7 +14,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.*;
 import javax.ws.rs.core.*;
-import java.io.*;
+import java.io.IOException;
+import java.io.InputStream;
 import java.security.Principal;
 import java.util.Base64;
 import java.util.List;
@@ -38,18 +41,44 @@ public class Profiles {
     public void savePicture(@PathParam("username") String username,
                             @FormDataParam("picture") InputStream picture,
                             @FormDataParam("picture") FormDataContentDisposition pictureInfo,
+                            @FormDataParam("picture") FormDataBodyPart body,
                             @Context HttpServletResponse servletResponse,
                             @Context HttpServletRequest servletRequest) throws IOException {
         System.out.println("begin processing image");
+        System.out.println("image: " + body.getMediaType().toString());
 
-        Principal principal = securityContext.getUserPrincipal();
-        String tokenUsername = principal.getName();
+        if (body.getMediaType().toString().equals("image/jpeg") ||
+                body.getMediaType().toString().equals("image/jpg") ||
+                body.getMediaType().toString().equals("image/png")) {
+            Principal principal = securityContext.getUserPrincipal();
+            String tokenUsername = principal.getName();
 
-        if (!tokenUsername.equals(username)) {
-            servletResponse.sendRedirect("/runner/login");
+            if (!tokenUsername.equals(username)) {
+                servletResponse.sendRedirect("/runner/login");
+            }
+
+            UserDao.instance.updateProfileImage(username, picture);
         }
+    }
 
-        UserDao.instance.updateProfileImage(username, picture);
+    @Path("/{username}/favorite/name")
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    public FavoriteOptions getLayoutName(@PathParam("username") String username) {
+        return UserDao.instance.getFavoriteLayoutName(username);
+    }
+
+    @Path("/{username}/rename_favorite/{layout_id}/{name}")
+    @PUT
+    @Consumes(MediaType.APPLICATION_JSON)
+    public void RenameLayout(@PathParam("username") String username,
+                             @PathParam("layout_id") String layout_id,
+                             @PathParam("name") String name,
+                             @Context HttpServletResponse servletResponse,
+                             @Context HttpServletRequest servletRequest) throws IOException {
+        if (!UserDao.instance.saveFavoriteLayoutName(username, Integer.parseInt(layout_id), name)){
+            //TODO put something when replace with the same name
+        }
     }
 
     @Path("/{username}/picture")

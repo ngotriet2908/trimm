@@ -4,7 +4,10 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import utwente.team2.dao.RunDao;
 import utwente.team2.dao.StepDao;
+import utwente.team2.dao.UserDao;
 import utwente.team2.filter.Secured;
+import utwente.team2.infographic.InfographicImageGenerator;
+import utwente.team2.infographic.InfographicTemplate;
 import utwente.team2.mail.MailAPI;
 import utwente.team2.model.*;
 
@@ -56,16 +59,101 @@ public class Runs {
         }
 
         ClassLoader classLoader = getClass().getClassLoader();
-        InputStream inputStream = classLoader.getResourceAsStream("../../html/dashboard.html");
+        InputStream inputStream;
+
+        if (UserDao.instance.isPremiumUser(tokenUsername)) {
+            inputStream = classLoader.getResourceAsStream("../../html/dashboard_premium.html");
+        } else {
+            inputStream = classLoader.getResourceAsStream("../../html/dashboard.html");
+        }
 
         return inputStream;
     }
+
+
+    //TODO change to post
+    @Path("/{run_id}/layout/reset")
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    public LayoutData setDefaultLayout(@PathParam("run_id") String run_id, @Context HttpServletResponse servletResponse,
+                                @Context HttpServletRequest servletRequest) throws IOException {
+
+        Principal principal = securityContext.getUserPrincipal();
+        String tokenUsername = principal.getName();
+
+        if (!RunDao.instance.isUsersRun(tokenUsername, Integer.parseInt(run_id))) {
+            servletResponse.sendRedirect("/runner/login");
+            return null;
+        }
+
+        String defaultlayout = RunDao.instance.getDefaultLayout(Integer.valueOf(run_id));
+
+        RunDao.instance.saveLayout(Integer.parseInt(run_id), defaultlayout);
+        return null;
+    }
+
+    @Path("/{run_id}/rename_layout/{layout_id}/{name}")
+    @PUT
+    @Consumes(MediaType.APPLICATION_JSON)
+    public void RenameLayout(@PathParam("run_id") String run_id,
+                             @PathParam("layout_id") String layout_id,
+                             @PathParam("name") String name,
+                             @Context HttpServletResponse servletResponse,
+                             @Context HttpServletRequest servletRequest) throws IOException {
+
+        if (!RunDao.instance.saveLayoutName(Integer.parseInt(run_id), Integer.parseInt(layout_id), name)){
+            //TODO put something when replace with the same name
+        }
+    }
+
+
+    @Path("/{run_id}/layout/name")
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    public LayoutOptions getLayoutName(@PathParam("run_id") String run_id) {
+        return RunDao.instance.getLayoutName(Integer.parseInt(run_id));
+    }
+
+    @Path("/{run_id}/current_layout/{current_layout}")
+    @PUT
+    @Produces(MediaType.APPLICATION_JSON)
+    public void updateCurrentLayout(@PathParam("run_id") String run_id, @PathParam("current_layout") String current_layout) {
+
+        if (!RunDao.instance.saveCurrentLayout(Integer.parseInt(run_id), Integer.parseInt(current_layout))) {
+            //TODO do something, only error when the update with the same thing as before
+        }
+    }
+
+    @Path("/{run_id}/save_favorite/{layout_id}/")
+    @PUT
+    @Consumes(MediaType.APPLICATION_JSON)
+    public void saveFavoriteLayout(@PathParam("layout_id") String layout_id,
+                                   @PathParam("run_id") String run_id,
+                                   @Context HttpServletResponse servletResponse,
+                                   @Context HttpServletRequest servletRequest) throws IOException {
+        if (!UserDao.instance.saveFavoriteLayout(Integer.parseInt(layout_id),Integer.parseInt(run_id))){
+            //TODO put something when replace with the same name
+        }
+    }
+    @Path("/{run_id}/load_favorite/{layout_id}/")
+    @PUT
+    @Consumes(MediaType.APPLICATION_JSON)
+    public void loadFavoriteLayout(
+                                   @PathParam("layout_id") String layout_id,
+                                   @PathParam("run_id") String run_id,
+                                   @Context HttpServletResponse servletResponse,
+                                   @Context HttpServletRequest servletRequest) throws IOException {
+        if (!UserDao.instance.loadFavoriteLayout(Integer.parseInt(layout_id), Integer.parseInt(run_id))){
+            //TODO put something when replace with the same name
+        }
+    }
+
 
     @Path("/{run_id}/layout")
     @PUT
     @Consumes(MediaType.APPLICATION_JSON)
     public void saveLayout(@PathParam("run_id") String run_id, @Context HttpServletResponse servletResponse,
-                      @Context HttpServletRequest servletRequest) throws IOException {
+                           @Context HttpServletRequest servletRequest) throws IOException {
 
         Principal principal = securityContext.getUserPrincipal();
         String tokenUsername = principal.getName();
@@ -88,44 +176,19 @@ public class Runs {
 
             servletResponse.setStatus(204);
         } catch (IOException ex) {
-//            Logger.getLogger(Utils.class.getName()).log(Level.SEVERE, null, ex);
             ex.printStackTrace();
         } finally {
             if (br != null) {
                 try {
                     br.close();
                 } catch (IOException ex) {
-//                    Logger.getLogger(Utils.class.getName()).log(Level.WARNING, null, ex);
                     ex.printStackTrace();
                 }
             }
         }
     }
 
-
-
-    @Path("/{run_id}/layout/reset")
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    public LayoutData setDefaultLayout(@PathParam("run_id") String run_id, @Context HttpServletResponse servletResponse,
-                                @Context HttpServletRequest servletRequest) throws IOException {
-
-        Principal principal = securityContext.getUserPrincipal();
-        String tokenUsername = principal.getName();
-
-        if (!RunDao.instance.isUsersRun(tokenUsername, Integer.parseInt(run_id))) {
-            servletResponse.sendRedirect("/runner/login");
-            return null;
-        }
-
-        String defaultlayout = RunDao.instance.getDefaultLayout(Integer.valueOf(run_id));
-
-        RunDao.instance.saveLayout(Integer.parseInt(run_id), defaultlayout);
-        return null;
-    }
-
-
-        // returns layout with data
+    // returns layout with data
     @Path("/{run_id}/layout")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
@@ -280,31 +343,61 @@ public class Runs {
         return RunDao.instance.getRunsOverviewByID(Integer.parseInt(run_id));
     }
 
-    @Path("/{run_id}/export/kindle")
+    @Path("/{run_id}/infographic/email")
     @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    public String sendToKindle(@PathParam("run_id") String run_id, @QueryParam("email") String email) {
-
-        System.out.println("send to kindle run#" + run_id);
+    public String sentToEmail(@PathParam("run_id") String run_id, @QueryParam("email") String email) {
 
         Run run = RunDao.instance.getRunsOverviewByID(Integer.parseInt(run_id));
-        ImageProcessing imageProcessing = new ImageProcessing(
-                run.getName(),
-                run.getDate().toString() ,
-                run.getShoesname(),
-                run.getDuration().toString(),
-                run.getDistance().toString(),
-                run.getSteps().toString());
-        try {
-            System.out.println("here");
-            MailAPI.generateAndSendEmailWithAttachtMent("hello", "send to kindle",
-                    email, imageProcessing.generate());
-        }catch (AddressException e) {
-            e.printStackTrace();
-        } catch (MessagingException e) {
-            e.printStackTrace();
+
+        if (run != null) {
+            InfographicImageGenerator infographicImageGenerator = new InfographicImageGenerator(
+                    run.getName(),
+                    run.getDate().toString(),
+                    run.getShoes(),
+                    run.getDuration().toString(),
+                    run.getDistance().toString(),
+                    run.getSteps().toString());
+            try {
+                System.out.println("here");
+                MailAPI.generateAndSendEmailWithAttachtMent("hello", "Infographic for " + run.getName() + " on " + run.getDate().toString() + ".   ",
+                        email, infographicImageGenerator.generate());
+            } catch (AddressException e) {
+                e.printStackTrace();
+            } catch (MessagingException e) {
+                e.printStackTrace();
+            }
+            return null;
+        } else {
+            try {
+                servletResponse.sendError(404, "Page does not exist.");
+            } catch (IOException ie) {
+                ie.printStackTrace();
+            }
+
+            return null;
         }
-        return null;
     }
 
+
+    @Path("/{run_id}/infographic/browser")
+    @GET
+    @Produces(MediaType.TEXT_HTML)
+    public String prepareInfographic(@PathParam("run_id") String run_id) {
+
+        Principal principal = securityContext.getUserPrincipal();
+
+        Run run = RunDao.instance.getRunsOverviewByID(Integer.parseInt(run_id));
+
+        if (run != null) {
+            return InfographicTemplate.createInfographic(run.getName(), run.getDate().toString(), run.getDistance().toString(), run.getDuration().toString(), run.getShoes(), run.getSteps().toString());
+        } else {
+            try {
+                servletResponse.sendError(404, "Page does not exist.");
+            } catch (IOException ie) {
+                ie.printStackTrace();
+            }
+
+            return null;
+        }
+    }
 }

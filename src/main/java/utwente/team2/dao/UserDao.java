@@ -2,6 +2,8 @@ package utwente.team2.dao;
 
 import org.apache.commons.codec.binary.Hex;
 import utwente.team2.DatabaseInitialiser;
+import utwente.team2.model.FavoriteOptions;
+import utwente.team2.model.LayoutData;
 import utwente.team2.model.User;
 
 import java.io.ByteArrayOutputStream;
@@ -13,7 +15,8 @@ import java.security.NoSuchAlgorithmException;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Types;
+import java.sql.Timestamp;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -460,6 +463,140 @@ public enum UserDao {
 
     }
 
+    public FavoriteOptions getFavoriteLayoutName(String username) {
+        try {
+            String query = "SELECT l.name, l.lid " +
+                    "FROM favorite_layout AS l " +
+                    "WHERE l.username = ? ";
+
+            PreparedStatement statement = DatabaseInitialiser.getCon().prepareStatement(query);
+            statement.setString(1, username);
+
+            ResultSet resultSet = statement.executeQuery();
+
+            System.out.println(statement);
+
+            List<LayoutData> layoutData = new ArrayList<>();
+
+            while (resultSet.next()) {
+                String name = resultSet.getString(1);
+                int lid = resultSet.getInt(2);
+                layoutData.add(new LayoutData(name, lid));
+            }
+
+            return new FavoriteOptions(layoutData, username);
+        } catch (SQLException se) {
+            se.printStackTrace();
+        }
+
+        return null;
+    }
+
+    public boolean saveFavoriteLayoutName(String username, int layout_id, String name) {
+
+        try {
+            String query = "UPDATE favorite_layout " +
+                    " SET name = ? " +
+                    " WHERE lid = ? " +
+                    "AND username = ?";
+
+            PreparedStatement statement = DatabaseInitialiser.getCon().prepareStatement(query);
+
+            statement.setString(1, name);
+            statement.setInt(2, layout_id);
+            statement.setString(3, username);
+
+            System.out.println(statement);
+            int resultSet = statement.executeUpdate();
+
+            return resultSet > 0;
+        } catch (SQLException se) {
+            se.printStackTrace();
+        }
+
+        return false;
+    }
+
+    public boolean saveFavoriteLayout(int layout_id, int runID) {
+        String layout = RunDao.instance.getLayout(runID);
+        String username = RunDao.instance.getUsername(runID);
+        try {
+            String query = "UPDATE favorite_layout " +
+                    " SET layout = ? " +
+                    " WHERE lid = ? " +
+                    "AND username = ?";
+
+            PreparedStatement statement = DatabaseInitialiser.getCon().prepareStatement(query);
+
+            statement.setString(1, layout);
+            statement.setInt(2, layout_id);
+            statement.setString(3, username);
+
+            System.out.println(statement);
+            int resultSet = statement.executeUpdate();
+
+            return resultSet > 0;
+        } catch (SQLException se) {
+            se.printStackTrace();
+        }
+
+        return false;
+    }
+
+    public String getFavoriteLayout(int layout_id, String username) {
+        try {
+            String query = "SELECT f.layout " +
+                    " FROM favorite_layout as f " +
+                    " WHERE f.lid = ? " +
+                    "AND f.username = ?";
+
+            PreparedStatement statement = DatabaseInitialiser.getCon().prepareStatement(query);
+
+            statement.setInt(1, layout_id);
+            statement.setString(2, username);
+
+            System.out.println(statement);
+            ResultSet resultSet = statement.executeQuery();
+
+            if (resultSet.next()) {
+                return resultSet.getString(1);
+            }
+
+            return null;
+        } catch (SQLException se) {
+            se.printStackTrace();
+        }
+
+        return null;
+    }
+
+    public boolean loadFavoriteLayout(int layout_id, int runID) {
+        String username = RunDao.instance.getUsername(runID);
+        String layout = getFavoriteLayout(layout_id, username);
+        int currentLayout = RunDao.instance.getCurrentLayout(runID);
+
+        try {
+            String query = "UPDATE layout " +
+                    " SET layout = ? " +
+                    " WHERE lid = ? " +
+                    "AND run_id = ?";
+
+            PreparedStatement statement = DatabaseInitialiser.getCon().prepareStatement(query);
+
+            statement.setString(1, layout);
+            statement.setInt(2, currentLayout);
+            statement.setInt(3, runID);
+
+            System.out.println(statement);
+            int resultSet = statement.executeUpdate();
+
+            return resultSet > 0;
+        } catch (SQLException se) {
+            se.printStackTrace();
+        }
+
+        return false;
+    }
 
     public boolean upgradeToPremium(String username) {
         try {
@@ -468,8 +605,8 @@ public enum UserDao {
             PreparedStatement statement = DatabaseInitialiser.getCon().prepareStatement(query);
 
             statement.setString(1, username);
-            statement.setNull(2, Types.TIMESTAMP);
-            statement.setNull(3, Types.TIMESTAMP);
+            statement.setTimestamp(2, Timestamp.valueOf(LocalDate.now().atStartOfDay()));
+            statement.setTimestamp(3, Timestamp.valueOf(LocalDate.now().atStartOfDay().plusYears(1)));
 
             int resultSet = statement.executeUpdate();
 

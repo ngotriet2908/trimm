@@ -1,6 +1,8 @@
 package utwente.team2.dao;
 
 import utwente.team2.DatabaseInitialiser;
+import utwente.team2.model.LayoutData;
+import utwente.team2.model.LayoutOptions;
 import utwente.team2.model.Run;
 import utwente.team2.model.User;
 
@@ -94,6 +96,38 @@ public enum RunDao {
         return null;
     }
 
+    public String getUsername(int runID) {
+        try {
+            // date
+            // name
+            // distance
+            // time
+            // steps
+            String query = "SELECT r.username " +
+                    "FROM run AS r " +
+                    "WHERE r.id = ? " +
+                    "ORDER BY r.date DESC";
+
+            PreparedStatement statement = DatabaseInitialiser.getCon().prepareStatement(query);
+            statement.setInt(1, runID);
+
+            ResultSet resultSet = statement.executeQuery();
+
+
+            // multiple rows
+            if (resultSet.next()) {
+                return resultSet.getString(1);
+            }
+
+            return null;
+
+        } catch (SQLException se) {
+            se.printStackTrace();
+        }
+
+        return null;
+    }
+
     public User getUserRunsOverview(String username, User user) {
         user.setRunsList(getUserRunsOverview(username));
         return user;
@@ -102,13 +136,19 @@ public enum RunDao {
 
 
     public String getLayout(int runId) {
+
+        int current = getCurrentLayout(runId);
+
+
         try {
-            String query = "SELECT r.layout " +
-                    "FROM run AS r " +
-                    "WHERE r.id = ? ";
+            String query = "SELECT l.layout " +
+                    "FROM layout AS l " +
+                    "WHERE l.run_id = ? " +
+                    "AND l.lid = ? ";
 
             PreparedStatement statement = DatabaseInitialiser.getCon().prepareStatement(query);
             statement.setInt(1, runId);
+            statement.setInt(2, current);
 
             ResultSet resultSet = statement.executeQuery();
 
@@ -148,6 +188,60 @@ public enum RunDao {
         return null;
     }
 
+    public LayoutOptions getLayoutName(int runId) {
+        try {
+            String query = "SELECT l.name, l.lid " +
+                    "FROM layout AS l " +
+                    "WHERE l.run_id = ? ";
+
+            PreparedStatement statement = DatabaseInitialiser.getCon().prepareStatement(query);
+            statement.setInt(1, runId);
+
+            ResultSet resultSet = statement.executeQuery();
+
+            System.out.println(statement);
+
+            List<LayoutData> layoutData = new ArrayList<>();
+
+            while (resultSet.next()) {
+                String name = resultSet.getString(1);
+                int lid = resultSet.getInt(2);
+                layoutData.add(new LayoutData(name, lid));
+            }
+
+            return new LayoutOptions(layoutData, getCurrentLayout(runId));
+        } catch (SQLException se) {
+            se.printStackTrace();
+        }
+
+        return null;
+    }
+
+    public int getCurrentLayout(int runId) {
+        try {
+            String query = "SELECT r.current_layout " +
+                    "FROM run AS r " +
+                    "WHERE r.id = ? ";
+
+            PreparedStatement statement = DatabaseInitialiser.getCon().prepareStatement(query);
+            statement.setInt(1, runId);
+
+            ResultSet resultSet = statement.executeQuery();
+
+            System.out.println(statement);
+            if (resultSet.next()) {
+                return resultSet.getInt(1);
+            }
+
+            return 1;
+        } catch (SQLException se) {
+            se.printStackTrace();
+        }
+
+        return 1;
+    }
+
+
     public BigDecimal getSpeed(int runId) {
         try {
             String query = "SELECT r.distance, r.steps " +
@@ -183,18 +277,74 @@ public enum RunDao {
     }
 
 
+    public boolean saveCurrentLayout(int runId, int current) {
 
-    public boolean saveLayout(int runId, String layout) {
         try {
             String query = "UPDATE run " +
-                    " SET layout = ?" +
+                    " SET current_layout = ?" +
                     " WHERE id = ?";
 
             PreparedStatement statement = DatabaseInitialiser.getCon().prepareStatement(query);
 
-            statement.setString(1, layout);
+            statement.setInt(1, current);
             statement.setInt(2, runId);
 
+            System.out.println(statement);
+            int resultSet = statement.executeUpdate();
+
+            return resultSet > 0;
+        } catch (SQLException se) {
+            se.printStackTrace();
+        }
+
+        return false;
+    }
+
+    public boolean saveLayoutName(int runId, int layout_id, String name) {
+
+        try {
+            String query = "UPDATE layout " +
+                    " SET name = ? " +
+                    " WHERE lid = ? " +
+                    "AND run_id = ?";
+
+            PreparedStatement statement = DatabaseInitialiser.getCon().prepareStatement(query);
+
+            statement.setString(1, name);
+            statement.setInt(2, layout_id);
+            statement.setInt(3, runId);
+
+            System.out.println(statement);
+            int resultSet = statement.executeUpdate();
+
+            return resultSet > 0;
+        } catch (SQLException se) {
+            se.printStackTrace();
+        }
+
+        return false;
+    }
+
+
+
+
+    public boolean saveLayout(int runId, String layout) {
+
+        int current = getCurrentLayout(runId);
+
+        try {
+            String query = "UPDATE layout " +
+                    " SET layout = ?" +
+                    " WHERE lid = ? " +
+                    " AND run_id = ?";
+
+            PreparedStatement statement = DatabaseInitialiser.getCon().prepareStatement(query);
+
+            statement.setString(1, layout);
+            statement.setInt(3, runId);
+            statement.setInt(2, current);
+
+            System.out.println(statement);
             int resultSet = statement.executeUpdate();
 
             return resultSet > 0;
@@ -271,7 +421,7 @@ public enum RunDao {
                 runOverviewModel.setDistance(resultSet.getInt("distance"));
                 runOverviewModel.setDuration(resultSet.getInt("duration"));
                 runOverviewModel.setSteps(resultSet.getInt("steps"));
-                runOverviewModel.setShoesname(shoesname);
+                runOverviewModel.setShoes(shoesname);
 
 
                 return runOverviewModel;

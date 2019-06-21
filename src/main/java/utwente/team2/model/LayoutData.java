@@ -9,7 +9,36 @@ import java.util.List;
 public class LayoutData {
 
     @XmlAnyElement
-    List<Card> cards;
+    private List<Card> cards;
+    private String name;
+    private int layoutID;
+
+    public LayoutData(String name, int layoutID) {
+        this.name = name;
+        this.layoutID = layoutID;
+    }
+
+    public LayoutData(List<Card> cards, String name, int layoutID) {
+        this.cards = cards;
+        this.name = name;
+        this.layoutID = layoutID;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public int getLayoutID() {
+        return layoutID;
+    }
+
+    public void setLayoutID(int layoutID) {
+        this.layoutID = layoutID;
+    }
 
     public LayoutData(List<Card> cards) {
         this.cards = cards;

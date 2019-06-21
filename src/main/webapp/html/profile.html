@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="full-height">
 <head>
 	<meta name="viewport" content="width=device-width,initial-scale=1.0">
 	<meta charset="UTF-8">
@@ -10,18 +10,31 @@
 	<link href="https://fonts.googleapis.com/css?family=Montserrat" rel="stylesheet">
 	<link rel="stylesheet" href="/style/style.css">
 </head>
-<body id="profile">
+<body id="profile" class="full-height">
+
+<div class="popup-overlay hidden">
+</div>
 
 <div class="profile-top">
-	<nav>
-		<ul>
+</div>
 
-			<!--<div id="nav-items">-->
-			<li class="nav-logo">
-				<a class="font-bold" href="/">runner</a>
+<nav>
+	<span class="nav-logo">
+			<a class="font-bold" href="/">runner</a>
+	</span>
+
+	<span class="nav-button">
+			<a class="font-bold">
+				<i class="fas fa-bars"></i>
+			</a>
+	</span>
+
+	<div>
+		<ul class="hidden">
+			<li class="nav-item">
+				<a href="/">home</a>
 			</li>
 
-			<!-- TODO show only for free users-->
 			<li class="nav-item upgrade hidden">
 				<a class="button-raised" href="/runner/premium/join"><span>upgrade</span></a>
 			</li>
@@ -29,20 +42,13 @@
 			<li class="nav-item">
 				<a href="/runner/settings">settings</a>
 			</li>
+
 			<li class="nav-item">
 				<a href="/runner/logout">sign out</a>
 			</li>
-			<!--</div>-->
-
-
-			<li class="nav-button">
-				<a class="font-bold" href="/"><i class="fas fa-bars"></i></a>
-			</li>
-
 		</ul>
-	</nav>
-	<div class="nav-opacity-overlay"></div>
-</div>
+	</div>
+</nav>
 
 <main class="profile-main">
 
@@ -56,17 +62,20 @@
 		<div id="profile-picture-general">
 			<div class="profile-picture-general-item">
 				<p>
-					<span>Runs</span><span></span>
+					<span>Runs</span>
+					<span></span>
 				</p>
 			</div>
 			<div class="profile-picture-general-item">
 				<p>
-					<span>Distance</span><span></span>
+					<span>Distance</span>
+					<span></span>
 				</p>
 			</div>
 			<div class="profile-picture-general-item">
 				<p>
-					<span>Total steps</span><span></span>
+					<span>Total steps</span>
+					<span></span>
 				</p>
 			</div>
 			<div class="profile-picture-general-item profile-picture-general-item-multiline">
@@ -100,7 +109,7 @@
 				<div class="overview-data-item" id="overview-distance">
 					<h3>
 						<span>total</span>
-						<span>distance</span>
+						<span> distance</span>
 					</h3>
 					<p>
 						<span>44334 </span><span>km</span>
@@ -109,7 +118,7 @@
 				<div class="overview-data-item" id="overview-time">
 					<h3>
 						<span>total</span>
-						<span>time</span>
+						<span> time</span>
 					</h3>
 					<p>
 						<span>434 </span><span>h</span>
@@ -118,7 +127,7 @@
 				<div class="overview-data-item" id="overview-steps">
 					<h3>
 						<span>total</span>
-						<span>steps</span>
+						<span> steps</span>
 					</h3>
 					<p>
 						<span>344334</span>
@@ -175,9 +184,9 @@
 					<div class="input-group input-select">
 						<select id="select-sort-type">
 							<!--<option value="sort ">-&#45;&#45;sort-&#45;&#45;</option>-->
+							<option value="dated">Date [Z-A]</option>
 
 							<option value="dateu">Date [A-Z]</option>
-							<option value="dated">Date [Z-A]</option>
 
 							<option value="timeu">Time [A-Z]</option>
 							<option value="timed">Time [Z-A]</option>
@@ -197,42 +206,33 @@
 			<div id="runs-data-container">
 
 				<!--<div class="profile-card profile-run-card">-->
-				<!--&lt;!&ndash;<header>&ndash;&gt;-->
-				<!--&lt;!&ndash;<div class="run-card-icon">&ndash;&gt;-->
-				<!--&lt;!&ndash;<i class="fas fa-running"></i>&ndash;&gt;-->
-				<!--&lt;!&ndash;</div>&ndash;&gt;-->
-				<!--&lt;!&ndash;<div class="run-card-title">&ndash;&gt;-->
-				<!--&lt;!&ndash;<h4><a href="/">Typical Run</a></h4>&ndash;&gt;-->
-				<!--&lt;!&ndash;</div>&ndash;&gt;-->
-				<!--&lt;!&ndash;<div class="run-card-date">2019-04-13</div>&ndash;&gt;-->
-				<!--&lt;!&ndash;</header>&ndash;&gt;-->
+					<!--<div class="run-card-blocks">-->
+						<!--<div>-->
+							<!--<div class="run-card-title">-->
+								<!--<h4><a href="/">Typical Run</a></h4>-->
+							<!--</div>-->
+							<!--<div class="run-card-date">2019-04-13</div>-->
+						<!--</div>-->
 
-				<!--<div class="run-card-blocks">-->
-				<!--<div>-->
-				<!--<div class="run-card-title">-->
-				<!--<h4><a href="/">Typical Run</a></h4>-->
-				<!--</div>-->
-				<!--<div class="run-card-date">2019-04-13</div>-->
-				<!--</div>-->
+						<!--<div class="run-card-distance">-->
+							<!--<div>Distance</div>-->
+							<!--<div>8.7 km</div>-->
+						<!--</div>-->
 
-				<!--<div class="run-card-distance">-->
-				<!--<div>Distance</div>-->
-				<!--<div>8.7 km</div>-->
-				<!--</div>-->
+						<!--<div class="run-card-time">-->
+							<!--<div>Time</div>-->
+							<!--<div>00:55:33</div>-->
+						<!--</div>-->
 
-				<!--<div class="run-card-time">-->
-				<!--<div>Time</div>-->
-				<!--<div>00:55:33</div>-->
-				<!--</div>-->
+						<!--<div class="run-card-steps">-->
+							<!--<div>Steps</div>-->
+							<!--<div>11342</div>-->
+						<!--</div>-->
 
-				<!--<div class="run-card-steps">-->
-				<!--<div>Steps</div>-->
-				<!--<div>11342</div>-->
-				<!--</div>-->
+						<!--<div class="run-card-see-more"><a class="button-raised" href="/"><span><i-->
+								<!--class="fas fa-angle-right"></i></span></a></div>-->
 
-				<!--<div class="run-card-see-more"><a class="button-raised" href="/"><span><i class="fas fa-angle-right"></i></span></a></div>-->
-
-				<!--</div>-->
+					<!--</div>-->
 				<!--</div>-->
 
 
@@ -257,9 +257,7 @@
 	</div>
 </footer>
 
-<script src="https://code.jquery.com/jquery-3.4.1.min.js"
-		integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
-		crossorigin="anonymous"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 <!--<script src="/script/jquery.nicescroll.js"></script>-->
 <script src="/script/script.js"></script>
 

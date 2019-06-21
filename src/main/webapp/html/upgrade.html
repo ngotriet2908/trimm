@@ -12,25 +12,33 @@
 </head>
 <body id="upgrade">
 
-<nav>
-	<ul>
-		<li class="nav-logo">
-			<a class="font-bold" href="/">runner</a>
-		</li>
-		<li class="nav-item">
-			<a href="/runner/profiles">profile</a>
-		</li>
-		<li class="nav-item">
-			<a href="/runner/logout">sign out</a>
-		</li>
 
-		<li class="nav-button">
-			<a class="font-bold" href="/"><i class="fas fa-bars"></i></a>
-		</li>
-	</ul>
-	<div class="nav-opacity-overlay">
+<div class="popup-overlay hidden">
+</div>
+
+<nav>
+	<span class="nav-logo">
+			<a class="font-bold" href="/">runner</a>
+	</span>
+
+	<span class="nav-button">
+			<a class="font-bold">
+				<i class="fas fa-bars"></i>
+			</a>
+	</span>
+
+	<div>
+		<ul class="hidden">
+			<li class="nav-item">
+				<a href="/runner/profiles">profile</a>
+			</li>
+			<li class="nav-item">
+				<a href="/runner/logout">sign out</a>
+			</li>
+		</ul>
 	</div>
 </nav>
+
 
 <main>
 	<div id="upgrade-container">
@@ -38,11 +46,7 @@
 		<div class="upgrade-card">
 			<div class="title-label"><span>upgrade</span></div>
 			<h1>Become a premium member and unlock all these cool features</h1>
-			<!--<div>-->
-				<!--<span>$</span>-->
-				<!--<span>29</span>-->
-				<!--<span>/month</span>-->
-			<!--</div>-->
+
 			<p>
 				Lorem ipsum dolor sit amet, consectetur adipiscing elit.
 				Proin convallis tellus vel risus vulputate, id hendrerit nibh malesuada.
@@ -53,20 +57,20 @@
 
 				<div class="upgrade-feature">
 					<i class="fas fa-dragon"></i>
-					<h4>Cool styles</h4>
-					<p>Create, save and share your runs with anyone.</p>
+					<h4>Multiple layouts</h4>
+					<p>Create up to 5 dashboard layouts for every run.</p>
 				</div>
 
 				<div class="upgrade-feature">
 					<i class="fas fa-layer-group"></i>
-					<h4>Pre-defined cards</h4>
-					<p>Create, save and share your runs with anyone.</p>
+					<h4>Favourite layouts</h4>
+					<p>Store your favourite dashboard layouts and load them in no time.</p>
 				</div>
 
 				<div class="upgrade-feature">
 					<i class="fab fa-mix"></i>
-					<h4>Drag and drop sections</h4>
-					<p>Create, save and share your runs with anyone.</p>
+					<h4>Compare runs</h4>
+					<p>Compare statistics from different runs to get a better insight in your running habits.</p>
 				</div>
 
 				<div class="upgrade-feature">
@@ -77,18 +81,16 @@
 
 			</div>
 
-			<button class="button-raised"><span>upgrade now</span></button>
+			<button id="upgrade-button" class="button-raised"><span>upgrade now</span></button>
 
-			<p class="upgrade-price">for only $299.99</p>
+			<p class="upgrade-price">for only $29999.99</p>
 		</div>
 
 
 	</div>
 </main>
 
-<script src="https://code.jquery.com/jquery-3.4.1.min.js"
-		integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
-		crossorigin="anonymous"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 <!--<script src="/script/jquery.nicescroll.js"></script>-->
 <script src="/script/script.js"></script>
 

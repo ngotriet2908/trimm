@@ -16,10 +16,10 @@ public class Run {
 
     private Integer shoesId;
     private Integer surfaceId;
-    private String shoesname;
+    private String shoes;
 
     public Run(Integer id, String username, Date date, String name, String bodypackfile, Integer distance, Integer duration, Integer steps, Integer shoesId,
-               Integer surfaceId, String shoesname, String description, String remarks, String stravaLink) {
+               Integer surfaceId, String shoes, String description, String remarks, String stravaLink) {
         this.id = id;
         this.username = username;
         this.date = date;
@@ -30,18 +30,18 @@ public class Run {
         this.steps = steps;
         this.shoesId = shoesId;
         this.surfaceId = surfaceId;
-        this.shoesname = shoesname;
+        this.shoes = shoes;
         this.description = description;
         this.remarks = remarks;
         this.stravaLink = stravaLink;
     }
 
-    public String getShoesname() {
-        return shoesname;
+    public String getShoes() {
+        return shoes;
     }
 
-    public void setShoesname(String shoesname) {
-        this.shoesname = shoesname;
+    public void setShoes(String shoes) {
+        this.shoes = shoes;
     }
 
     private String description;

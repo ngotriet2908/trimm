@@ -13,15 +13,42 @@
 </head>
 <body id="register">
 
+<div class="popup-overlay hidden">
+</div>
+
+
 <nav>
-	<ul>
-		<li class="nav-logo">
+	<span class="nav-logo">
 			<a class="font-bold" href="/">runner</a>
-		</li>
-	</ul>
-	<div class="nav-opacity-overlay">
+	</span>
+
+	<span class="nav-button">
+			<a class="font-bold">
+				<i class="fas fa-bars"></i>
+			</a>
+	</span>
+
+	<div>
+		<ul class="hidden">
+			<li class="nav-item">
+				<a href="/">home</a>
+			</li>
+
+			<li class="nav-item upgrade hidden">
+				<a class="button-raised" href="/runner/premium/join"><span>upgrade</span></a>
+			</li>
+
+			<li class="nav-item">
+				<a href="/runner/settings">settings</a>
+			</li>
+
+			<li class="nav-item">
+				<a href="/runner/logout">sign out</a>
+			</li>
+		</ul>
 	</div>
 </nav>
+
 
 <main>
 	<div id="register-background-overlay">
@@ -108,9 +135,7 @@
 	</div>
 </main>
 
-<script src="https://code.jquery.com/jquery-3.4.1.min.js"
-		integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
-		crossorigin="anonymous"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 <!--<script src="/script/jquery.nicescroll.js"></script>-->
 <script src="//cdnjs.cloudflare.com/ajax/libs/validate.js/0.12.0/validate.min.js"></script>
 <script src="/script/script.js"></script>

@@ -21,11 +21,8 @@ public class MailAPI {
     static Session getMailSession;
     static MimeMessage generateMailMessage;
 
-    public static void main(String args[]) throws AddressException, MessagingException {
-        generateAndSendEmail("hahahaha", "greeting from recovery email", "khavronayevhen@gmail.com");
-    }
 
-    public static void generateAndSendEmail(String context, String subject, String recipient) throws AddressException, MessagingException, NoSuchMethodError {
+    public static void generateAndSendEmail(String body, String subject, String recipient) throws AddressException, MessagingException, NoSuchMethodError {
 
         // Step1
         System.out.println("1st ===> setup Mail Server Properties..");
@@ -43,9 +40,8 @@ public class MailAPI {
 
         generateMailMessage.setSubject(subject + " " + LocalDateTime.now().toString());
 
-        String emailBody = context;
         //messageBodyPart.setText(html, "UTF-8", "html");
-        generateMailMessage.setContent(emailBody, "text/html");
+        generateMailMessage.setContent(body, "text/html");
         System.out.println("Mail Session has been created successfully..");
 
         // Step3
@@ -59,6 +55,7 @@ public class MailAPI {
         transport.close();
         System.out.println("===> Your Java Program has just sent an Email successfully. Check your email..");
     }
+
 
     public static void generateAndSendEmailWithAttachtMent(String context, String subject, String recipient, BufferedImage image)
             throws AddressException, MessagingException, NoSuchMethodError {
@@ -82,22 +79,13 @@ public class MailAPI {
         BodyPart messageBodyPart = new MimeBodyPart();
 
         // Now set the actual message
-        messageBodyPart.setText("This is message body");
+        messageBodyPart.setText("You can find your infographic in the attachment below.");
 
-        // Create a multipar message
+        // Create a multipart message
         Multipart multipart = new MimeMultipart();
 
         // Set text message part
         multipart.addBodyPart(messageBodyPart);
-
-        // Part two is attachment
-
-//        File file = new File("temp.png");
-//        try {
-//            ImageIO.write(image, "png", file);
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
 
         messageBodyPart = new MimeBodyPart();
 
@@ -116,11 +104,8 @@ public class MailAPI {
             e.printStackTrace();
         }
         messageBodyPart.setDataHandler(new DataHandler(data));
-        messageBodyPart.setFileName("kindle.png");
+        messageBodyPart.setFileName("infographic.png");
         multipart.addBodyPart(messageBodyPart);
-//        boolean flag = file.delete();
-//        System.out.println("delete image " + flag);
-        // Send the complete message parts
         generateMailMessage.setContent(multipart);
 
         // Step3

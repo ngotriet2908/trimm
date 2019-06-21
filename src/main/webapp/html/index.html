@@ -10,21 +10,41 @@
 	<link rel="stylesheet" href="/style/style.css">
 </head>
 <body id="index">
-	<nav>
-			<ul>
-				<li class="nav-logo">
-					<a class="font-bold" href="/">runner</a>
-				</li>
-				<!--<li class="nav-item">-->
-					<!--<a href="runner/register">register</a>-->
-				<!--</li>-->
-				<!--<li class="nav-item">-->
-					<!--<a href="runner/login">login</a>-->
-				<!--</li>-->
-			</ul>
-			<!--<div class="nav-opacity-overlay">-->
-			<!--</div>-->
-	</nav>
+
+<div class="popup-overlay hidden">
+</div>
+
+<nav>
+	<span class="nav-logo">
+			<a class="font-bold" href="/">runner</a>
+	</span>
+
+	<span class="nav-button">
+			<a class="font-bold">
+				<i class="fas fa-bars"></i>
+			</a>
+	</span>
+
+	<div>
+		<ul class="hidden">
+			<li class="nav-item">
+				<a href="/">home</a>
+			</li>
+
+			<li class="nav-item upgrade hidden">
+				<a class="button-raised" href="/runner/premium/join"><span>upgrade</span></a>
+			</li>
+
+			<li class="nav-item">
+				<a href="/runner/profiles">profile</a>
+			</li>
+
+			<li class="nav-item">
+				<a href="/runner/logout">sign out</a>
+			</li>
+		</ul>
+	</div>
+</nav>
 
 
 	<main>
@@ -37,9 +57,7 @@
 		</div>
 	</main>
 
-	<script src="https://code.jquery.com/jquery-3.4.1.min.js"
-		integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
-		crossorigin="anonymous"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 	<!--<script src="/script/jquery.nicescroll.js"></script>-->
 	<script src="/script/script.js"></script>
 </body>

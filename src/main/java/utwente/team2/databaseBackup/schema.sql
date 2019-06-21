@@ -6,7 +6,9 @@ DROP TABLE IF EXISTS term CASCADE;
 DROP TABLE IF EXISTS run CASCADE;
 DROP TABLE IF EXISTS step CASCADE;
 DROP TABLE IF EXISTS user_picture CASCADE;
-
+DROP TABLE IF EXISTS layout CASCADE;
+DROP TABLE IF EXISTS baseline CASCADE;
+DROP TABLE IF EXISTS favorite_layout CASCADE;
 
 CREATE TABLE general_user (
     username VARCHAR(30),
@@ -26,6 +28,8 @@ CREATE TABLE user_picture (
     PRIMARY KEY (username),
     FOREIGN KEY (username) REFERENCES general_user(username)
 );
+
+
 
 CREATE TABLE premium_user (
     username VARCHAR(30),
@@ -76,9 +80,28 @@ CREATE TABLE run (
     stravalink VARCHAR(255),
     layout text,
     default_layout text,
+    current_layout INTEGER,
     PRIMARY KEY (id),
     FOREIGN KEY (shoes_id) REFERENCES shoes(id),
     FOREIGN KEY (surface_id) REFERENCES surface(id)
+);
+
+CREATE TABLE layout (
+    lid SERIAL,
+    name VARCHAR(30),
+    layout text,
+    run_id SERIAL,
+    PRIMARY KEY (lid,run_id),
+    FOREIGN KEY (run_id) REFERENCES run(id)
+);
+
+CREATE TABLE favorite_layout (
+    lid SERIAL,
+    name VARCHAR(30),
+    layout text,
+    username VARCHAR(30),
+    PRIMARY KEY (lid,username),
+    FOREIGN KEY (username) REFERENCES general_user(username)
 );
 
 CREATE TABLE step (
@@ -111,4 +134,27 @@ CREATE TABLE step (
 
     PRIMARY KEY (run_id, step_no),
     FOREIGN KEY (surface_id) REFERENCES surface(id)
+);
+
+CREATE TABLE baseline (
+    segment INTEGER,
+
+    axtibacc_right NUMERIC(30,20),
+    tibimpact_right NUMERIC(30,20),
+    axsacacc_right NUMERIC(30,20),
+    sacimpact_right NUMERIC(30,20),
+    brakingforce_right NUMERIC(30,20),
+    pushoffpower_right NUMERIC(30,20),
+    tibintrot_right NUMERIC(30,20),
+    vll_right NUMERIC(30,20),
+    axtibacc_left NUMERIC(30,20),
+    tibimpact_left NUMERIC(30,20),
+    axsacacc_left NUMERIC(30,20),
+    sacimpact_left NUMERIC(30,20),
+    brakingforce_left NUMERIC(30,20),
+    pushoffpower_left NUMERIC(30,20),
+    tibintrot_left NUMERIC(30,20),
+    vll_left NUMERIC(30,20),
+
+    PRIMARY KEY (segment)
 );

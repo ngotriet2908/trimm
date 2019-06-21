@@ -1,0 +1,181 @@
+/* INFOGRAPHIC */
+
+html, body {
+    margin: 0;
+    padding: 0;
+
+    height: 800px;
+    width: 600px;
+
+    font-family: sans-serif;
+
+    box-sizing: border-box;
+}
+
+main {
+    border: 1px solid black;
+    letter-spacing: 0;
+
+    height: 800px;
+    width: 600px;
+
+    overflow: auto;
+
+    position: relative;
+}
+
+#title, #name-date {
+    margin: 16px;
+}
+
+#name-date h3, p {
+    margin: 8px auto;
+}
+
+.stats-section {
+    margin: 32px 16px;
+    position: relative;
+    display: block;
+    /*width: 100%;*/
+
+    /*box-sizing: content-box;*/
+    z-index: 3;
+}
+
+.stats-section h3 {
+    display: block;
+    width: auto;
+    margin: 0;
+}
+
+.stats-section svg {
+    position: absolute;
+    top: 0px;
+    left: 100px;
+}
+
+.stats-section svg circle {
+    stroke: black;
+    stroke-width:2;
+    fill: black;
+    r: 5px;
+}
+
+.stats-section svg circle {
+
+}
+
+.stats-section svg line {
+    stroke: black;
+    stroke-width:2;
+}
+
+#distance {
+    position: absolute;
+    top: 200px;
+    left: 0;
+}
+
+#distance svg circle {
+    cx: 10px;
+    cy: 10px;
+}
+
+
+#duration {
+    position: absolute;
+    top: 400px;
+    left: 0;
+}
+
+#duration svg circle {
+    cx: 10px;
+    cy: 10px;
+}
+
+
+#shoes {
+    position: absolute;
+    top: 600px;
+    left: 100px;
+}
+
+#shoes h3, #shoes p {
+    margin-left: 150px;
+}
+
+#shoes svg {
+    left: 0px;
+    /*margin-top: 58px;*/
+}
+
+#shoes h3 {
+    margin-top: 58px;
+}
+
+
+#shoes svg circle {
+    cx: 140px;
+    cy: 68px;
+}
+
+
+#steps {
+    position: absolute;
+    top: 350px;
+    left: 320px;
+}
+
+#steps h3, #steps p {
+    margin-left: 150px;
+}
+
+#steps svg {
+    left: 0px;
+}
+
+
+#steps svg circle {
+    cx: 140px;
+    cy: 10px;
+}
+
+
+#qr {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+}
+
+#qr svg {
+    height: 100px;
+    width: 100px;
+}
+
+#qr p {
+    margin: 0;
+    text-align: center;
+    font-size: 10px;
+}
+
+
+
+#runner {
+    position: absolute;
+    top: 100px;
+    left: 0;
+    right: 0;
+    bottom: 0;
+
+    display: flex;
+    justify-content: center;
+
+    z-index: 2;
+}
+
+#runner svg {
+    display: block;
+    margin: auto;
+
+    width: 70%;
+}

@@ -82,7 +82,7 @@ public class Login {
             Map<String,Object> claims = new HashMap<>();
             claims.put("iss", "runner");
             claims.put("sub", username);
-            claims.put("exp", String.valueOf(LocalDateTime.now().plusMinutes(10).atZone(zoneId).toEpochSecond()));
+            claims.put("exp", String.valueOf(LocalDateTime.now().plusMinutes(60).atZone(zoneId).toEpochSecond()));
             claims.put("iat", String.valueOf(LocalDateTime.now().atZone(zoneId)));
 
 
