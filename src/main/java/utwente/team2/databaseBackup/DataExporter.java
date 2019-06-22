@@ -51,7 +51,6 @@ public class DataExporter {
     }
 
     public GraphPoints getAllSteps(int runID, String indicator) {
-//        System.out.println("get run info " + runID);
         try{
             String query =  "SELECT DISTINCT  s.step_no, s." + indicator + " FROM step s, run " +
                     "WHERE s.run_id = ? " +
@@ -61,8 +60,6 @@ public class DataExporter {
             PreparedStatement statement = conn.prepareStatement(query);
             statement.setInt(1, runID);
 
-
-//            System.out.println(statement.toString());
 
             ResultSet resultSet = statement.executeQuery();
 
@@ -113,7 +110,6 @@ public class DataExporter {
             for(int i = 0; i < 50; i++) {
                 statement.setBigDecimal(1, bigDecimals.get(i));
                 statement.setInt(2, i + 1);
-//                System.out.println(statement); //TODO turnoff this one
                 int resultSet = statement.executeUpdate();
             }
         } catch (SQLException se) {
@@ -295,7 +291,6 @@ public class DataExporter {
         try {
             for (int readNum; (readNum = fis.read(buf)) != -1;) {
                 bos.write(buf, 0, readNum);
-                //System.out.println("read " + readNum + " bytes,");
             }
         } catch (IOException ex) {
         }
@@ -406,7 +401,6 @@ public class DataExporter {
 
         try {
             Workbook workbook = WorkbookFactory.create(new File("RA-data/BodyPackRuns.xlsx"));
-            //System.out.println("Workbook has " + workbook.getNumberOfSheets() + " Sheets : ");
             Sheet shoes = workbook.getSheetAt(0);
             DataFormatter dataFormatter = new DataFormatter();
 
@@ -678,7 +672,8 @@ public class DataExporter {
                     return false;
                 }
             }
-            System.out.println("Finish create schema");
+
+            System.out.println("Schema created.");
             return true;
         }
     }
@@ -729,11 +724,12 @@ public class DataExporter {
                     pd.UpdateBaseLine(pd.getBaseLine(indicators[i]),indicators[i]);
                 }
             }
+
             System.out.println("Done!");
             pd.conn.close();
 
         } catch (FileNotFoundException e) {
-            System.out.println("schema file not found");
+            System.out.println("Schema file not found.");
         } catch (SQLException se) {
             se.printStackTrace();
         }

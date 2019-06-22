@@ -7,7 +7,7 @@ import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import utwente.team2.dao.UserDao;
 import utwente.team2.mail.MailAPI;
-import utwente.team2.mail.ResetTemplate;
+import utwente.team2.mail.EmailHtmlTemplate;
 import utwente.team2.model.User;
 
 import javax.mail.MessagingException;
@@ -44,22 +44,6 @@ public class PasswordReset {
         return inputStream;
     }
 
-    @Path("/activate/enter")
-    @GET
-    @Produces(MediaType.TEXT_HTML)
-    public void showResetRequestPage(@QueryParam("token") String token, @Context HttpServletResponse servletResponse) throws IOException {
-
-        Jws<Claims> jws = Jwts.parser().require("purpose", "activate")
-                .setSigningKey(Login.KEY).parseClaimsJws(token);
-        System.out.println("Password reset JWT is valid.");
-        String username = Login.getTokenClaims(token).getBody().getSubject();
-
-
-        UserDao.instance.activateAccount(username);
-
-        servletResponse.sendRedirect("/runner/login?message=activate_success");
-    }
-
     @Path("/reset")
     @POST
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
@@ -69,8 +53,6 @@ public class PasswordReset {
         User user = UserDao.instance.getUserDetails(username);
 
         if (user != null) {
-//            String token = UserDao.instance.generateTokenForPasswordReset(username);
-
             // default timezone
             ZoneId zoneId = ZoneId.systemDefault();
 
@@ -83,7 +65,10 @@ public class PasswordReset {
 
             String token = Jwts.builder().setClaims(claims).signWith(Login.KEY).compact();
 
-            MailAPI.generateAndSendEmail(ResetTemplate.createResetEmail(username, token), "Reset your password - Runner", user.getEmail());
+            MailAPI.generateAndSendEmail(EmailHtmlTemplate.createEmailHtml(username, token,
+                    "You're receiving this email because you requested a password reset for your user account on Runner. If you didn't request a password change, you can just ignore this message.",
+                    "RESET YOUR PASSWORD",
+                    "http://localhost:8080/runner/password/reset/enter?token="), "Reset your password - Runner", user.getEmail());
         }
 
         // redirect to success page (even if the user does not exist - nobody should know that) TODO later

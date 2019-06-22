@@ -57,6 +57,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         return decodedJson;
     }
+
     function getCookieValue(cookieName) {
         var name = cookieName + "=";
         var cookies = document.cookie.split(';');
@@ -73,6 +74,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         return null;
     }
+
     // initialize grid
     function initGrid() {
         var dragCounter = 0;
@@ -185,7 +187,7 @@ document.addEventListener('DOMContentLoaded', function () {
     function saveLayout(grid) {
         var layout = serializeLayout(grid);
         // window.localStorage.setItem('layout', layout);
-        console.log("layout saved: " + layout);
+        console.log(layout);
 
         var layoutJson = JSON.stringify(layout);
 
@@ -262,8 +264,7 @@ document.addEventListener('DOMContentLoaded', function () {
         // Sort the items.
         grid.sort(
             currentSort === 'title' ? compareItemTitle :
-                currentSort === 'color' ? compareItemColor :
-                    dragOrder
+                dragOrder
         );
 
         // Update indices and active sort value.
@@ -328,7 +329,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         // Sort the items only if the drag sorting is not active.
         if (sortFieldValue !== 'order') {
-            grid.sort(sortFieldValue === 'title' ? compareItemTitle : compareItemColor);
+            grid.sort('title');
             dragOrder = dragOrder.concat(newItem);
         }
 
@@ -340,9 +341,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         filter();
 
-        if (typeName === "map") {
-            initMap();
-        } else if (typeName === "graph" && indicatorName !== "speed") {
+        if (typeName === "graph" && indicatorName !== "speed") {
             initGraph(newElement, data);
         } else if (typeName === "distribution") {
             initDistribution(newElement, data); // TODO
@@ -353,6 +352,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function removeItem(e, saveLayoutFlag) {
         var elem;
+
         if (e.target === undefined) {
             elem = e;
         } else {
@@ -379,17 +379,6 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // change the layout type
-    // function changeLayout() {
-    //     layoutFieldValue = layoutField.value;
-    //     grid._settings.layout = {
-    //         horizontal: false,
-    //         alignRight: layoutFieldValue.indexOf('right') > -1,
-    //         alignBottom: layoutFieldValue.indexOf('bottom') > -1,
-    //         fillGaps: layoutFieldValue.indexOf('fillgaps') > -1
-    //     };
-    //     grid.layout();
-    // }
 
     function generateElement(id, title, type, data) {
         var itemElem = document.createElement('div');
@@ -424,32 +413,6 @@ document.addEventListener('DOMContentLoaded', function () {
                     '' +
                     '<div>' +
                     '<span>max ' + data.maximum + '</span>' +
-                    '</div>' +
-
-                    '</div>' +
-                    '</div>';
-                break;
-            case "individual-high":
-                height = 2;
-                width = 1;
-                innerContent = '<div class="dashboard-card-front">' +
-                    '<header>' +
-                    '<h3 class="dashboard-card-id">' + id +
-                    '</h3>' +
-                    '<button class="dashboard-card-remove"><i class="material-icons">&#xE5CD;</i></button>' +
-                    '</header>' +
-                    '<div class="dashboard-card-content dashboard-card-single">' +
-
-                    '<div>' +
-                    '<span>' + title + '</span>' +
-                    '</div>' +
-                    '' +
-                    '<div>' +
-                    '<span>min 29.8</span>' +
-                    '</div>' +
-                    '' +
-                    '<div>' +
-                    '<span>max 44.0</span>' +
                     '</div>' +
 
                     '</div>' +
@@ -514,27 +477,8 @@ document.addEventListener('DOMContentLoaded', function () {
                     '</div>' +
                     '</div>';
                 break;
-            case "map":
-                height = 2;
-                width = 2;
-                innerContent = '<div class="dashboard-card-front dashboard-card-front-map">' +
-                    '<header>' +
-                    '<h3 class="dashboard-card-id">' + id +
-                    '' +
-                    '</h3>' +
-                    '<button class="dashboard-card-remove"><i class="material-icons">&#xE5CD;</i></button>' +
-                    '</header>' +
-                    '<div class="dashboard-card-content dashboard-card-map">' +
-                    '<div id="mapid"></div>' +
-                    '</div>' +
-                    '</div>';
-
-                // TODO load map (check if map is not already added)
-
-                break;
         }
 
-        // var classNames = 'dashboard-card h' + height + ' w' + width + ' ' + color;
         var classNames = 'dashboard-card h' + height + ' w' + width;
 
         var itemTemplate = '' +
@@ -559,18 +503,12 @@ document.addEventListener('DOMContentLoaded', function () {
         return aVal < bVal ? -1 : aVal > bVal ? 1 : 0;
     }
 
-    function compareItemColor(a, b) {
-        var aVal = a.getElement().getAttribute('data-type') || '';
-        var bVal = b.getElement().getAttribute('data-type') || '';
-        return aVal < bVal ? -1 : aVal > bVal ? 1 : compareItemTitle(a, b);
-    }
 
     // updating ids of items when layout changes
     function updateIndices() {
         var maxIndex = 1;
         grid.getItems().forEach(function (item, i) {
             item.getElement().setAttribute('data-id', i + 1);
-            // item.getElement().querySelector('.dashboard-card-id').innerHTML = i + 1;
             maxIndex = i + 1;
         });
     }
@@ -636,31 +574,6 @@ document.addEventListener('DOMContentLoaded', function () {
     initControls();
     initGrid();
 
-    // map
-    function initMap() {
-        console.log("loading map...");
-        var mymap = L.map('mapid').setView([51.505, -0.09], 13);
-
-        L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {
-            attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, ' +
-                '<a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
-            maxZoom: 18,
-            id: 'mapbox.streets',
-            accessToken: 'pk.eyJ1Ijoic2t5d2Fsa2VydWEiLCJhIjoiY2p2d2w3MmZzMDlmczQ4cnhjeW43aWNraSJ9.v3yPqOHBFqO74s7kNcUfVA'
-        }).addTo(mymap);
-
-        var pointA = new L.LatLng(51.505, -0.09);
-        var pointB = new L.LatLng(51.520, -0.10);
-        var pointList = [pointA, pointB];
-
-        var firstpolyline = new L.Polyline(pointList, {
-            color: 'red',
-            weight: 3,
-            opacity: 0.5,
-            smoothFactor: 1
-        });
-        firstpolyline.addTo(mymap);
-    }
 
     // add graph
     function initGraph(element, data) {
@@ -910,96 +823,63 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
 
-
-        $('#controls #select-layout button').on('click', function (event) {
-            if (document.querySelector(".premium-required") == null) {
-                var ss = document.getElementById("select-layout-selection");
-                document.getElementById('save-layout-name-field').value = ss[ss.selectedIndex].value;
-            }
-
-            document.querySelector(".popup-overlay").classList.remove("hidden");
-
-            // show popup
-            document.querySelector(".select-layout-dialog").classList.remove("hidden");
-
-
-        });
-
-
-        $('#controls #select-favorite-layout button').on('click', function (event) {
-
-            if (document.querySelector(".premium-required") == null) {
-                var ss = document.getElementById("favorite-layout-selection");
-
-                if (ss[ss.selectedIndex] !== null && ss[ss.selectedIndex] !== undefined) {
-                    document.getElementById('favorite-layout-name-field').value = ss[ss.selectedIndex].value;
-                }
-            }
-
-            document.querySelector(".popup-overlay").classList.remove("hidden");
-
-            // show popup
-            document.querySelector(".favorite-layout-dialog").classList.remove("hidden");
-
-        });
-
-        $('#select-layout-selection').on('change', function (event) {
+    $('#controls #select-layout button').on('click', function (event) {
+        if (document.querySelector(".premium-required") == null) {
             var ss = document.getElementById("select-layout-selection");
             document.getElementById('save-layout-name-field').value = ss[ss.selectedIndex].value;
-        });
+        }
+
+        document.querySelector(".popup-overlay").classList.remove("hidden");
+
+        // show popup
+        document.querySelector(".select-layout-dialog").classList.remove("hidden");
 
 
-        $('#favorite-layout-selection').on('change', function (event) {
+    });
+
+
+    $('#controls #select-favorite-layout button').on('click', function (event) {
+
+        if (document.querySelector(".premium-required") == null) {
             var ss = document.getElementById("favorite-layout-selection");
-            document.getElementById('favorite-layout-name-field').value = ss[ss.selectedIndex].value;
-        });
 
-        $('#save-layout-name').on('click', function (event) {
-            var layout_name = $("#save-layout-name-field").val();
-            console.log(layout_name);
-            if (layout_name !== "") {
-                var http = new XMLHttpRequest();
-
-                http.onreadystatechange = function () {
-                    if (http.readyState === XMLHttpRequest.DONE) {
-                        if (http.status === 200 || http.status === 204) {
-                            console.log(http.status);
-                            // TODO show email sent!
-                            console.log("sent");
-                            // location.reload();
-                            ss[ss.selectedIndex].innerText = layout_name;
-
-                        } else if (http.status === 401) {
-                            console.log("code 401");
-
-
-                        } else {
-                            console.log("something else...");
-                        }
-                    }
-                };
-                var ss = document.getElementById("select-layout-selection");
-                http.open("PUT", window.location.href + "/rename_layout/"
-                    + ss[ss.selectedIndex].getAttribute('val') + "/" + layout_name, true);
-                http.setRequestHeader('Cache-Control', 'no-store');
-                http.send();
+            if (ss[ss.selectedIndex] !== null && ss[ss.selectedIndex] !== undefined) {
+                document.getElementById('favorite-layout-name-field').value = ss[ss.selectedIndex].value;
             }
-        });
+        }
 
-        $('#favorite-layout-save').on("click", function (event) {
+        document.querySelector(".popup-overlay").classList.remove("hidden");
+
+        // show popup
+        document.querySelector(".favorite-layout-dialog").classList.remove("hidden");
+
+    });
+
+    $('#select-layout-selection').on('change', function (event) {
+        var ss = document.getElementById("select-layout-selection");
+        document.getElementById('save-layout-name-field').value = ss[ss.selectedIndex].value;
+    });
+
+
+    $('#favorite-layout-selection').on('change', function (event) {
+        var ss = document.getElementById("favorite-layout-selection");
+        document.getElementById('favorite-layout-name-field').value = ss[ss.selectedIndex].value;
+    });
+
+    $('#save-layout-name').on('click', function (event) {
+        var layout_name = $("#save-layout-name-field").val();
+        console.log(layout_name);
+        if (layout_name !== "") {
             var http = new XMLHttpRequest();
 
             http.onreadystatechange = function () {
                 if (http.readyState === XMLHttpRequest.DONE) {
                     if (http.status === 200 || http.status === 204) {
-
+                        console.log(http.status);
+                        // TODO show email sent!
+                        console.log("sent");
                         // location.reload();
-                        console.log("restored to default.")
-
-                        document.querySelector(".popup-overlay").classList.add("hidden");
-
-                        // hide popup
-                        document.querySelector(".favorite-layout-dialog").classList.add("hidden");
+                        ss[ss.selectedIndex].innerText = layout_name;
 
                     } else if (http.status === 401) {
                         console.log("code 401");
@@ -1010,50 +890,78 @@ document.addEventListener('DOMContentLoaded', function () {
                     }
                 }
             };
-
-            var ss = document.getElementById("favorite-layout-selection");
-
-            http.open("PUT", window.location.href + "/save_favorite/" +
-                ss[ss.selectedIndex].getAttribute('val') + "/", true);
+            var ss = document.getElementById("select-layout-selection");
+            http.open("PUT", window.location.href + "/rename_layout/"
+                + ss[ss.selectedIndex].getAttribute('val') + "/" + layout_name, true);
             http.setRequestHeader('Cache-Control', 'no-store');
             http.send();
-        });
+        }
+    });
 
-        $('#favorite-layout-name').on('click', function (event) {
-            var layout_name = $("#favorite-layout-name-field").val();
-            console.log(layout_name);
-            if (layout_name !== "") {
-                var http = new XMLHttpRequest();
+    $('.favorite-layout-dialog .saveFavourite').on("click", function (event) {
+        var http = new XMLHttpRequest();
 
-                http.onreadystatechange = function () {
-                    if (http.readyState === XMLHttpRequest.DONE) {
-                        if (http.status === 200 || http.status === 204) {
-                            console.log(http.status);
-                            // TODO show email sent!
-                            console.log("sent");
-                            // location.reload();
-                            ss[ss.selectedIndex].innerText = layout_name;
+        http.onreadystatechange = function () {
+            if (http.readyState === XMLHttpRequest.DONE) {
+                if (http.status === 200 || http.status === 204) {
 
-                        } else if (http.status === 401) {
-                            console.log("code 401");
+                    // location.reload();
+                    console.log("restored to default.")
+
+                    document.querySelector(".popup-overlay").classList.add("hidden");
+
+                    // hide popup
+                    document.querySelector(".favorite-layout-dialog").classList.add("hidden");
+
+                } else if (http.status === 401) {
+                    console.log("code 401");
 
 
-                        } else {
-                            console.log("something else...");
-                        }
-                    }
-                };
-                var ss = document.getElementById("favorite-layout-selection");
-                http.open("PUT", "/runner/profiles/" + usernameFromToken + "/rename_favorite/"
-                    + ss[ss.selectedIndex].getAttribute('val') + "/" + layout_name, true);
-                http.setRequestHeader('Cache-Control', 'no-store');
-                http.send();
+                } else {
+                    console.log("something else...");
+                }
             }
-        });
+        };
+
+        var ss = document.getElementById("favorite-layout-selection");
+
+        http.open("PUT", window.location.href + "/save_favorite/" +
+            ss[ss.selectedIndex].getAttribute('val') + "/", true);
+        http.setRequestHeader('Cache-Control', 'no-store');
+        http.send();
+    });
+
+    $('#favorite-layout-name').on('click', function (event) {
+        var layout_name = $("#favorite-layout-name-field").val();
+        console.log(layout_name);
+        if (layout_name !== "") {
+            var http = new XMLHttpRequest();
+
+            http.onreadystatechange = function () {
+                if (http.readyState === XMLHttpRequest.DONE) {
+                    if (http.status === 200 || http.status === 204) {
+                        console.log(http.status);
+                        // TODO show email sent!
+                        console.log("sent");
+                        // location.reload();
+                        ss[ss.selectedIndex].innerText = layout_name;
+
+                    } else if (http.status === 401) {
+                        console.log("code 401");
 
 
-
-
+                    } else {
+                        console.log("something else...");
+                    }
+                }
+            };
+            var ss = document.getElementById("favorite-layout-selection");
+            http.open("PUT", "/runner/profiles/" + usernameFromToken + "/rename_favorite/"
+                + ss[ss.selectedIndex].getAttribute('val') + "/" + layout_name, true);
+            http.setRequestHeader('Cache-Control', 'no-store');
+            http.send();
+        }
+    });
 
 
     $(".eink-sent-dialog button.export-eink").on('click', function (event) {
@@ -1092,8 +1000,6 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
 
-
-
     $("#controls #remove-all").on("click", function (event) {
         // show overlay
         document.querySelector(".popup-overlay").classList.remove("hidden");
@@ -1109,11 +1015,11 @@ document.addEventListener('DOMContentLoaded', function () {
         console.log(items[0]);
 
         //
-        for (var i = 0; i < items.length; i++) {
+        for (var i = 0; i < items.length - 1; i++) {
             removeItem(items[i], false);
         }
 
-        saveLayout(grid);
+        removeItem(items[items.length - 1], true);
 
         //
         console.log("removed layout.");
@@ -1148,7 +1054,6 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
 
-
     $('.restore-layout-dialog .restore').on('click', function (event) {
         var http = new XMLHttpRequest();
 
@@ -1169,12 +1074,12 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         };
 
-        http.open("GET", window.location.href + "/layout/reset", true);
+        http.open("POST", window.location.href + "/layout/reset", true);
         http.setRequestHeader('Cache-Control', 'no-store');
         http.send();
     });
 
-    $('.select-layout-dialog .restore').on('click', function (event) {
+    $('.select-layout-dialog .select').on('click', function (event) {
         var http = new XMLHttpRequest();
 
         http.onreadystatechange = function () {
@@ -1202,7 +1107,7 @@ document.addEventListener('DOMContentLoaded', function () {
         http.send();
     });
 
-    $('.favorite-layout-dialog .restore').on('click', function (event) {
+    $('.favorite-layout-dialog .select').on('click', function (event) {
         var http = new XMLHttpRequest();
 
         http.onreadystatechange = function () {
@@ -1235,7 +1140,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
 
-    window.addEventListener('resize', function(event){
+    window.addEventListener('resize', function (event) {
         // if we have a small device - disable muuri's drag and drop
         if (document.querySelector("html").offsetWidth <= 1023) {
             grid.dragEnabled = false;
@@ -1247,4 +1152,5 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // if (document.querySelector(".premium-required") == null) {
     document.querySelector("#eink-new-window a").setAttribute('href', currentUrl + "/infographic/browser");
+    // }
 });

@@ -168,17 +168,14 @@ public enum UserDao {
                 statement.setString(1, username);
             }
 
-            System.out.println(statement);
             ResultSet resultSet = statement.executeQuery();
 
             // should be the first entry if exists
             if (resultSet.next()) {
                 User user = new User();
                 user.setUsername(resultSet.getString("username"));
-                System.out.println("there exist");
                 return user;
             } else {
-                System.out.println("no user");
                 return null;
             }
         } catch (SQLException se) {
@@ -249,9 +246,7 @@ public enum UserDao {
 
             ResultSet resultSetForActivation = statementForActivation.executeQuery();
 
-            System.out.println(statementForActivation);
             if (!resultSetForActivation.next()) {
-                System.out.println("empty list");
                 return false;
             }
 
@@ -384,7 +379,6 @@ public enum UserDao {
             se.printStackTrace();
         }
 
-        System.out.println("success update password: " + (totalRowsAffected > 0));
         return totalRowsAffected > 0;
     }
 
@@ -404,23 +398,22 @@ public enum UserDao {
             statement.setString(5, getSHA256(getSHA256(password) + salt));
             statement.setString(6, salt);
 
-            System.out.println(statement);
 
             int resultSet = statement.executeUpdate();
 
             // should be only one row
             if (resultSet > 0) {
-                System.out.println("Registered a new user!");
+                System.out.println("Successfully registered a new user!");
                 return true;
             } else {
-                System.out.println("Failed to register the user!");
+                System.out.println("Failed to register a new user!");
                 return false;
             }
         } catch (SQLException se) {
             se.printStackTrace();
         }
 
-        System.out.println("Failed to register the user!");
+        System.out.println("Failed to register a new user!");
         return false;
     }
 
@@ -474,8 +467,6 @@ public enum UserDao {
 
             ResultSet resultSet = statement.executeQuery();
 
-            System.out.println(statement);
-
             List<LayoutData> layoutData = new ArrayList<>();
 
             while (resultSet.next()) {
@@ -506,7 +497,6 @@ public enum UserDao {
             statement.setInt(2, layout_id);
             statement.setString(3, username);
 
-            System.out.println(statement);
             int resultSet = statement.executeUpdate();
 
             return resultSet > 0;
@@ -532,7 +522,6 @@ public enum UserDao {
             statement.setInt(2, layout_id);
             statement.setString(3, username);
 
-            System.out.println(statement);
             int resultSet = statement.executeUpdate();
 
             return resultSet > 0;
@@ -555,7 +544,6 @@ public enum UserDao {
             statement.setInt(1, layout_id);
             statement.setString(2, username);
 
-            System.out.println(statement);
             ResultSet resultSet = statement.executeQuery();
 
             if (resultSet.next()) {
@@ -587,7 +575,6 @@ public enum UserDao {
             statement.setInt(2, currentLayout);
             statement.setInt(3, runID);
 
-            System.out.println(statement);
             int resultSet = statement.executeUpdate();
 
             return resultSet > 0;
@@ -612,7 +599,7 @@ public enum UserDao {
 
             // should be only one row
             if (resultSet > 0) {
-                System.out.println("Upgraded the user's status!");
+                System.out.println("Upgraded the user's status.");
                 return true;
             } else {
                 System.out.println("Failed to upgrade the user's status...");
@@ -622,7 +609,6 @@ public enum UserDao {
             se.printStackTrace();
         }
 
-        System.out.println("Failed to register the user!");
         return false;
     }
 

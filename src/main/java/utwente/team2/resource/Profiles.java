@@ -44,8 +44,6 @@ public class Profiles {
                             @FormDataParam("picture") FormDataBodyPart body,
                             @Context HttpServletResponse servletResponse,
                             @Context HttpServletRequest servletRequest) throws IOException {
-        System.out.println("begin processing image");
-        System.out.println("image: " + body.getMediaType().toString());
 
         if (body.getMediaType().toString().equals("image/jpeg") ||
                 body.getMediaType().toString().equals("image/jpg") ||
@@ -88,7 +86,6 @@ public class Profiles {
     public Response getPicture(@PathParam("username") String username,
                                 @Context HttpServletResponse servletResponse,
                                 @Context HttpServletRequest servletRequest) throws IOException {
-        System.out.println("begin processing image");
 
         Principal principal = securityContext.getUserPrincipal();
         String tokenUsername = principal.getName();
@@ -108,8 +105,6 @@ public class Profiles {
     public Response getPictureBase64(@PathParam("username") String username,
                                @Context HttpServletResponse servletResponse,
                                @Context HttpServletRequest servletRequest) throws IOException {
-        System.out.println("begin processing image");
-
         Principal principal = securityContext.getUserPrincipal();
         String tokenUsername = principal.getName();
 
@@ -127,7 +122,6 @@ public class Profiles {
 
 
         String encoded = Base64.getEncoder().encodeToString(imageData);
-        System.out.println(encoded);
         // uncomment line below to send non-streamed
         return Response.ok(encoded).build();
 
@@ -168,8 +162,6 @@ public class Profiles {
         InputStream inputStream = classLoader.getResourceAsStream("../../html/profile.html");
 
         servletResponse.setHeader("Content-Type", "text/html");
-        System.out.println("Profile for " + username + " requested.");
-
         return inputStream;
     }
 
@@ -196,8 +188,6 @@ public class Profiles {
             RunDao.instance.getUserTotalStats(username, user);
             RunDao.instance.getUserRunsOverview(username, user);
 
-            System.out.println("Sent profile info back to " + username);
-
             servletResponse.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
             servletResponse.setHeader("Pragma", "no-cache");
             servletResponse.setDateHeader("Expires", 0);
@@ -214,7 +204,7 @@ public class Profiles {
         Principal principal = securityContext.getUserPrincipal();
         String tokenUsername = principal.getName();
 
-        servletResponse.sendRedirect("profiles/" +tokenUsername);
+        servletResponse.sendRedirect("profiles/" + tokenUsername);
         // TODO what if the token expires during the session?
     }
 }

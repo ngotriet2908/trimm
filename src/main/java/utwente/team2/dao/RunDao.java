@@ -19,11 +19,6 @@ public enum RunDao {
 
     public User getUserTotalStats(String username, User user) {
         try {
-            // first we get total data froms runs
-            // total distance
-            // total runs
-            // total time
-            // total steps
             String query = "SELECT COUNT(*) AS total_runs, SUM(r.duration) AS total_time, SUM(r.distance) AS total_distance, SUM(r.steps) AS total_steps " +
                     "FROM run AS r " +
                     "WHERE r.username = ? ";
@@ -56,11 +51,6 @@ public enum RunDao {
 
     public List<Run> getUserRunsOverview(String username) {
         try {
-            // date
-            // name
-            // distance
-            // time
-            // steps
             String query = "SELECT r.id, r.date, r.name, r.distance, r.duration, r.steps " +
                     "FROM run AS r " +
                     "WHERE r.username = ? " +
@@ -98,11 +88,6 @@ public enum RunDao {
 
     public String getUsername(int runID) {
         try {
-            // date
-            // name
-            // distance
-            // time
-            // steps
             String query = "SELECT r.username " +
                     "FROM run AS r " +
                     "WHERE r.id = ? " +
@@ -199,8 +184,6 @@ public enum RunDao {
 
             ResultSet resultSet = statement.executeQuery();
 
-            System.out.println(statement);
-
             List<LayoutData> layoutData = new ArrayList<>();
 
             while (resultSet.next()) {
@@ -228,7 +211,6 @@ public enum RunDao {
 
             ResultSet resultSet = statement.executeQuery();
 
-            System.out.println(statement);
             if (resultSet.next()) {
                 return resultSet.getInt(1);
             }
@@ -241,7 +223,6 @@ public enum RunDao {
         return 1;
     }
 
-
     public BigDecimal getSpeed(int runId) {
         try {
             String query = "SELECT r.distance, r.steps " +
@@ -252,8 +233,6 @@ public enum RunDao {
             statement.setInt(1, runId);
 
             ResultSet resultSet = statement.executeQuery();
-
-            System.out.println(statement);
 
             if (resultSet.next()) {
 
@@ -276,7 +255,6 @@ public enum RunDao {
         return null;
     }
 
-
     public boolean saveCurrentLayout(int runId, int current) {
 
         try {
@@ -289,7 +267,6 @@ public enum RunDao {
             statement.setInt(1, current);
             statement.setInt(2, runId);
 
-            System.out.println(statement);
             int resultSet = statement.executeUpdate();
 
             return resultSet > 0;
@@ -314,7 +291,6 @@ public enum RunDao {
             statement.setInt(2, layout_id);
             statement.setInt(3, runId);
 
-            System.out.println(statement);
             int resultSet = statement.executeUpdate();
 
             return resultSet > 0;
@@ -324,9 +300,6 @@ public enum RunDao {
 
         return false;
     }
-
-
-
 
     public boolean saveLayout(int runId, String layout) {
 
@@ -344,7 +317,6 @@ public enum RunDao {
             statement.setInt(3, runId);
             statement.setInt(2, current);
 
-            System.out.println(statement);
             int resultSet = statement.executeUpdate();
 
             return resultSet > 0;
@@ -355,24 +327,16 @@ public enum RunDao {
         return false;
     }
 
-
-
-    public String getShoes(int runid) {
+    public String getShoes(int runId) {
         try {
-            // date
-            // name
-            // distance
-            // time
-            // steps
             String query = "SELECT s.brand || ' ' || s.model as shoesname " +
                     "FROM run AS r, shoes AS s " +
                     "WHERE r.id =  ? " +
                     "AND r.shoes_id = s.id ";
 
             PreparedStatement statement = DatabaseInitialiser.getCon().prepareStatement(query);
-            statement.setInt(1, runid);
+            statement.setInt(1, runId);
             ResultSet resultSet = statement.executeQuery();
-
 
             // multiple rows
             if (resultSet.next()) {
@@ -393,23 +357,17 @@ public enum RunDao {
         return null;
     }
 
-    public Run getRunsOverviewByID(int runid) {
-        String shoesname = getShoes(runid);
+    public Run getRunsOverviewByID(int runId) {
+        String shoesName = getShoes(runId);
 
         try {
-            // date
-            // name
-            // distance
-            // time
-            // steps
             String query = "SELECT r.id, r.date, r.name, r.distance, r.duration, r.steps " +
                     "FROM run AS r " +
                     "WHERE r.id =  ? ";
 
             PreparedStatement statement = DatabaseInitialiser.getCon().prepareStatement(query);
-            statement.setInt(1, runid);
+            statement.setInt(1, runId);
             ResultSet resultSet = statement.executeQuery();
-
 
             // multiple rows
             if (resultSet.next()) {
@@ -421,8 +379,7 @@ public enum RunDao {
                 runOverviewModel.setDistance(resultSet.getInt("distance"));
                 runOverviewModel.setDuration(resultSet.getInt("duration"));
                 runOverviewModel.setSteps(resultSet.getInt("steps"));
-                runOverviewModel.setShoes(shoesname);
-
+                runOverviewModel.setShoes(shoesName);
 
                 return runOverviewModel;
             }

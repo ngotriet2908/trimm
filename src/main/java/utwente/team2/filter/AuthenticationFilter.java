@@ -33,6 +33,7 @@ public class AuthenticationFilter implements ContainerRequestFilter {
 
     @Override
     public void filter(ContainerRequestContext requestContext) {
+        System.out.println("=================");
         System.out.println("Filter started...");
         System.out.println("Resource requested: " + requestContext.getUriInfo().getPath());
 
@@ -40,6 +41,7 @@ public class AuthenticationFilter implements ContainerRequestFilter {
 
         if (jwsCookie == null) {
             System.out.println("No cookie with token provided. Redirecting to login.");
+            System.out.println("=================");
             forwardUnauthorized("not_authorized");
             abortWithUnauthorized(requestContext);
             return;
@@ -76,9 +78,11 @@ public class AuthenticationFilter implements ContainerRequestFilter {
             });
 
             System.out.println("Filter passed.");
+            System.out.println("=================");
 
         } catch (JwtException e) {
             System.out.println("Filter blocked: token is invalid or expired.");
+            System.out.println("=================");
             forwardUnauthorized("token_expired");
             abortWithUnauthorized(requestContext);
             return;

@@ -1,8 +1,10 @@
 package utwente.team2.resource;
 
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
 import utwente.team2.dao.UserDao;
-import utwente.team2.mail.ActivateTemplate;
+import utwente.team2.mail.EmailHtmlTemplate;
 import utwente.team2.mail.MailAPI;
 import utwente.team2.model.Username;
 
@@ -51,15 +53,14 @@ public class Register {
         // verifying/sanitizing input
         // check if the user already exists
         if (username.matches("[a-zA-Z_]{2,}") &&
-                firstName.matches("[a-zA-Z-]+") &&
-                lastName.matches("[a-zA-Z-]+") &&
+                firstName.matches("[\\p{L}\\s\\-]+") &&
+                lastName.matches("[\\p{L}\\s\\-]+") &&
                 email.matches("(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|\"(?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21\\x23-\\x5b\\x5d-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])*\")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21-\\x5a\\x53-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])+)\\])") &&
 //                email.matches("\"^([\\p{L}-_\\.]+){1,64}@([\\p{L}-_\\.]+){2,255}.[a-z]{2,}$\"") &&
                 password.matches("(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z]{8,}") &&
                 UserDao.instance.getUser(username, "", false) == null) {
 
             if (UserDao.instance.register(username, firstName, lastName, email, password)) {
-//            String token = UserDao.instance.generateTokenForPasswordReset(username);
                 ZoneId zoneId = ZoneId.systemDefault();
 
                 Map<String, Object> claims = new HashMap<>();
@@ -70,9 +71,11 @@ public class Register {
 
                 String token = Jwts.builder().setClaims(claims).signWith(Login.KEY).compact();
 
-                MailAPI.generateAndSendEmail(ActivateTemplate.createResetEmail(username, token),
+                MailAPI.generateAndSendEmail(EmailHtmlTemplate.createEmailHtml(username, token,
+                        "You're receiving this email because you register an account on Runner.",
+                        "ACTIVATE YOUR ACCOUNT",
+                        "http://localhost:8080/runner/register/activate?token="),
                         "Activate your account", email);
-                // default timezone
 
                 servletResponse.sendRedirect("/");
 
@@ -101,5 +104,21 @@ public class Register {
         username.setExists(UserDao.instance.getUser(username.getUsername(), "", false) != null);
 
         return username;
+    }
+
+    @Path("/activate")
+    @GET
+    @Produces(MediaType.TEXT_HTML)
+    public void showResetRequestPage(@QueryParam("token") String token, @Context HttpServletResponse servletResponse) throws IOException {
+
+        Jws<Claims> jws = Jwts.parser().require("purpose", "activate")
+                .setSigningKey(Login.KEY).parseClaimsJws(token);
+        System.out.println("Account activation JWT is valid.");
+        String username = Login.getTokenClaims(token).getBody().getSubject();
+
+
+        UserDao.instance.activateAccount(username);
+
+        servletResponse.sendRedirect("/runner/login?message=activate_success");
     }
 }

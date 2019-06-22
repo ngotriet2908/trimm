@@ -16,10 +16,8 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import java.io.IOException;
 import java.io.InputStream;
-import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -73,10 +71,6 @@ public class Login {
 
         if (user != null) {
 
-
-
-
-            // default timezone
             ZoneId zoneId = ZoneId.systemDefault();
 
             Map<String,Object> claims = new HashMap<>();
@@ -90,7 +84,6 @@ public class Login {
 
             System.out.println(jws);
 
-//             replace or create a cookie
             Cookie existing = getCookie(servletRequest, "token");
 
                 if(existing != null){
@@ -136,13 +129,5 @@ public class Login {
 
     public static Jws<Claims> getTokenClaims(String token) {
         return Jwts.parser().setSigningKey(Login.KEY).parseClaimsJws(token);
-    }
-
-
-    public static String generateRandomBase64Token(int byteLength) {
-        SecureRandom secureRandom = new SecureRandom();
-        byte[] token = new byte[byteLength];
-        secureRandom.nextBytes(token);
-        return Base64.getUrlEncoder().withoutPadding().encodeToString(token); //base64 encoding
     }
 }

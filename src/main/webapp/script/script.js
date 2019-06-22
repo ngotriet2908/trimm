@@ -13,8 +13,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
         var encoded = token.split(".")[1];
 
-        console.log(encoded);
-
         var decoded = atob(encoded);
 
         var decodedJson = JSON.parse(decoded);
@@ -106,27 +104,6 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
 
-    function hexString(buffer) {
-        const byteArray = new Uint8Array(buffer);
-
-        const hexCodes = [...byteArray].map(value => {
-            const hexCode = value.toString(16);
-            const paddedHexCode = hexCode.padStart(2, '0');
-            return paddedHexCode;
-        });
-
-
-        return hexCodes.join('');
-    }
-
-
-    function digestMessage(message) {
-        const encoder = new TextEncoder();
-        const data = encoder.encode(message);
-        console.log(window.crypto.subtle.digest('SHA-256', data));
-        return window.crypto.subtle.digest('SHA-256', data);
-    }
-
 
     if ($("#login").length > 0) {
         var loginForm = document.querySelector("#login form");
@@ -143,12 +120,6 @@ document.addEventListener('DOMContentLoaded', function () {
         var username = $("#login input[type='text']").val().trim();
         var password = $("#login input[type='password']").val().trim();
         if (username !== "" && password !== "") {
-            // var passwordsha;
-
-            // digestMessage(password).then(digestValue => {
-            //     return (hexString(digestValue));
-            // }).then(hashPassword => {
-            //     console.log(hashPassword);
 
             var params = "username=" + username + "&password=" + password;
 
@@ -167,6 +138,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
                         $("#response-message").text("Incorrect username or password. Please, try again.");
                         $("#response-message").removeClass("response-message-hidden");
+                        $("#response-message").addClass("response-message-hidden-red");
+
                         // $("#login input[type='text']").addClass("incorrect");
                         // $("#login input[type='password']").addClass("incorrect");
 
@@ -175,6 +148,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
                         $("#response-message").text("Account is not activated");
                         $("#response-message").removeClass("response-message-hidden");
+                        $("#response-message").addClass("response-message-hidden-red");
+
                         // $("#login input[type='text']").addClass("incorrect");
                         // $("#login input[type='password']").addClass("incorrect");
 
@@ -252,12 +227,6 @@ document.addEventListener('DOMContentLoaded', function () {
             var recoveryPasswordConfirm = $("#password-reset-enter form input[name=confirm-password]").val().trim();
 
             if (recoveryToken !== "" && recoveryPassword !== "" && recoveryPassword === recoveryPasswordConfirm) {
-                // var passwordsha;
-
-                // digestMessage(recoveryPassword).then(digestValue => {
-                //     return (hexString(digestValue));
-                // }).then(hashPassword => {
-                //     console.log(hashPassword);
 
                 var params = "token=" + recoveryToken + "&password=" + recoveryPassword;
 
@@ -394,13 +363,6 @@ document.addEventListener('DOMContentLoaded', function () {
                     // show pro tag
                     $("#profile-name-container").append('<span id="pro">PRO</span>');
                 } else {
-                    // show upgrade button
-                    // var referenceNode = document.querySelector("#profile-top ul .nav-logo");
-                    // var newNode = document.createElement("li");
-                    // newNode.classList.add("nav-item");
-                    // newNode.classList.add("nav-item");
-                    // newNode.innerHTML = '<a href="/runner/premium/join">upgrade</a>';
-                    // referenceNode.parentNode.insertBefore(newNode, referenceNode.nextSibling);
                     document.querySelector(".nav-item.upgrade").classList.remove("hidden");
                 }
 
@@ -492,11 +454,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 x = Number(Datex.getTime());
                 y = Number(Datey.getTime());
 
-                console.log(Datex);
-                console.log(Datey);
-                console.log(x);
-                console.log(y);
-
                 if (x > y) {
                     return 1;
                 } else if (x < y) {
@@ -517,9 +474,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 var secondx = Number(XX[0])*3600 + Number(XX[1])*60 + Number(XX[2]);
                 var secondy = Number(YY[0])*3600 + Number(YY[1])*60 + Number(YY[2]);
 
-                console.log(secondx);
-                console.log(secondy);
-
                 if (secondx > secondy) {
                     return 1;
                 } else if (secondx < secondy) {
@@ -537,9 +491,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 x = Number(x);
                 y = Number(y);
 
-                console.log(x);
-                console.log(y);
-
                 if (x > y) {
                     return 1;
                 } else if (x < y) {
@@ -556,9 +507,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
                 x = parseInt(x);
                 y = parseInt(y);
-
-                console.log(x);
-                console.log(y);
 
                 if (x > y) {
                     return 1;
@@ -578,11 +526,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 var Datey = new Date(y);
                 x = Number(Datex.getTime());
                 y = Number(Datey.getTime());
-
-                console.log(Datex);
-                console.log(Datey);
-                console.log(x);
-                console.log(y);
 
                 if (x < y) {
                     return 1;
@@ -604,9 +547,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 var secondx = Number(XX[0])*3600 + Number(XX[1])*60 + Number(XX[2]);
                 var secondy = Number(YY[0])*3600 + Number(YY[1])*60 + Number(YY[2]);
 
-                console.log(secondx);
-                console.log(secondy);
-
                 if (secondx < secondy) {
                     return 1;
                 } else if (secondx > secondy) {
@@ -624,9 +564,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 x = Number(x);
                 y = Number(y);
 
-                console.log(x);
-                console.log(y);
-
                 if (x < y) {
                     return 1;
                 } else if (x > y) {
@@ -643,9 +580,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
                 x = parseInt(x);
                 y = parseInt(y);
-
-                console.log(x);
-                console.log(y);
 
                 if (x < y) {
                     return 1;
@@ -732,16 +666,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         http.onreadystatechange = function () {
             if (http.readyState === 4 && http.status === 200) {
-                //var parsedResponse = JSON.parse(http.response);
-                // convert to Base64
-
-                // create an image
-                // var outputImg = document.createElement('img');
-                // outputImg.src = 'data:image/png;base64,'+b64Response;
                 document.getElementById("profile-picture").src = 'data:image/png;base64,' + http.responseText;
-                console.log(http.response);
-
-
             } else {
                 // TODO
             }
@@ -765,16 +690,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
         http.onreadystatechange = function () {
             if (http.readyState === 4 && http.status === 200) {
-                //var parsedResponse = JSON.parse(http.response);
-                // convert to Base64
 
-                // create an image
-                // var outputImg = document.createElement('img');
-                // outputImg.src = 'data:image/png;base64,'+b64Response;
                 document.getElementById("profile-picture").src = 'data:image/png;base64,' + http.responseText;
-                console.log(http.response);
-
-
             } else {
                 // TODO
             }
@@ -810,7 +727,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 },
                 format: {
                     pattern: "(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z]{8,}",
-                    // flags: "i",
                     message: "must contain at least one uppercase letter, lowercase letter and number."
                 }
             },
@@ -830,21 +746,21 @@ document.addEventListener('DOMContentLoaded', function () {
                 format: {
                     pattern: "[a-z0-9_]+",
                     flags: "i",
-                    message: "can only contain a-z and 0-9"
+                    message: "can only contain letters, digigts and underscores"
                 }
             },
             "first-name": {
                 presence: true,
                 format: {
-                    pattern: "[a-zA-Z\s\-]+",
-                    message: "can only contain a-z and A-Z"
+                    pattern: "[\\p{L}\\s\\-]+",
+                    message: "can only contain letters, spaces and dashes"
                 }
             },
             "last-name": {
                 presence: true,
                 format: {
-                    pattern: "[a-zA-Z\s\-]+",
-                    message: "can only contain a-z and A-Z"
+                    pattern: "[\\p{L}\\s\\-]+",
+                    message: "can only contain letters, spaces and dashes"
                 }
             },
         };
@@ -852,9 +768,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
         validate.validators.usernameAvailabilityValidator = function (value) {
             return new validate.Promise(function (resolve, reject) {
-                // if (validate.isEmpty(username)) {
-                //     return resolve('This github name already exists');
-                // }
 
                 var param = "username=" + value;
                 var http = new XMLHttpRequest();
@@ -897,8 +810,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
         var error = function (errors) {
-            // alert(JSON.stringify(errors, null, 2));
-            console.log(document.querySelector("#register input[name='username']"));
             showErrorsForInput(document.querySelector("#register input[name='username']"), [errors]);
         };
 
@@ -1034,17 +945,6 @@ document.addEventListener('DOMContentLoaded', function () {
         var email = $("#register form input[name='email']").val().trim();
         var password = $("#register form input[name='password']").val().trim();
 
-        // digestMessage(password).then(digestValue => {
-        //     return (hexString(digestValue));
-        // }).then(hashPassword => {
-
-
-        console.log(username);
-        console.log(firstName);
-        console.log(lastName);
-        console.log(email);
-        console.log(password);
-
         if (username !== "" && password !== "") { // etc. TODO
             var params = "username=" + username + "&password=" + password +
                 "&first_name=" + firstName + "&last_name=" + lastName + "&email=" + email;
@@ -1103,14 +1003,6 @@ document.addEventListener('DOMContentLoaded', function () {
                     // show pro tag
                     $("#profile-name-container").append('<span id="pro">PRO</span>');
                 } else {
-                    // show upgrade button
-                    // var referenceNode = document.querySelector("#profile-top ul .nav-logo");
-                    // var newNode = document.createElement("li");
-                    // newNode.classList.add("nav-item");
-                    // newNode.classList.add("nav-item");
-                    // newNode.innerHTML = '<a href="/runner/premium/join">upgrade</a>';
-                    // referenceNode.parentNode.insertBefore(newNode, referenceNode.nextSibling);
-
 
                     document.querySelector(".nav-item.upgrade").classList.remove("hidden");
                 }
@@ -1135,7 +1027,6 @@ document.addEventListener('DOMContentLoaded', function () {
     if ($('#dashboard').length > 0) {
         var http = new XMLHttpRequest();
         var url = window.location.href + "/info";
-        console.log(url);
         http.open('GET', url, true);
         http.setRequestHeader('Accept', 'application/json');
 
@@ -1164,8 +1055,6 @@ document.addEventListener('DOMContentLoaded', function () {
         http.onreadystatechange = function () {
             if (http.readyState === XMLHttpRequest.DONE) {
                 if (http.status === 200 || http.status === 204) {
-                    console.log(http.status);
-                    console.log("sent");
                     // show overlay
                     var parsedResponse = JSON.parse(http.response);
 
@@ -1187,9 +1076,6 @@ document.addEventListener('DOMContentLoaded', function () {
                             x.add(option);
                         }
                     }
-
-
-
                 } else if (http.status === 401) {
                     console.log("code 401");
 
@@ -1211,10 +1097,6 @@ document.addEventListener('DOMContentLoaded', function () {
         http.onreadystatechange = function () {
             if (http.readyState === XMLHttpRequest.DONE) {
                 if (http.status === 200 || http.status === 204) {
-                    console.log(http.status);
-                    // TODO show email sent!
-                    console.log("sent");
-                    // show overlay
                     var parsedResponse = JSON.parse(http.response);
 
                     var x = document.getElementById("favorite-layout-selection");
@@ -1286,8 +1168,6 @@ document.addEventListener('DOMContentLoaded', function () {
         var input = document.getElementById("profile-image-field");
         uploadImage(input);
 
-        console.log("uploaded the picture.");
-
         // hide popup
         document.querySelector(".upload-new-picture-dialog").classList.add("hidden");
 
@@ -1323,11 +1203,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
         button.classList.toggle('active');
 
-    });
-
-    $(".popup-overlay").on("click", function (event) {
-        // hide
-        // document.querySelector(".popup-overlay").classList.add("hidden");
     });
 
 });

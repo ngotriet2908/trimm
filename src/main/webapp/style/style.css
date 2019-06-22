@@ -733,7 +733,8 @@
     .nav-item.upgrade a {
         box-shadow: none;
         transition: all ease-out 0.3s;
-
+        background-color: transparent;
+        border: 1px solid white;
     }
 
     .nav-item.upgrade a:hover {
@@ -1545,6 +1546,19 @@
         position: relative;
     }
 
+    #menu-options div {
+        position: relative;
+    }
+
+    #menu-options .star {
+        position: absolute;
+        top: 0;
+        right: 0;
+        /*transform: rotate(-45deg);*/
+        color: gold;
+    }
+
+
     #menu-options {
         z-index: 4;
         position: relative;
@@ -1628,6 +1642,10 @@
 
     .dashboard-dialog > div div {
         /*display: block;*/
+    }
+
+    .dashboard-dialog a.button-raised {
+        width: auto;
     }
 
     .button-group {
@@ -1734,6 +1752,7 @@
     .upgrade-feature {
         width: 100%;
         margin: 1em auto;
+        /*padding: 1em;*/
     }
 
     .upgrade-feature i {
@@ -2416,7 +2435,8 @@
     .nav-item.upgrade a {
         box-shadow: none;
         transition: all ease-out 0.3s;
-
+        background-color: transparent;
+        border: 1px solid white;
     }
 
     .nav-item.upgrade a:hover {
@@ -3297,6 +3317,10 @@
         box-shadow: 0 24px 38px 3px rgba(0,0,0,0.14), 0 9px 46px 8px rgba(0,0,0,0.12), 0 11px 15px -7px rgba(0,0,0,0.20);
     }
 
+    .dashboard-dialog a.button-raised {
+        width: auto;
+    }
+
     .dashboard-dialog button, .dashboard-dialog div a.button-text {
         margin-left: 0.5em;
         width: auto;
@@ -3399,6 +3423,7 @@
     .upgrade-feature {
         width: 50%;
         margin: 1em auto;
+        /*padding: 1em;*/
     }
 
     .upgrade-feature i {

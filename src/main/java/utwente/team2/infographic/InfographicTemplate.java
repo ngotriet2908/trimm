@@ -225,7 +225,7 @@ public class InfographicTemplate {
             "" +
             "<p>";
 
-    private static String part4 = " km</p>" +
+    private static String part4 = " m</p>" +
             "</section>" +
             "" +
             "" +
@@ -240,24 +240,8 @@ public class InfographicTemplate {
             "" +
             "<p>";
 
-    private static String part5 = "</p>" +
+    private static String part5 = " s</p>" +
             "</section>" +
-            "" +
-            "" +
-            "<!--<section id=\"shoes\" class=\"stats-section\">-->" +
-            "<!--<h3>SHOES</h3>-->" +
-            "" +
-            "<!--<svg height=\"100\" width=\"300\">-->" +
-            "<!--<circle/>-->" +
-            "<!--<line x1=\"10\" y1=\"58\" x2=\"150\" y2=\"58\"/>-->" +
-            "<!--<line x1=\"150\" y1=\"58\" x2=\"250\" y2=\"-100\"/>-->" +
-            "<!--</svg>-->" +
-            "" +
-            "<!--<p>";
-
-    private static String part6 = "</p>-->" +
-            "<!--</section>-->" +
-            "" +
             "<section id=\"shoes\" class=\"stats-section\">" +
             "<h3>SHOES</h3>" +
             "" +
@@ -267,7 +251,9 @@ public class InfographicTemplate {
             "<line x1=\"90\" y1=\"68\" x2=\"60\" y2=\"30\"/>" +
             "</svg>" +
             "" +
-            "<p>Salomon Some Cool Shoes Name</p>" +
+            "<p>";
+
+    private static String part6 = "</p>" +
             "</section>" +
             "" +
             "" +

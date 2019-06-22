@@ -17,10 +17,10 @@ public class DatabaseInitialiser implements ServletContextListener
     }
 
     public void contextInitialized(ServletContextEvent arg0) {
-        System.out.println("SQL: generate enum");
+        System.out.println("Connecting to databse...");
         try {
             Class.forName("org.postgresql.Driver");
-            System.out.println("SQL: have driver");
+            System.out.println("Driver found.");
         } catch (ClassNotFoundException cnfe) {
             System.err.println("Error loading driver: " + cnfe);
         }
@@ -38,6 +38,7 @@ public class DatabaseInitialiser implements ServletContextListener
         try {
             con = DriverManager.getConnection(url, "di154", "8OlI3B/V");
 //            con = DriverManager.getConnection(url, "di02", "1Pu7WY99OW");
+            System.out.println("Connection established.");
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -46,7 +47,7 @@ public class DatabaseInitialiser implements ServletContextListener
         public void contextDestroyed(ServletContextEvent arg0) {
         try {
             con.close ();
-            System.out.println("server is disconnected");
+            System.out.println("Server disconnected");
         } catch (SQLException e) {
             e.printStackTrace();
         }
