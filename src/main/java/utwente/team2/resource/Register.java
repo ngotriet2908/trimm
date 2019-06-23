@@ -7,6 +7,7 @@ import utwente.team2.dao.UserDao;
 import utwente.team2.mail.EmailHtmlTemplate;
 import utwente.team2.mail.MailAPI;
 import utwente.team2.model.Username;
+import utwente.team2.settings.ApplicationSettings;
 
 import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;
@@ -69,12 +70,12 @@ public class Register {
                 claims.put("exp", String.valueOf(LocalDateTime.now().plusMinutes(1440).atZone(zoneId).toEpochSecond())); // TODO 15 min
                 claims.put("purpose", "activate");
 
-                String token = Jwts.builder().setClaims(claims).signWith(Login.KEY).compact();
+                String token = Jwts.builder().setClaims(claims).signWith(ApplicationSettings.APP_KEY).compact();
 
                 MailAPI.generateAndSendEmail(EmailHtmlTemplate.createEmailHtml(username, token,
                         "You're receiving this email because you register an account on Runner.",
                         "ACTIVATE YOUR ACCOUNT",
-                        "http://localhost:8080/runner/register/activate?token="),
+                        ApplicationSettings.DOMAIN + "/runner/register/activate?token="),
                         "Activate your account", email);
 
                 servletResponse.sendRedirect("/");
@@ -112,7 +113,7 @@ public class Register {
     public void showResetRequestPage(@QueryParam("token") String token, @Context HttpServletResponse servletResponse) throws IOException {
 
         Jws<Claims> jws = Jwts.parser().require("purpose", "activate")
-                .setSigningKey(Login.KEY).parseClaimsJws(token);
+                .setSigningKey(ApplicationSettings.APP_KEY).parseClaimsJws(token);
         System.out.println("Account activation JWT is valid.");
         String username = Login.getTokenClaims(token).getBody().getSubject();
 

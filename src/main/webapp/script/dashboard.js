@@ -80,19 +80,17 @@ document.addEventListener('DOMContentLoaded', function () {
         var dragCounter = 0;
 
         grid = new Muuri(gridElement, {
-            // items: generateElements(10),
-            layoutOnInit: false, // added
+            layoutOnInit: false,
             layoutDuration: 400,
             layoutEasing: 'ease',
             dragEnabled: dragEnabled,
             dragSortInterval: 50,
-            // dragContainer: document.body,
             dragStartPredicate: function (item, event) {
-                var isMap = event.target.id === "mapid";
+                var isTextArea = event.target.tagName.toLowerCase() === "textarea";
 
                 var isDraggable = sortFieldValue === 'order';
                 var isRemoveAction = elementMatches(event.target, '.dashboard-card-remove, .dashboard-card-remove i');
-                return (isDraggable && !isRemoveAction && !isMap) ? Muuri.ItemDrag.defaultStartPredicate(item, event) : false;
+                return (isDraggable && !isRemoveAction && !isTextArea) ? Muuri.ItemDrag.defaultStartPredicate(item, event) : false;
             },
             dragReleaseDuration: 400,
             dragReleaseEasing: 'ease'
@@ -224,15 +222,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         for (var i = 0; i < layout.cards.length; i++) {
             item = layout.cards[i];
-
-            if (item.cardTypeName === "graph") {
-                addItem(item.cardTypeName, item.name, item, true)
-            } else if (item.cardTypeName === "individual") {
-                addItem(item.cardTypeName, item.name, item, true)
-            } else if (item.cardTypeName === "distribution") {
-                addItem(item.cardTypeName, item.name, item, true)
-            }
-
+            addItem(item.cardTypeName, item.name, item, true);
             console.log("added: " + item);
         }
     }
@@ -300,9 +290,11 @@ document.addEventListener('DOMContentLoaded', function () {
         if (typeName === "graph") {
             http.open("GET", window.location.href + "/graph/50/" + indicatorName, true);
         } else if (typeName === "distribution") {
-            http.open("GET", window.location.href + "/distribution/" + indicatorName, true); // TODO
+            http.open("GET", window.location.href + "/distribution/" + indicatorName, true);
+        } else if (typeName === "note") {
+            http.open("GET", window.location.href + "/note", true);
         } else {
-            http.open("GET", window.location.href + "/indicator/" + indicatorName, true); // TODO
+            http.open("GET", window.location.href + "/individual/" + indicatorName, true);
         }
 
         http.setRequestHeader('Accept', 'application/json');
@@ -344,9 +336,11 @@ document.addEventListener('DOMContentLoaded', function () {
         if (typeName === "graph" && indicatorName !== "speed") {
             initGraph(newElement, data);
         } else if (typeName === "distribution") {
-            initDistribution(newElement, data); // TODO
+            initDistribution(newElement, data);
         } else if (indicatorName === "speed") {
-            initSpeedGraph(newElement, data); // TODO
+            initSpeedGraph(newElement, data);
+        } else if (typeName === "note") {
+            initNote();
         }
     }
 
@@ -397,9 +391,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
                 innerContent = '<div class="dashboard-card-front">' +
                     '<header>' +
-                    '<h3 class="dashboard-card-id">' + nameSplit[0] + " " + nameSplit[1] + // here was an id TODO
+                    '<h3 class="dashboard-card-id">' + nameSplit[0] + " " + nameSplit[1] +
                     '</h3>' +
-                    '<button class="dashboard-card-remove"><i class="material-icons">&#xE5CD;</i></button>' +
+                    '<button class="dashboard-card-remove"><i class="fas fa-times"></i></button>' +
                     '</header>' +
                     '<div class="dashboard-card-content dashboard-card-single">' +
 
@@ -425,7 +419,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     '<header>' +
                     '<h3 class="dashboard-card-id">' + id +
                     '</h3>' +
-                    '<button class="dashboard-card-remove"><i class="material-icons">&#xE5CD;</i></button>' +
+                    '<button class="dashboard-card-remove"><i class="fas fa-times"></i></button>' +
                     '</header>' +
                     '<div class="dashboard-card-content dashboard-card-single">' +
 
@@ -444,6 +438,26 @@ document.addEventListener('DOMContentLoaded', function () {
                     '</div>' +
                     '</div>';
                 break;
+            case "note":
+                height = 2;
+                width = 2;
+
+                innerContent = '<div class="dashboard-card-front">' +
+                    '<header>' +
+                    '<h3 class="dashboard-card-id">' + nameSplit[0] + " " + nameSplit[1] +
+                    '</h3>' +
+                    '<button class="dashboard-card-remove"><i class="fas fa-times"></i></button>' +
+                    '</header>' +
+                    '<div class="dashboard-card-content dashboard-card-note">' +
+
+
+                    '<textarea name="note-text" required>' + data.text +
+                    '</textarea>' +
+                    '<i class="fas fa-circle"></i>' +
+                    '<label>Text</label>' +
+                    '</div>' +
+                    '</div>';
+                break;
             case "graph":
                 height = 2;
                 width = 2;
@@ -452,7 +466,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     '<h3 class="dashboard-card-id">' + nameSplit[0] + " " + nameSplit[1] + " Graph" +
                     '' +
                     '</h3>' +
-                    '<button class="dashboard-card-remove"><i class="material-icons">&#xE5CD;</i></button>' +
+                    '<button class="dashboard-card-remove"><i class="fas fa-times"></i></button>' +
                     '</header>' +
                     '<div class="dashboard-card-content dashboard-card-graph">' +
                     '<canvas></canvas>' +
@@ -470,7 +484,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     '<h3 class="dashboard-card-id">' + nameSplit[0] + " " + nameSplit[1] + " Distribution" +
                     '' +
                     '</h3>' +
-                    '<button class="dashboard-card-remove"><i class="material-icons">&#xE5CD;</i></button>' +
+                    '<button class="dashboard-card-remove"><i class="fas fa-times"></i></button>' +
                     '</header>' +
                     '<div class="dashboard-card-content dashboard-card-graph">' + // TODO
                     '<canvas></canvas>' +
@@ -541,11 +555,10 @@ document.addEventListener('DOMContentLoaded', function () {
             field.value = field.querySelectorAll('option')[0].value;
         });
 
-        // Set initial search query, active filter, active sort value and active layout.
+        // Set initial search query, active filter, active sort value
         searchFieldValue = searchField.value.toLowerCase();
         filterFieldValue = filterField.value;
         sortFieldValue = sortField.value;
-        // layoutFieldValue = layoutField.value;
 
         // Search field binding.
         searchField.addEventListener('keyup', function () {
@@ -556,14 +569,11 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
 
-        // Filter, sort and layout bindings.
+        // Filter, sort bindings.
         filterField.addEventListener('change', filter);
         sortField.addEventListener('change', sort);
-        // layoutField.addEventListener('change', changeLayout);
     }
 
-    // Add/remove items bindings.
-    // addItemsElement.addEventListener('click', addItems);
     gridElement.addEventListener('click', function (e) {
         if (elementMatches(e.target, '.dashboard-card-remove, .dashboard-card-remove i')) {
             removeItem(e, true);
@@ -573,7 +583,6 @@ document.addEventListener('DOMContentLoaded', function () {
     // start
     initControls();
     initGrid();
-
 
     // add graph
     function initGraph(element, data) {
@@ -675,12 +684,11 @@ document.addEventListener('DOMContentLoaded', function () {
         })
     }
 
-    // add graph
     function initSpeedGraph(element, data) {
         var ctx = element.querySelector("canvas").getContext('2d');
 
         var lineChartData = {
-            labels: data.step_no,
+            labels: data.right,
             datasets: [{
                 label: "speed",
                 borderColor: 'rgb(255, 99, 132)',
@@ -743,6 +751,13 @@ document.addEventListener('DOMContentLoaded', function () {
 
         // show popup
         document.querySelector(".add-dialog").classList.remove("hidden");
+
+        // if note is on the page, remove note option from selectType field
+        if (document.querySelector(".dashboard-card-note") != null) {
+            document.querySelector('#select-type option[value="note"]').setAttribute("disabled", "disabled");
+        } else {
+            document.querySelector('#select-type option[value="note"]').removeAttribute("disabled");
+        }
     });
 
     $("#select-type").on("change", function (event) {
@@ -757,7 +772,12 @@ document.addEventListener('DOMContentLoaded', function () {
             $("#select-side input").attr("disabled", false);
             $("#select-side div:nth-of-type(1) input").attr("checked", true);
             document.querySelector("#select-side").classList.remove("disabled");
+
+            $("#select-indicator").attr("disabled", false);
+            document.querySelector(".add-dialog .input-select").classList.remove("disabled");
         } else if (typeField.value === "graph" || typeField.value === "distribution") {
+            $("#select-indicator").attr("disabled", false);
+            document.querySelector(".add-dialog .input-select").classList.remove("disabled");
 
             if (indicatorField.querySelector("option[value='speed']") == null) {
                 var newOption = document.createElement("option");
@@ -775,6 +795,13 @@ document.addEventListener('DOMContentLoaded', function () {
                 $("#select-side div:nth-of-type(1) input").attr("checked", true);
                 document.querySelector("#select-side").classList.remove("disabled");
             }
+        } else if (typeField.value === "note") {
+            $("#select-side input").attr("disabled", true);
+            $("#select-side input").attr("checked", false);
+            document.querySelector("#select-side").classList.add("disabled");
+
+            $("#select-indicator").attr("disabled", true);
+            document.querySelector(".add-dialog .input-select").classList.add("disabled");
         }
     });
 
@@ -1153,4 +1180,59 @@ document.addEventListener('DOMContentLoaded', function () {
     // if (document.querySelector(".premium-required") == null) {
     document.querySelector("#eink-new-window a").setAttribute('href', currentUrl + "/infographic/browser");
     // }
+
+    function initNote() {
+        var statusIcon = document.querySelector(".dashboard-card-note i");
+        var noteTextArea = document.querySelector(".dashboard-card-note textarea");
+        var timeout;
+
+        noteTextArea.addEventListener("keyup", function () {
+            statusIcon.classList.add("unsaved");
+            console.log("changes pending");
+
+            if (timeout) {
+                clearTimeout(timeout);
+            }
+
+            timeout = setTimeout(function () {
+                saveNoteText(noteTextArea.value);
+
+                statusIcon.classList.remove("unsaved");
+                console.log("changes saved");
+            }, 1000);
+        });
+    }
+
+
+    function saveNoteText(text) {
+        var http = new XMLHttpRequest();
+
+        var param = {
+            "cardTypeName": "note",
+            "text": text,
+            "name": "note",
+        };
+
+        http.onreadystatechange = function () {
+            if (http.readyState === XMLHttpRequest.DONE) {
+                if (http.status === 200 || http.status === 204) {
+                    console.log(http.status);
+
+                } else if (http.status === 401) {
+                    console.log("code 401");
+
+
+                } else {
+                    console.log("something else...");
+                }
+            }
+        };
+
+        http.open("PUT", window.location.href + "/note", true);
+        http.setRequestHeader('Cache-Control', 'no-store');
+        http.setRequestHeader('Content-type', 'application/json');
+        http.send(JSON.stringify(param));
+    }
+
+
 });

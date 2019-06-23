@@ -982,6 +982,11 @@ document.addEventListener('DOMContentLoaded', function () {
     if ($("#profile-management").length > 0) {
         console.log("loading " + usernameFromToken + " profile data");
 
+        console.log(window.location.protocol + "//" + window.location.host);
+
+        document.querySelector("#link-strava").setAttribute("href", "https://www.strava.com/oauth/authorize?client_id=35158&redirect_uri="
+            + window.location.protocol + "//" + window.location.host + "/runner/settings/link_strava&response_type=code&scope=read,read_all,profile:read_all,profile:write,activity:read_all,activity:write");
+
         getImageForSettings(usernameFromToken);
 
         var http = new XMLHttpRequest();

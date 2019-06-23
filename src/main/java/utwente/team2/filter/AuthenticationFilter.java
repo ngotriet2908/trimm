@@ -5,6 +5,7 @@ import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import utwente.team2.resource.Login;
+import utwente.team2.settings.ApplicationSettings;
 
 import javax.annotation.Priority;
 import javax.servlet.http.HttpServletRequest;
@@ -90,7 +91,7 @@ public class AuthenticationFilter implements ContainerRequestFilter {
     }
 
     private void validateToken(String token) throws JwtException {
-        Jws<Claims> jws = Jwts.parser().setSigningKey(Login.KEY).parseClaimsJws(token);
+        Jws<Claims> jws = Jwts.parser().setSigningKey(ApplicationSettings.APP_KEY).parseClaimsJws(token);
     }
 
     private void forwardUnauthorized(String error) {

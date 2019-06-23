@@ -71,7 +71,6 @@ public class Runs {
     }
 
 
-    //TODO change to post
     @Path("/{run_id}/layout/reset")
     @POST
     @Produces(MediaType.APPLICATION_JSON)
@@ -255,7 +254,6 @@ public class Runs {
         }
 
         String layout = RunDao.instance.getLayout(Integer.valueOf(runId));
-
         ObjectMapper mapper = new ObjectMapper();
 
         if (layout == null) {
@@ -271,45 +269,19 @@ public class Runs {
                 String typeName = jsonNode.get("layout").get(i).get("typeName").textValue();
 
                 if (typeName.equals("individual")) {
-                    Indicator indicator = getIndicator(runId, jsonNode.get("layout").get(i).get("indicatorName").textValue());
-                    ld.getCards().add(indicator);
+                    Individual individual = getIndividual(runId, jsonNode.get("layout").get(i).get("indicatorName").textValue());
+                    ld.getCards().add(individual);
                 } else if (typeName.equals("graph")) {
-                    String indicatorName = jsonNode.get("layout").get(i).get("indicatorName").textValue();
-
-                    GraphPoints gp;
-
-                    if (indicatorName.equals("speed")) {
-                        BigDecimal stepDistance = RunDao.instance.getSpeed(Integer.parseInt(runId));
-                        gp = StepDao.instance.getTime(runId, 51);
-
-                        if (gp != null) {
-                            gp.reprocessSpeed(stepDistance);
-                        }
-                    } else {
-                        gp = StepDao.instance.getStepsWithPara(runId, 50, indicatorName);
-                    }
+                    String indicator = jsonNode.get("layout").get(i).get("indicatorName").textValue();
+                    GraphPoints gp = prepareGraphWithNumberOfPoints(runId, indicator, 50);
                     ld.getCards().add(gp);
                 } else if (typeName.equals("distribution")) {
-                    String indicatorName = jsonNode.get("layout").get(i).get("indicatorName").textValue();
-                    GraphPoints gp;
-
-                    if (indicatorName.equals("speed")) {
-                        BigDecimal stepDistance = RunDao.instance.getSpeed(Integer.parseInt(runId));
-                        gp = StepDao.instance.getAllTime(runId);
-                        gp.reprocessSpeed(stepDistance);
-
-                        Distribution distribution = new Distribution(gp.getLeft(), gp.getName());
-                        distribution.getSpeedDistribution();
-                    } else {
-                        gp = StepDao.instance.getAllSteps(runId, jsonNode.get("layout").get(i).get("indicatorName").textValue());
-                    }
-
-                    if (gp != null) {
-                        Distribution distribution = new Distribution(gp.getLeft(), gp.getName());
-                        distribution.getDistribution();
-
-                        ld.getCards().add(distribution);
-                    }
+                    String indicator = jsonNode.get("layout").get(i).get("indicatorName").textValue();
+                    Distribution distribution = prepareDistribution(runId, indicator);
+                    ld.getCards().add(distribution);
+                } else if (typeName.equals("note")) {
+                    Note note = prepareNote(runId);
+                    ld.getCards().add(note);
                 }
             }
 
@@ -317,60 +289,27 @@ public class Runs {
         }
     }
 
-    public Indicator getIndicator(String runId, String variable) {
-        return StepDao.instance.getFunction(variable,Integer.parseInt(runId));
+    public Individual prepareIndividual(String runId, String variable) {
+        return StepDao.instance.getIndividual(variable,Integer.parseInt(runId));
     }
 
-
-    @Path("/{run_id}/indicator/{variable}")
-    @GET
-    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public Indicator showRunPage(@PathParam("run_id") String runId, @PathParam("variable") String variable) {
-       return getIndicator(runId, variable);
-    }
-
-    @Path("/{run_id}/graph/{numberOfSteps}")
-    @GET
-    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public List<Step> getListOfStep(@PathParam("run_id") String runId, @PathParam("numberOfSteps") String numberOfSteps) {
-        List<Step> res = StepDao.instance.getSteps(runId, Integer.parseInt(numberOfSteps));
-        return res;
-    }
-
-    @Path("/{run_id}/graph/{numberOfSteps}/{indicator}")
-    @GET
-    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public GraphPoints getListOfStepWithPara(@PathParam("run_id") String runId, @PathParam("numberOfSteps") String numberOfSteps, @PathParam("indicator") String indicator) {
-
+    public GraphPoints prepareGraphWithNumberOfPoints(String runId, String indicator, int numberOfSteps) {
         if (indicator.equals("speed")) {
-            BigDecimal stepDistance = RunDao.instance.getSpeed(Integer.parseInt(runId));
-            GraphPoints gp = StepDao.instance.getTime(runId, Integer.parseInt(numberOfSteps) + 1);
-            gp.reprocessSpeed(stepDistance);
+            BigDecimal stepLength = RunDao.instance.getStepLength(Integer.parseInt(runId));
+
+            GraphPoints gp = StepDao.instance.getStepsAndTime(runId, numberOfSteps + 1, true);
+            gp.calculateSpeed(stepLength);
             return gp;
         }
 
-        GraphPoints res = StepDao.instance.getStepsWithPara(runId, Integer.parseInt(numberOfSteps), indicator);
-        return res;
+        return StepDao.instance.getStepsWithNumberOfSteps(runId, numberOfSteps, indicator);
     }
 
-    @Path("/{run_id}/graph/{numberOfSteps}/{indicator}/{startP}/{endP}")
-    @GET
-    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public GraphPoints getListOfStepWithParaAndRange(@PathParam("run_id") String runId, @PathParam("numberOfSteps") String numberOfSteps,
-                                                     @PathParam("indicator") String indicator, @PathParam("startP") String startP, @PathParam("endP") String endP) {
-        GraphPoints gp = StepDao.instance.getStepsWithParaAndRange(runId, Integer.parseInt(numberOfSteps), indicator, Integer.parseInt(startP), Integer.parseInt(endP));
-        return gp;
-    }
-
-    @Path("/{run_id}/distribution/{indicator}")
-    @GET
-    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public Distribution getDistribution(@PathParam("run_id") String runId, @PathParam("indicator") String indicator) {
-
+    public Distribution prepareDistribution(String runId, String indicator) {
         if (indicator.equals("speed")) {
-            BigDecimal stepDistance = RunDao.instance.getSpeed(Integer.parseInt(runId));
-            GraphPoints gp = StepDao.instance.getAllTime(runId);
-            gp.reprocessSpeed(stepDistance);
+            BigDecimal stepDistance = RunDao.instance.getStepLength(Integer.parseInt(runId));
+            GraphPoints gp = StepDao.instance.getStepsAndTime(runId, 0, false);
+            gp.calculateSpeed(stepDistance);
 
             Distribution distribution = new Distribution(gp.getLeft(), gp.getName());
             distribution.getSpeedDistribution();
@@ -385,20 +324,79 @@ public class Runs {
         return distribution;
     }
 
+    public Note prepareNote(String runId) {
+        Note note = RunDao.instance.getNote(Integer.valueOf(runId));
+        System.out.println("Preparing note.");
+        System.out.println("Note text: " + note.getText());
+        return note;
+    }
 
+
+    @Path("/{run_id}/individual/{variable}")
+    @GET
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    public Individual getIndividual(@PathParam("run_id") String runId, @PathParam("variable") String variable) {
+       return prepareIndividual(runId, variable);
+    }
+
+    @Path("/{run_id}/graph/{numberOfSteps}")
+    @GET
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    public List<Step> getListOfSteps(@PathParam("run_id") String runId, @PathParam("numberOfSteps") String numberOfSteps) {
+        return StepDao.instance.getSteps(runId, Integer.parseInt(numberOfSteps));
+    }
+
+    @Path("/{run_id}/graph/{numberOfSteps}/{indicator}")
+    @GET
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    public GraphPoints getGraphWithNumberOfPoints(@PathParam("run_id") String runId, @PathParam("numberOfSteps") String numberOfSteps, @PathParam("indicator") String indicator) {
+        return prepareGraphWithNumberOfPoints(runId, indicator, Integer.valueOf(numberOfSteps));
+    }
+
+    @Path("/{run_id}/graph/{numberOfSteps}/{indicator}/{startP}/{endP}")
+    @GET
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    public GraphPoints getGraphWithNumberOfPointsAndRange(@PathParam("run_id") String runId, @PathParam("numberOfSteps") String numberOfSteps,
+                                                          @PathParam("indicator") String indicator, @PathParam("startP") String startP, @PathParam("endP") String endP) {
+        return StepDao.instance.getStepsWithNumberOfStepsAndRange(runId, Integer.parseInt(numberOfSteps), indicator, Integer.parseInt(startP), Integer.parseInt(endP));
+    }
+
+    @Path("/{run_id}/distribution/{indicator}")
+    @GET
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    public Distribution getDistribution(@PathParam("run_id") String runId, @PathParam("indicator") String indicator) {
+        return prepareDistribution(runId, indicator);
+    }
+
+    @Path("/{run_id}/note")
+    @GET
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    public Note getNote(@PathParam("run_id") String runId) {
+        return prepareNote(runId);
+    }
+
+    @Path("/{run_id}/note")
+    @PUT
+    @Consumes(MediaType.APPLICATION_JSON)
+    public void updateNote(@PathParam("run_id") String runId, Note note) {
+        System.out.println("Updating note.");
+        System.out.println("Note's new text: " + note.getText());
+
+        RunDao.instance.saveNote(Integer.valueOf(runId), note.getText());
+    }
 
     @Path("/{run_id}/info")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public Run showRunInfo(@PathParam("run_id") String runId) {
-        return RunDao.instance.getRunsOverviewByID(Integer.parseInt(runId));
+        return RunDao.instance.getRun(Integer.parseInt(runId));
     }
 
     @Path("/{run_id}/infographic/email")
     @GET
     public String sentToEmail(@PathParam("run_id") String runId, @QueryParam("email") String email) {
 
-        Run run = RunDao.instance.getRunsOverviewByID(Integer.parseInt(runId));
+        Run run = RunDao.instance.getRun(Integer.parseInt(runId));
 
         if (run != null) {
             InfographicImageGenerator infographicImageGenerator = new InfographicImageGenerator(
@@ -431,7 +429,7 @@ public class Runs {
     @Produces(MediaType.TEXT_HTML)
     public String prepareInfographic(@PathParam("run_id") String runId) {
 
-        Run run = RunDao.instance.getRunsOverviewByID(Integer.parseInt(runId));
+        Run run = RunDao.instance.getRun(Integer.parseInt(runId));
 
         if (run != null) {
             return InfographicTemplate.createInfographic(run.getName(), run.getDate().toString(),

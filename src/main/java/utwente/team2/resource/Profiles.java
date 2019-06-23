@@ -186,7 +186,7 @@ public class Profiles {
             User user = new User();
             UserDao.instance.getUserDetails(username, user);
             RunDao.instance.getUserTotalStats(username, user);
-            RunDao.instance.getUserRunsOverview(username, user);
+            RunDao.instance.getUserRunsList(username, user);
 
             servletResponse.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
             servletResponse.setHeader("Pragma", "no-cache");

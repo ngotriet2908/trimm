@@ -6,9 +6,10 @@ import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import utwente.team2.dao.UserDao;
-import utwente.team2.mail.MailAPI;
 import utwente.team2.mail.EmailHtmlTemplate;
+import utwente.team2.mail.MailAPI;
 import utwente.team2.model.User;
+import utwente.team2.settings.ApplicationSettings;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.AddressException;
@@ -53,22 +54,21 @@ public class PasswordReset {
         User user = UserDao.instance.getUserDetails(username);
 
         if (user != null) {
-            // default timezone
             ZoneId zoneId = ZoneId.systemDefault();
 
             Map<String, Object> claims = new HashMap<>();
             claims.put("iss", "runner");
             claims.put("sub", username);
-            claims.put("exp", String.valueOf(LocalDateTime.now().plusMinutes(2).atZone(zoneId).toEpochSecond())); // TODO 15 min
+            claims.put("exp", String.valueOf(LocalDateTime.now().plusMinutes(10).atZone(zoneId).toEpochSecond())); // TODO 15 min
             claims.put("purpose", "password_reset");
             claims.put("key", (UserDao.instance.getUsersPassword(username)).substring(0, 5));
 
-            String token = Jwts.builder().setClaims(claims).signWith(Login.KEY).compact();
+            String token = Jwts.builder().setClaims(claims).signWith(ApplicationSettings.APP_KEY).compact();
 
             MailAPI.generateAndSendEmail(EmailHtmlTemplate.createEmailHtml(username, token,
                     "You're receiving this email because you requested a password reset for your user account on Runner. If you didn't request a password change, you can just ignore this message.",
                     "RESET YOUR PASSWORD",
-                    "http://localhost:8080/runner/password/reset/enter?token="), "Reset your password - Runner", user.getEmail());
+                    ApplicationSettings.DOMAIN + "/runner/password/reset/enter?token="), "Reset your password - Runner", user.getEmail());
         }
 
         // redirect to success page (even if the user does not exist - nobody should know that) TODO later
@@ -100,7 +100,7 @@ public class PasswordReset {
 
             if (passswordHash != null) {
                 Jws<Claims> jws = Jwts.parser().require("purpose", "password_reset").require("key", passswordHash.substring(0, 5))
-                        .setSigningKey(Login.KEY).parseClaimsJws(token);
+                        .setSigningKey(ApplicationSettings.APP_KEY).parseClaimsJws(token);
                 System.out.println("Password reset JWT is valid.");
 
                 UserDao.instance.updatePassword(username, password);

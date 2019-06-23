@@ -114,7 +114,7 @@ public class Settings {
 
                     System.out.println(responseJson.getString("access_token"));
                     System.out.println(responseJson.getString("refresh_token"));
-                    System.out.println(responseJson.getString("expires_at"));
+                    System.out.println(responseJson.getBigDecimal("expires_at"));
                 }
             }
 

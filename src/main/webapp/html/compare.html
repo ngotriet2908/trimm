@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <meta charset="UTF-8">
+    <title>Compare</title>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css"
+          integrity="sha384-oS3vJWv+0UjzBfQzYUhtDYW+Pj2yciDJxpsK1OYPAYjqT085Qq/1cq5FLXAZQ7Ay" crossorigin="anonymous">
+
+    <link rel="stylesheet" href="/style/style.css">
+</head>
+<body id="compare">
+
+    <div class="popup-overlay hidden">
+    </div>
+
+    <div class="profile-top">
+    </div>
+
+    <nav>
+        <span class="nav-logo">
+                <a class="font-bold" href="/">runner</a>
+        </span>
+
+        <span class="nav-button">
+                <a class="font-bold">
+                    <i class="fas fa-bars"></i>
+                </a>
+        </span>
+
+        <div>
+            <ul class="hidden">
+                <li class="nav-item">
+                    <a href="/">home</a>
+                </li>
+
+                <li class="nav-item">
+                    <a href="/runner/profiles">profile</a>
+                </li>
+
+                <li class="nav-item">
+                    <a href="/runner/logout">sign out</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <main>
+        <div id="compare-checkbox">
+
+        </div>
+
+        <div class="input-group input-select">
+            <select id="select-indicator-compare">
+                <option value="axtibacc">Axtibacc</option>
+                <option value="tibimpact">Tibimpact</option>
+                <option value="axsacacc">Axsacacc</option>
+                <option value="sacimpact">Sacimpact</option>
+                <option value="brakingforce">Brakingforce</option>
+                <option value="pushoffpower">Pushoffpower</option>
+                <option value="tibintrot">Tibintrot</option>
+                <option value="vll">Vll</option>
+            </select>
+            <label class="select-label">Indicator</label>
+        </div>
+
+        <div id="select-side-compare" class="option-group">
+            <div>
+                <input id="select-side-left-compare" type="radio" name="select-side" value="_left" checked>
+                <label for="select-side-left-compare">Left side</label>
+            </div>
+
+            <div>
+                <input id="select-side-right-compare" type="radio" name="select-side" value="_right">
+                <label for="select-side-right-compare">Right side</label>
+            </div>
+        </div>
+
+        <div>
+            <button id="compare-button" type="button" > Compare </button>
+        </div>
+
+        <div id="chart-compare">
+
+        </div>
+    </main>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.bundle.js"></script>
+
+    <script src="/script/script.js"></script>
+    <script src="/script/compare.js"></script>
+</body>
+</html>

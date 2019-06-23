@@ -2,7 +2,7 @@ package utwente.team2.dao;
 
 import utwente.team2.DatabaseInitialiser;
 import utwente.team2.model.GraphPoints;
-import utwente.team2.model.Indicator;
+import utwente.team2.model.Individual;
 import utwente.team2.model.Step;
 
 import java.math.BigDecimal;
@@ -10,7 +10,8 @@ import java.math.RoundingMode;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,7 +36,6 @@ public enum StepDao {
             List<Step> steps = new ArrayList<>();
 
             while(resultSet.next()) {
-
                 int stepID = resultSet.getInt("step_no");
 
                 String time = resultSet.getString("time");
@@ -69,7 +69,6 @@ public enum StepDao {
                          sacimpact_left,  brakingforce_left,  pushoffpower_left,
                          tibintrot_left,  vll_left);
 
-
                     steps.add(step);
             }
             return steps;
@@ -81,7 +80,7 @@ public enum StepDao {
     }
 
 
-    public Indicator getFunction(String variable, int runID) {
+    public Individual getIndividual(String variable, int runID) {
         try{
             String query =  "SELECT MIN(s."+ variable + ")" + ",MAX(s." + variable + ")" + ",AVG(s." + variable + "),t.name, t.meaning FROM step s, term t " +
                     "WHERE s.run_id = ? " +
@@ -94,8 +93,8 @@ public enum StepDao {
             ResultSet resultSet = statement.executeQuery();
 
             if (resultSet.next()) {
-                //TODO get all variable
-                return new Indicator(resultSet.getBigDecimal(1).setScale(2, RoundingMode.HALF_UP).doubleValue(),
+                //TODO get all variables
+                return new Individual(resultSet.getBigDecimal(1).setScale(2, RoundingMode.HALF_UP).doubleValue(),
                         resultSet.getBigDecimal(2).setScale(2, RoundingMode.HALF_UP).doubleValue(),
                         resultSet.getBigDecimal(3).setScale(2, RoundingMode.HALF_UP).doubleValue(),
                         resultSet.getString(4),resultSet.getString(5));
@@ -106,44 +105,12 @@ public enum StepDao {
         return null;
     }
 
-    public GraphPoints getStepsWithPara(String runID, int numberOfStep, String indicator) {
-        try{
-
-            String query =  "SELECT DISTINCT  s.step_no, s." + indicator + " FROM step s, run " +
-                    "WHERE s.run_id = ? " +
-                    "AND run.id = s.run_id " +
-                    "AND MOD(s.step_no - 1, DIV(run.steps,?)) = 0 " +
-                    "ORDER BY s.step_no";
-
-            PreparedStatement statement = DatabaseInitialiser.getCon().prepareStatement(query);
-            statement.setInt(1, Integer.parseInt(runID));
-            statement.setInt(2, numberOfStep);
-
-            ResultSet resultSet = statement.executeQuery();
-
-            GraphPoints graphPoints = new GraphPoints(indicator);
-
-            while(resultSet.next()) {
-
-                graphPoints.getStep_no().add(resultSet.getInt("step_no"));
-                graphPoints.getLeft().add(resultSet.getBigDecimal(2));
-            }
-            graphPoints.setRight(getBaseLine(indicator));
-            return graphPoints;
-        } catch(SQLException sqle) {
-            System.err.println("Error connecting: " + sqle);
-        }
-
-        return null;
-    }
 
     public List<BigDecimal> getBaseLine(String indicator) {
         try{
 
             String query =  "SELECT DISTINCT  b.segment, b." + indicator + " FROM baseline b " +
                     "ORDER BY  b.segment";
-
-
 
             PreparedStatement statement = DatabaseInitialiser.getCon().prepareStatement(query);
 
@@ -192,9 +159,59 @@ public enum StepDao {
         return null;
     }
 
-    public GraphPoints getTime(String runID, int numberOfSteps) {
+    public GraphPoints getStepsAndTime(String runID, int numberOfSteps, boolean withNumberOfSteps) {
         try{
-            String query =  "SELECT DISTINCT  s.step_no, s.time FROM step s, run " +
+            String query;
+            PreparedStatement statement;
+
+            if (withNumberOfSteps) {
+                query = "SELECT DISTINCT  s.step_no, s.time " +
+                        "FROM step s, run " +
+                        "WHERE s.run_id = ? " +
+                        "AND run.id = s.run_id " +
+                        "AND MOD(s.step_no - 1, DIV(run.steps,?)) = 0 " +
+                        "ORDER BY s.step_no";
+
+                statement = DatabaseInitialiser.getCon().prepareStatement(query);
+                statement.setInt(1, Integer.parseInt(runID));
+                statement.setInt(2, numberOfSteps);
+            } else {
+                query =  "SELECT DISTINCT  s.step_no, s.time FROM step s, run " +
+                        "WHERE s.run_id = ? " +
+                        "AND run.id = s.run_id " +
+                        "AND MOD(s.step_no - 1, 50) = 0 " +
+                        "ORDER BY s.step_no";
+
+                statement = DatabaseInitialiser.getCon().prepareStatement(query);
+                statement.setInt(1, Integer.parseInt(runID));
+            }
+
+            ResultSet resultSet = statement.executeQuery();
+
+            GraphPoints graphPoints = new GraphPoints("speed");
+
+            while(resultSet.next()) {
+                graphPoints.getStep_no().add(resultSet.getInt("step_no"));
+
+                LocalDateTime timestamp = resultSet.getTimestamp(2).toLocalDateTime();
+                ZoneId zoneId = ZoneId.systemDefault();
+                long unixTime = timestamp.atZone(zoneId).toEpochSecond();
+
+                graphPoints.getLeft().add(BigDecimal.valueOf(unixTime).setScale(10, BigDecimal.ROUND_UP));
+            }
+            return graphPoints;
+        } catch(SQLException sqle) {
+            System.err.println("Error connecting: " + sqle);
+        }
+
+        return null;
+    }
+
+
+    public GraphPoints getStepsWithNumberOfSteps(String runID, int numberOfSteps, String indicator) {
+        try{
+
+            String query =  "SELECT DISTINCT  s.step_no, s." + indicator + " FROM step s, run " +
                     "WHERE s.run_id = ? " +
                     "AND run.id = s.run_id " +
                     "AND MOD(s.step_no - 1, DIV(run.steps,?)) = 0 " +
@@ -206,57 +223,13 @@ public enum StepDao {
 
             ResultSet resultSet = statement.executeQuery();
 
-            GraphPoints graphPoints = new GraphPoints("speed");
+            GraphPoints graphPoints = new GraphPoints(indicator);
 
             while(resultSet.next()) {
-
                 graphPoints.getStep_no().add(resultSet.getInt("step_no"));
-
-                java.util.Date date = null;
-                Timestamp timestamp = resultSet.getTimestamp(2);
-                if (timestamp != null)
-                    date = new java.util.Date(timestamp.getTime());
-
-                long second = date.getTime() / 1000;
-                graphPoints.getLeft().add(BigDecimal.valueOf(second).setScale(10, BigDecimal.ROUND_UP));
-
+                graphPoints.getLeft().add(resultSet.getBigDecimal(2));
             }
-            return graphPoints;
-        } catch(SQLException sqle) {
-            System.err.println("Error connecting: " + sqle);
-        }
-
-        return null;
-    }
-
-    public GraphPoints getAllTime(String runID) {
-        try{
-            String query =  "SELECT DISTINCT  s.step_no, s.time FROM step s, run " +
-                    "WHERE s.run_id = ? " +
-                    "AND run.id = s.run_id " +
-                    "AND MOD(s.step_no - 1, 50) = 0 " +
-                    "ORDER BY s.step_no";
-
-            PreparedStatement statement = DatabaseInitialiser.getCon().prepareStatement(query);
-            statement.setInt(1, Integer.parseInt(runID));
-
-            ResultSet resultSet = statement.executeQuery();
-
-            GraphPoints graphPoints = new GraphPoints("speed");
-
-            while(resultSet.next()) {
-
-                graphPoints.getStep_no().add(resultSet.getInt("step_no"));
-
-                java.util.Date date = null;
-                Timestamp timestamp = resultSet.getTimestamp(2);
-                if (timestamp != null)
-                    date = new java.util.Date(timestamp.getTime());
-
-                long second = date.getTime() / 1000;
-                graphPoints.getLeft().add(BigDecimal.valueOf(second).setScale(10, BigDecimal.ROUND_UP));
-
-            }
+            graphPoints.setRight(getBaseLine(indicator));
             return graphPoints;
         } catch(SQLException sqle) {
             System.err.println("Error connecting: " + sqle);
@@ -266,7 +239,7 @@ public enum StepDao {
     }
 
 
-    public GraphPoints getStepsWithParaAndRange(String runID, int numberOfStep, String indicator, int startP, int endP) {
+    public GraphPoints getStepsWithNumberOfStepsAndRange(String runID, int numberOfSteps, String indicator, int startP, int endP) {
         try{
 
             String indicator_left = indicator + "_left";
@@ -285,7 +258,7 @@ public enum StepDao {
             statement.setInt(1, Integer.parseInt(runID));
             statement.setInt(2, endP);
             statement.setInt(3, startP);
-            statement.setInt(4, numberOfStep);
+            statement.setInt(4, numberOfSteps);
             statement.setInt(5, startP);
             statement.setInt(6, endP);
 
@@ -295,7 +268,6 @@ public enum StepDao {
             GraphPoints graphPoints = new GraphPoints(indicator);
 
             while(resultSet.next()) {
-
                 graphPoints.getStep_no().add(resultSet.getInt("step_no"));
                 graphPoints.getLeft().add(resultSet.getBigDecimal(2));
                 graphPoints.getRight().add(resultSet.getBigDecimal(3));

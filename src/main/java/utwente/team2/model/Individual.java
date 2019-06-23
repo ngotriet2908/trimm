@@ -3,7 +3,7 @@ package utwente.team2.model;
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
-public class Indicator implements Card {
+public class Individual implements Card {
     private String cardTypeName;
     private double minimum;
     private double maximum;
@@ -27,7 +27,7 @@ public class Indicator implements Card {
         this.meaning = meaning;
     }
 
-    public Indicator(double minimum, double maximum, double average, String name, String meaning) {
+    public Individual(double minimum, double maximum, double average, String name, String meaning) {
         cardTypeName = "individual";
         this.minimum = minimum;
         this.maximum = maximum;
@@ -68,7 +68,7 @@ public class Indicator implements Card {
         this.average = average;
     }
 
-    public Indicator(double minimum, double maximum, double average) {
+    public Individual(double minimum, double maximum, double average) {
         this.minimum = minimum;
         this.maximum = maximum;
         this.average = average;

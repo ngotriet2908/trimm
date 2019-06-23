@@ -3,11 +3,10 @@ package utwente.team2.resource;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.security.Keys;
 import utwente.team2.dao.UserDao;
 import utwente.team2.model.User;
+import utwente.team2.settings.ApplicationSettings;
 
-import javax.crypto.SecretKey;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -24,12 +23,6 @@ import java.util.Map;
 
 @Path("/login")
 public class Login {
-
-    // TODO insecure!!
-    private static final String SECRET = "LZ_FzX6IB-sSeEScwB0XjhQaetivpLf91QzsQAAYnVI";
-    private static final byte[] SECRET_BYTES = SECRET.getBytes();
-    public static final SecretKey KEY = Keys.hmacShaKeyFor(SECRET_BYTES);
-
 
     @GET
     @Produces(MediaType.TEXT_HTML)
@@ -63,7 +56,6 @@ public class Login {
 
         if (!UserDao.instance.isActivated(username) && user != null) {
             System.out.println("account is not activated");
-//            servletResponse.sendError(HttpServletResponse.SC_UNAUTHORIZED, "account is not activated");
             servletResponse.sendError(402, "account is not activated");
             return;
         }
@@ -80,7 +72,7 @@ public class Login {
             claims.put("iat", String.valueOf(LocalDateTime.now().atZone(zoneId)));
 
 
-            String jws = Jwts.builder().setClaims(claims).signWith(KEY).compact();
+            String jws = Jwts.builder().setClaims(claims).signWith(ApplicationSettings.APP_KEY).compact();
 
             System.out.println(jws);
 
@@ -128,6 +120,6 @@ public class Login {
     }
 
     public static Jws<Claims> getTokenClaims(String token) {
-        return Jwts.parser().setSigningKey(Login.KEY).parseClaimsJws(token);
+        return Jwts.parser().setSigningKey(ApplicationSettings.APP_KEY).parseClaimsJws(token);
     }
 }

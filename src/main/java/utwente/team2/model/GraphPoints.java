@@ -10,6 +10,10 @@ public class GraphPoints implements Card {
     private String cardTypeName;
     private String name;
 
+    private List<BigDecimal> left;
+    private List<BigDecimal> right;
+    private List<Integer> step_no;
+
     public String getName() {
         return name;
     }
@@ -25,10 +29,6 @@ public class GraphPoints implements Card {
     public List<Integer> getStep_no() {
         return step_no;
     }
-
-    private List<BigDecimal> left;
-    private List<BigDecimal> right;
-    private List<Integer> step_no;
 
     public GraphPoints(String name) {
         cardTypeName = "graph";
@@ -62,20 +62,23 @@ public class GraphPoints implements Card {
         this.step_no = step_no;
     }
 
-    public void reprocessSpeed(BigDecimal stepDistance) {
+    public void calculateSpeed(BigDecimal stepLength) {
+        List<BigDecimal> speed = new ArrayList<>();
+        List<BigDecimal> distance = new ArrayList<>();
 
-        System.out.println(stepDistance);
-        List<BigDecimal> timeStamp = new ArrayList<>();
         for(int i = 0; i < getLeft().size() - 1; i++) {
-            timeStamp.add((getLeft().get(i + 1).subtract(getLeft().get(i))
-                    .divide(stepDistance.multiply(BigDecimal.valueOf(getStep_no().get(i + 1) - getStep_no().get(i))), BigDecimal.ROUND_UP))
-                    .setScale(3, BigDecimal.ROUND_UP));
+            speed.add(
+                    stepLength.multiply(BigDecimal.valueOf(getStep_no().get(i + 1) - getStep_no().get(i)))
+                    .divide(getLeft().get(i + 1).subtract(getLeft().get(i)), BigDecimal.ROUND_HALF_UP)
+                    .multiply(BigDecimal.valueOf(3.6)));
+
+            distance.add(BigDecimal.valueOf(getStep_no().get(i + 1) * stepLength.intValue()));
+//                    .divide(BigDecimal.valueOf(1000), BigDecimal.ROUND_HALF_UP));
+//                    .setScale(3, BigDecimal.ROUND_UNNECESSARY));
         }
-        setLeft(timeStamp);
+
+        setLeft(speed);
+        setRight(distance);
         step_no.remove(0);
-
-        System.out.println(step_no.size() + " " + getLeft().size());
-
     }
-
 }

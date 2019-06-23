@@ -71,17 +71,11 @@ public class Distribution implements Card {
     }
 
     public void getDistribution() {
-
         int MAX_POINT = 50;
 
         BigDecimal minP = pointX.get(0);
         BigDecimal maxP = pointX.get(pointX.size() - 1);
         BigDecimal segment = (maxP.subtract(minP)).divide(BigDecimal.valueOf(MAX_POINT), BigDecimal.ROUND_UP);
-
-        System.out.println("min: " + minP);
-        System.out.println("max: " + maxP);
-        System.out.println("segment: " + segment);
-
 
         int[] number = new int[MAX_POINT];
 
@@ -125,7 +119,6 @@ public class Distribution implements Card {
     }
 
     public void getSpeedDistribution() {
-
         int MAX_POINT = 50;
 
         System.out.println("get speed ditribution");
@@ -137,11 +130,6 @@ public class Distribution implements Card {
         BigDecimal minP = pointX.get(0);
         BigDecimal maxP = pointX.get(pointX.size() - 1);
         BigDecimal segment = (maxP.subtract(minP)).divide(BigDecimal.valueOf(MAX_POINT), BigDecimal.ROUND_UP);
-
-        System.out.println("min: " + minP);
-        System.out.println("max: " + maxP);
-        System.out.println("segment: " + segment);
-
 
         int[] number = new int[MAX_POINT];
 

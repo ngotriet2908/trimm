@@ -1241,7 +1241,7 @@
         border-color: #4A4A4A;
     }
 
-    .input-group select:focus ~ label, .input-group select:valid ~ label {
+    .input-group select:focus ~ label, .input-group select:valid ~ label, .input-group select:disabled ~ label {
         top: -0.6em;
         font-size: 0.9em;
         background: white;
@@ -1256,6 +1256,7 @@
     .input-group select:focus {
         border-color: #296785;
     }
+
 
     /* radio buttons */
     @keyframes ripple {
@@ -2875,9 +2876,11 @@
         border-radius: 0.5em;
         transition: border 0.2s;
 
-        color: rgba(0,0,0,.87);
-
         background: white;
+    }
+
+    .input-group select:not(:disabled) {
+        color: rgba(0,0,0,.87);
     }
 
     .input-select:after {
@@ -2901,11 +2904,12 @@
         outline:none;
     }
 
-    .input-group select:hover {
+    .input-group select:hover:not(:disabled) {
         border-color: #4A4A4A;
     }
 
-    .input-group select:focus ~ label, .input-group select:valid ~ label {
+
+    .input-group select:focus ~ label, .input-group select:valid ~ label, .input-group select:disabled ~ label{
         top: -0.6em;
         font-size: 0.9em;
         background: white;
@@ -3072,6 +3076,9 @@
         -ms-transition: all 0.2s ease-out;
         -o-transition: all 0.2s ease-out;
         transition: all 0.2s ease-out;
+
+        display:flex;
+        flex-direction:column;
     }
 
     .dashboard-card header {
@@ -3158,25 +3165,96 @@
         grid-row: 2 / 3;
     }
 
-
-    /* Map */
-    /*.dashboard-card-front-map, .dashboard-card-front-graph {*/
-        /*display: flex;*/
-        /*flex-direction: column;*/
-    /*}*/
-
-    /*.dashboard-card-map, .dashboard-card-graph {*/
-        /*flex: 1;*/
-    /*}*/
-
-    /*#mapid {*/
-        /*width: 100%;*/
-        /*height: 100%;*/
-    /*}*/
-
     .dashboard-card-graph {
         padding: 1em;
     }
+
+    .dashboard-card-note {
+        margin: 0 1em 1em 1em;
+        position: relative;
+        flex: 1;
+    }
+
+    .dashboard-card-note textarea {
+        box-sizing: border-box;
+
+        font-size: 18px;
+        padding: 0.8em;
+        margin: 0;
+        display:block;
+        border: 1px solid rgba(0, 0, 0, 0.23);
+        border-radius: 0.5em;
+        transition: border 0.2s;
+
+        color: rgba(0,0,0,.87);
+        resize: none;
+        width: 100%;
+        height: 100%;
+    }
+
+    .dashboard-card-note textarea:focus {
+        outline:none;
+    }
+
+    .dashboard-card-note textarea:hover {
+        border-color: #4A4A4A;
+    }
+
+    .dashboard-card-note label {
+        padding-left: inherit;
+        color: rgba(0, 0, 0, 0.54);
+        font-size:18px;
+        font-weight:normal;
+        position:absolute;
+        pointer-events:none;
+        left: 0.8em;
+        top: 0.8em;
+        transition: all 0.2s ease;
+    }
+
+    .dashboard-card-note textarea:focus ~ label, .dashboard-card-note textarea:valid ~ label {
+        top: -0.6em;
+        font-size: 0.9em;
+        background: white;
+        padding: 0 0.2em;
+        /*margin-left: 1em;*/
+        border-radius: 0.5em;
+    }
+
+    .dashboard-card-note textarea:focus ~ label {
+        color: #296785;
+    }
+
+    .dashboard-card-note textarea:focus {
+        border-color: #296785;
+    }
+
+    @-webkit-keyframes autofill {
+        to {
+            background: white;
+        }
+    }
+
+    .dashboard-card-note textarea:-webkit-autofill {
+        -webkit-animation-name: autofill;
+        -webkit-animation-fill-mode: both;
+    }
+
+    .dashboard-card-note i {
+        display: block;
+        position: absolute;
+        top: 4px;
+        right: 4px;
+        color: #4f8a10;
+        font-size: 12px;
+        /*transition: color 0.4s ease-out;*/
+    }
+
+    .dashboard-card-note i.unsaved {
+        color: #cc0000;
+    }
+
+
 
 
     /* Controls */
@@ -3327,6 +3405,10 @@
         /*float: right;*/
 
         display: inline-block;
+    }
+
+    .input-select.disabled {
+        opacity: 0.4;
     }
 
     .button-group {
