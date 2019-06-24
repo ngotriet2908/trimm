@@ -27,7 +27,7 @@
 		<welcome-file>html/index.html</welcome-file>
 	</welcome-file-list>
 	<listener>
-		<listener-class>utwente.team2.DatabaseInitialiser</listener-class>
+		<listener-class>utwente.team2.settings.DatabaseInitialiser</listener-class>
 	</listener>
 	<error-page>
 		<error-code>404</error-code>

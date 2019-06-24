@@ -1,7 +1,7 @@
 package utwente.team2.dao;
 
 import org.apache.commons.codec.binary.Hex;
-import utwente.team2.DatabaseInitialiser;
+import utwente.team2.settings.DatabaseInitialiser;
 import utwente.team2.model.FavoriteOptions;
 import utwente.team2.model.LayoutData;
 import utwente.team2.model.User;
@@ -28,9 +28,7 @@ public enum UserDao {
 
     public User getUserDetails(String username, User user) {
         try {
-            String query = "SELECT * " +
-                    "FROM general_user AS u " +
-                    "WHERE u.username = ? ";
+            String query = "SELECT * FROM getUserDetails(?)";
 
             PreparedStatement statement = DatabaseInitialiser.getCon().prepareStatement(query);
             statement.setString(1, username);
@@ -64,9 +62,8 @@ public enum UserDao {
 
     public byte[] getUserImage(String username) {
         try {
-            String query = "SELECT picture " +
-                    "FROM user_picture AS u " +
-                    "WHERE u.username = ? ";
+            String query = "SELECT * FROM getUserImage(?)";
+
 
             PreparedStatement statement = DatabaseInitialiser.getCon().prepareStatement(query);
             statement.setString(1, username);
@@ -75,7 +72,7 @@ public enum UserDao {
 
             // should be only one row
             if (resultSet.next()) {
-                return resultSet.getBytes(1);
+                return resultSet.getBytes("r_picture");
             } else {
                 return null;
             }
@@ -93,9 +90,8 @@ public enum UserDao {
 
     public String getUsersPassword(String username) {
         try {
-            String query = "SELECT password " +
-                    "FROM general_user AS u " +
-                    "WHERE u.username = ? ";
+            String query = "SELECT * FROM getUsersPassword(?)";
+
 
             PreparedStatement statement = DatabaseInitialiser.getCon().prepareStatement(query);
             statement.setString(1, username);
@@ -104,7 +100,7 @@ public enum UserDao {
 
             // should be only one row
             if (resultSet.next()) {
-                return resultSet.getString("password");
+                return resultSet.getString("r_password");
             } else {
                 return null;
             }
@@ -117,11 +113,9 @@ public enum UserDao {
 
     public String getSalt(String username) {
         try {
-            String query;
             PreparedStatement statement;
-            query = "SELECT u.salt " +
-                    "FROM general_user AS u " +
-                    "WHERE u.username = ? ";
+            String query = "SELECT * FROM getSalt(?)";
+
 
             statement = DatabaseInitialiser.getCon().prepareStatement(query);
             statement.setString(1, username);
@@ -130,7 +124,7 @@ public enum UserDao {
 
             // should be the first entry if exists
             if (resultSet.next()) {
-                return resultSet.getString("salt");
+                return resultSet.getString("r_salt");
             } else {
                 return null;
             }
@@ -191,9 +185,7 @@ public enum UserDao {
 
     public boolean isPremiumUser(String username) {
         try {
-            String queryForPremiumStatus = "SELECT p.username " +
-                    "FROM premium_user AS p " +
-                    "WHERE p.username = ? ";
+            String queryForPremiumStatus = "SELECT * FROM isPremiumUser(?)";
 
             // also check time? TODO
 
@@ -212,10 +204,7 @@ public enum UserDao {
 
     public boolean isUsersEmail(String username, String email) {
         try {
-            String query = "SELECT p.username " +
-                    "FROM general_user AS p " +
-                    "WHERE p.username = ? " +
-                    "AND p.email = ?";
+            String query = "SELECT * FROM isUsersEmail(?,?)";
 
             // also check time? TODO
 
@@ -235,9 +224,7 @@ public enum UserDao {
 
     public boolean isActivated(String username) {
         try {
-            String queryForActivation = "SELECT p.is_activated " +
-                    "FROM general_user AS p " +
-                    "WHERE p.username = ? ";
+            String queryForActivation = "SELECT * FROM isActivated(?)";
 
             // also check time? TODO
 
@@ -250,7 +237,7 @@ public enum UserDao {
                 return false;
             }
 
-            return resultSetForActivation.getBoolean(1);
+            return resultSetForActivation.getBoolean("r_is_activated");
         } catch (SQLException se) {
             se.printStackTrace();
         }
@@ -432,10 +419,8 @@ public enum UserDao {
 
     public List<String> getShoes(String username) {
         try {
-            String query = "SELECT s.brand || ' ' || s.model, r.id " +
-                    "FROM shoes AS s, run AS r, general_user u " +
-                    "WHERE s.id = r.shoes_id " +
-                    "AND u.username = ?";
+            String query = "SELECT * FROM getShoes(?)";
+
 
             PreparedStatement statement = DatabaseInitialiser.getCon().prepareStatement(query);
             statement.setString(1, username);
@@ -458,9 +443,8 @@ public enum UserDao {
 
     public FavoriteOptions getFavoriteLayoutName(String username) {
         try {
-            String query = "SELECT l.name, l.lid " +
-                    "FROM favorite_layout AS l " +
-                    "WHERE l.username = ? ";
+            String query = "SELECT * FROM getFavoriteLayoutName(?)";
+
 
             PreparedStatement statement = DatabaseInitialiser.getCon().prepareStatement(query);
             statement.setString(1, username);
@@ -470,8 +454,8 @@ public enum UserDao {
             List<LayoutData> layoutData = new ArrayList<>();
 
             while (resultSet.next()) {
-                String name = resultSet.getString(1);
-                int lid = resultSet.getInt(2);
+                String name = resultSet.getString("r_name");
+                int lid = resultSet.getInt("r_lid");
                 layoutData.add(new LayoutData(name, lid));
             }
 
@@ -534,10 +518,8 @@ public enum UserDao {
 
     public String getFavoriteLayout(int layout_id, String username) {
         try {
-            String query = "SELECT f.layout " +
-                    " FROM favorite_layout as f " +
-                    " WHERE f.lid = ? " +
-                    "AND f.username = ?";
+            String query = "SELECT * FROM getFavoriteLayout(?,?)";
+
 
             PreparedStatement statement = DatabaseInitialiser.getCon().prepareStatement(query);
 
@@ -547,7 +529,7 @@ public enum UserDao {
             ResultSet resultSet = statement.executeQuery();
 
             if (resultSet.next()) {
-                return resultSet.getString(1);
+                return resultSet.getString("r_layout");
             }
 
             return null;
@@ -669,9 +651,7 @@ public enum UserDao {
 
     public boolean hasImage(String username) {
         try {
-            String query = "SELECT u.username " +
-                    "FROM user_picture as u " +
-                    "WHERE username = ? ";
+            String query = "SELECT * FROM hasImage(?)";
 
             PreparedStatement statement = DatabaseInitialiser.getCon().prepareStatement(query);
 

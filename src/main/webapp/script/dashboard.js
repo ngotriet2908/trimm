@@ -801,7 +801,7 @@ document.addEventListener('DOMContentLoaded', function () {
             document.querySelector("#select-side").classList.add("disabled");
 
             $("#select-indicator").attr("disabled", true);
-            document.querySelector(".add-dialog .input-select").classList.add("disabled");
+            document.querySelector(".add-dialog .input-select:nth-of-type(2)").classList.add("disabled");
         }
     });
 

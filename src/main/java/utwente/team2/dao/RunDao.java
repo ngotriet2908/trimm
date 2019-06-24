@@ -1,6 +1,6 @@
 package utwente.team2.dao;
 
-import utwente.team2.DatabaseInitialiser;
+import utwente.team2.settings.DatabaseInitialiser;
 import utwente.team2.model.*;
 
 import java.math.BigDecimal;
@@ -16,9 +16,7 @@ public enum RunDao {
 
     public User getUserTotalStats(String username, User user) {
         try {
-            String query = "SELECT COUNT(*) AS total_runs, SUM(r.duration) AS total_time, SUM(r.distance) AS total_distance, SUM(r.steps) AS total_steps " +
-                    "FROM run AS r " +
-                    "WHERE r.username = ? ";
+            String query = "SELECT * FROM getUserTotalStats(?)";
 
             PreparedStatement statement = DatabaseInitialiser.getCon().prepareStatement(query);
             statement.setString(1, username);
@@ -27,10 +25,10 @@ public enum RunDao {
 
             // should be only one row
             while (resultSet.next()) {
-                user.setTotalRuns(resultSet.getInt("total_runs"));
-                user.setTotalTime(resultSet.getInt("total_time"));
-                user.setTotalDistance(resultSet.getInt("total_distance"));
-                user.setTotalSteps(resultSet.getInt("total_steps"));
+                user.setTotalRuns(resultSet.getInt("r_total_runs"));
+                user.setTotalTime(resultSet.getInt("r_total_time"));
+                user.setTotalDistance(resultSet.getInt("r_total_distance"));
+                user.setTotalSteps(resultSet.getInt("r_total_steps"));
             }
 
             return user;
@@ -47,10 +45,7 @@ public enum RunDao {
 
     public List<Run> getUserRunsList(String username) {
         try {
-            String query = "SELECT r.id, r.date, r.name, r.distance, r.duration, r.steps " +
-                    "FROM run AS r " +
-                    "WHERE r.username = ? " +
-                    "ORDER BY r.date DESC";
+            String query = "SELECT * FROM getUserRunsList(?)";
 
             PreparedStatement statement = DatabaseInitialiser.getCon().prepareStatement(query);
             statement.setString(1, username);
@@ -84,10 +79,8 @@ public enum RunDao {
 
     public String getUsername(int runID) {
         try {
-            String query = "SELECT r.username " +
-                    "FROM run AS r " +
-                    "WHERE r.id = ? " +
-                    "ORDER BY r.date DESC";
+            String query = "SELECT * FROM getUsername(?)";
+
 
             PreparedStatement statement = DatabaseInitialiser.getCon().prepareStatement(query);
             statement.setInt(1, runID);
@@ -119,10 +112,8 @@ public enum RunDao {
         int current = getCurrentLayout(runId);
 
         try {
-            String query = "SELECT l.layout " +
-                    "FROM layout AS l " +
-                    "WHERE l.run_id = ? " +
-                    "AND l.lid = ? ";
+            String query = "SELECT * FROM getLayout(?,?)";
+
 
             PreparedStatement statement = DatabaseInitialiser.getCon().prepareStatement(query);
             statement.setInt(1, runId);
@@ -145,9 +136,8 @@ public enum RunDao {
 
     public String getDefaultLayout(int runId) {
         try {
-            String query = "SELECT r.default_layout " +
-                    "FROM run AS r " +
-                    "WHERE r.id = ? ";
+            String query = "SELECT * FROM getDefaultLayout(?)";
+
 
             PreparedStatement statement = DatabaseInitialiser.getCon().prepareStatement(query);
             statement.setInt(1, runId);
@@ -168,9 +158,8 @@ public enum RunDao {
 
     public LayoutOptions getLayoutName(int runId) {
         try {
-            String query = "SELECT l.name, l.lid " +
-                    "FROM layout AS l " +
-                    "WHERE l.run_id = ? ";
+            String query = "SELECT * FROM getLayoutName(?)";
+
 
             PreparedStatement statement = DatabaseInitialiser.getCon().prepareStatement(query);
             statement.setInt(1, runId);
@@ -195,9 +184,8 @@ public enum RunDao {
 
     public int getCurrentLayout(int runId) {
         try {
-            String query = "SELECT r.current_layout " +
-                    "FROM run AS r " +
-                    "WHERE r.id = ? ";
+            String query = "SELECT * FROM getCurrentLayout(?)";
+
 
             PreparedStatement statement = DatabaseInitialiser.getCon().prepareStatement(query);
             statement.setInt(1, runId);
@@ -321,10 +309,7 @@ public enum RunDao {
 
     public String getShoes(int runId) {
         try {
-            String query = "SELECT s.brand || ' ' || s.model as shoes_name " +
-                    "FROM run AS r, shoes AS s " +
-                    "WHERE r.id =  ? " +
-                    "AND r.shoes_id = s.id ";
+            String query = "SELECT  * FROM getShoesWithRun(?)";
 
             PreparedStatement statement = DatabaseInitialiser.getCon().prepareStatement(query);
             statement.setInt(1, runId);
@@ -332,7 +317,7 @@ public enum RunDao {
 
             // multiple rows
             if (resultSet.next()) {
-                String shoesName = resultSet.getString("shoes_name");
+                String shoesName = resultSet.getString("r_shoesIndicator");
                 if (shoesName != null) {
                     return shoesName;
                 } else {
@@ -352,9 +337,8 @@ public enum RunDao {
         String shoesName = getShoes(runId);
 
         try {
-            String query = "SELECT r.id, r.date, r.name, r.distance, r.duration, r.steps " +
-                    "FROM run AS r " +
-                    "WHERE r.id =  ? ";
+            String query = "SELECT  * FROM getRun(?)";
+
 
             PreparedStatement statement = DatabaseInitialiser.getCon().prepareStatement(query);
             statement.setInt(1, runId);
@@ -386,9 +370,7 @@ public enum RunDao {
 
     public boolean isUsersRun(String username, int runId) {
         try {
-            String query = "SELECT r.id " +
-                    "FROM run AS r " +
-                    "WHERE r.id = ? AND r.username = ?";
+            String query = "SELECT  * FROM isUsersRun(?,?)";
 
             PreparedStatement statement = DatabaseInitialiser.getCon().prepareStatement(query);
             statement.setInt(1, runId);
@@ -406,9 +388,8 @@ public enum RunDao {
 
     public Note getNote(int runId) {
         try {
-            String query = "SELECT description " +
-                    "FROM run " +
-                    "WHERE id =  ? ";
+            String query = "SELECT  * FROM getNote(?)";
+
 
             PreparedStatement statement = DatabaseInitialiser.getCon().prepareStatement(query);
             statement.setInt(1, runId);

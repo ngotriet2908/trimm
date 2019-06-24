@@ -25,7 +25,6 @@ import java.util.List;
 
 @Path("/compare")
 @Secured
-
 public class Compare {
     @Context
     UriInfo uriInfo;

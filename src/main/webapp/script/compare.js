@@ -1,5 +1,11 @@
 document.addEventListener('DOMContentLoaded', function () {
 
+    var chart;
+    var ctx = document.querySelector("#chart-compare canvas").getContext('2d');
+
+
+    initEmptyGraph();
+
     function getLines() {
         var res = "";
         $.each($("input[name='runID']:checked"), function() {
@@ -16,11 +22,9 @@ document.addEventListener('DOMContentLoaded', function () {
             if (http.readyState === XMLHttpRequest.DONE) {
                 if (http.status === 200) {
                     console.log("code 200");
-                    document.getElementById("chart-compare").innerHTML = "<canvas id=\"chart-compare-canvas\"></canvas>";
+                    // document.getElementById("chart-compare c").innerHTML = "<canvas id=\"chart-compare-canvas\"></canvas>";
 
-                    initcompareGraph(
-                        document.getElementById("chart-compare-canvas"),
-                        JSON.parse(http.response));
+                    initCompareGraph(JSON.parse(http.response));
 
                 } else {
                     console.log("something else...");
@@ -51,6 +55,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function addElementToDataset(lineChart, response) {
         console.log(response);
+
         for(i = 0; i < response.length; i++) {
             var dataElement = {
                 label: response[i].name,
@@ -72,9 +77,33 @@ document.addEventListener('DOMContentLoaded', function () {
         return arrayy;
     }
 
-    function initcompareGraph(element, response) {
-        var ctx = document.getElementById("chart-compare-canvas").getContext('2d');
+    function initEmptyGraph() {
+        chart = Chart.Line(ctx, {
+            options: {
+                responsive: true,
+                spanGaps: true,
+                hoverMode: 'index',
+                stacked: false,
+                elements: {
+                    point: {
+                        radius: 0
+                    }
+                },
+                scales: {
+                    yAxes: [{
+                        type: 'linear',
+                        display: true,
+                        position: 'left',
+                        id: 'y-axis-1',
+                    }],
+                }
+            }
+        });
 
+    }
+
+
+    function initCompareGraph(response) {
         var lineChartData = {
             labels: getXaxesLineChart(100),
             datasets: []
@@ -82,7 +111,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         addElementToDataset(lineChartData, response);
 
-        window.myLine = Chart.Line(ctx, {
+        chart = Chart.Line(ctx, {
             data: lineChartData,
             options: {
                 responsive: true,

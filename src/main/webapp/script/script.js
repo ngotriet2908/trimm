@@ -1209,5 +1209,4 @@ document.addEventListener('DOMContentLoaded', function () {
         button.classList.toggle('active');
 
     });
-
 });

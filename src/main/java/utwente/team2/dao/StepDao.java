@@ -1,6 +1,6 @@
 package utwente.team2.dao;
 
-import utwente.team2.DatabaseInitialiser;
+import utwente.team2.settings.DatabaseInitialiser;
 import utwente.team2.model.GraphPoints;
 import utwente.team2.model.Individual;
 import utwente.team2.model.Step;
