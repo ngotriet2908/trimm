@@ -721,8 +721,8 @@ public class DataExporter {
         }
 
         String fileAsString = sb.toString();
-        System.out.println("Contents : ");
-        System.out.println(fileAsString);
+//        System.out.println("Contents : ");
+//        System.out.println(fileAsString);
 
         try {
             conn.createStatement().execute(fileAsString);

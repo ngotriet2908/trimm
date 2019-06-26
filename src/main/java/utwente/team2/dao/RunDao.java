@@ -1,5 +1,6 @@
 package utwente.team2.dao;
 
+import org.apache.poi.ss.usermodel.DataFormatter;
 import utwente.team2.model.*;
 import utwente.team2.settings.DatabaseInitialiser;
 
@@ -37,6 +38,29 @@ public enum RunDao {
         }
 
         return null;
+    }
+
+    public void insertLayout(int runID) {
+        String query = "INSERT INTO layout(lid, run_id, name) "
+                + "VALUES(?,?,?)";
+
+        try {
+
+            DataFormatter dataFormatter = new DataFormatter();
+
+            PreparedStatement statement = DatabaseInitialiser.getCon().prepareStatement(query);
+
+                for(int j = 2; j <= 5; j++) {
+
+                    statement.setInt(1, j);
+                    statement.setInt(2, runID);
+                    statement.setString(3, "Layout " + j);
+                    statement.execute();
+                }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     public List<Run> getUserRunsList(String username) {

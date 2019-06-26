@@ -39,6 +39,24 @@ public enum UserDao {
         return os.toByteArray();
     }
 
+    public void insertFavoriteLayout(String username) {
+        String query = "INSERT INTO favorite_layout(username, lid, name) "
+                + "VALUES(?,?,?)";
+
+        try {
+            PreparedStatement statement = DatabaseInitialiser.getCon().prepareStatement(query);
+
+            for(int i = 1; i < 6; i++) {
+                statement.setString(1, username);
+                statement.setInt(2, i);
+                statement.setString(3, "Favorite " + i);
+                statement.execute();
+            }
+        } catch (SQLException se) {
+            se.printStackTrace();
+        }
+    }
+
     public User getUserDetails(String username, User user) {
         try {
             String query = "SELECT * FROM getUserDetails(?)";

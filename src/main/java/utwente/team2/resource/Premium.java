@@ -1,7 +1,9 @@
 package utwente.team2.resource;
 
+import utwente.team2.dao.RunDao;
 import utwente.team2.dao.UserDao;
 import utwente.team2.filter.Secured;
+import utwente.team2.model.Run;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -13,6 +15,7 @@ import javax.ws.rs.core.*;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.Principal;
+import java.util.List;
 
 @Path("/premium")
 @Secured
@@ -47,6 +50,17 @@ public class Premium {
         // check if user is already a premium user TODO
 
         boolean upgraded = UserDao.instance.upgradeToPremium(tokenUsername);
+
+        if (upgraded) {
+            UserDao.instance.insertFavoriteLayout(tokenUsername);
+
+            List<Run> runs = RunDao.instance.getUserRunsList(tokenUsername);
+
+            for(int i = 0; i < runs.size(); i++) {
+                RunDao.instance.insertLayout(runs.get(i).getId());
+            }
+        }
+
 
         System.out.println("Upgrade to pre: " + upgraded);
 
