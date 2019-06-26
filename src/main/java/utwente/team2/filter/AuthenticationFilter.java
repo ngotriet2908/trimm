@@ -4,6 +4,7 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
+import utwente.team2.dao.UserDao;
 import utwente.team2.resource.Login;
 import utwente.team2.settings.ApplicationSettings;
 
@@ -82,6 +83,13 @@ public class AuthenticationFilter implements ContainerRequestFilter {
             System.out.println("=================");
 
         } catch (JwtException e) {
+
+            if (e.getMessage().equals("password token is wrong!")) {
+                forwardUnauthorized("password_change");
+                abortWithUnauthorized(requestContext);
+                return;
+            }
+
             System.out.println("Filter blocked: token is invalid or expired.");
             System.out.println("=================");
             forwardUnauthorized("token_expired");
@@ -92,6 +100,10 @@ public class AuthenticationFilter implements ContainerRequestFilter {
 
     private void validateToken(String token) throws JwtException {
         Jws<Claims> jws = Jwts.parser().setSigningKey(ApplicationSettings.APP_KEY).parseClaimsJws(token);
+        if (!UserDao.instance.getUsersPassword(jws.getBody().getSubject()).substring(0,5)
+                .equals(jws.getBody().get("key"))) {
+            throw new JwtException("password token is wrong!");
+        }
     }
 
     private void forwardUnauthorized(String error) {

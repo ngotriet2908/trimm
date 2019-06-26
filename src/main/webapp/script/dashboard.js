@@ -132,8 +132,10 @@ document.addEventListener('DOMContentLoaded', function () {
                     }
                 } else if (http.status === 401) {
                     console.log("code 401");
+                    location.reload();
                 } else {
                     console.log("Response: " + http.status);
+                    location.reload();
                 }
             }
         };
@@ -157,8 +159,10 @@ document.addEventListener('DOMContentLoaded', function () {
                     // TODO print some line in the bottom like "layout saved..."
                 } else if (http.status === 401) {
                     console.log("code 401");
+                    location.reload();
                 } else {
                     console.log("Response: " + http.status);
+                    location.reload();
                 }
             }
         };
@@ -229,10 +233,12 @@ document.addEventListener('DOMContentLoaded', function () {
                     addItem(typeName, indicatorName, parsedResponse, initialLayout);
                 } else if (http.status === 401) {
                     console.log("code 400");
+                    location.reload();
 
 
                 } else {
                     console.log("something else...");
+                    location.reload();
                 }
             }
         };
@@ -806,9 +812,10 @@ document.addEventListener('DOMContentLoaded', function () {
                         ss[ss.selectedIndex].innerText = layout_name;
 
                     } else if (http.status === 401) {
-
+                        location.reload();
                     } else {
                         console.log("Response: " + http.status);
+                        location.reload();
                     }
                 }
             };
@@ -832,9 +839,12 @@ document.addEventListener('DOMContentLoaded', function () {
                     document.querySelector(".favorite-layout-dialog").classList.add("hidden");
 
                 } else if (http.status === 401) {
+                    location.reload();
 
                 } else {
                     console.log("Response: " + http.status);
+                    location.reload();
+
                 }
             }
         };
@@ -859,9 +869,12 @@ document.addEventListener('DOMContentLoaded', function () {
                         ss[ss.selectedIndex].innerText = layout_name;
 
                     } else if (http.status === 401) {
+                        location.reload();
 
                     } else {
                         console.log("Response: " + http.status);
+                        location.reload();
+
                     }
                 }
             };
@@ -886,9 +899,11 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
                     } else if (http.status === 401) {
+                        location.reload();
 
                     } else {
                         console.log("Response: " + http.status);
+                        location.reload();
                     }
                 }
             };
@@ -961,9 +976,11 @@ document.addEventListener('DOMContentLoaded', function () {
                 if (http.status === 200 || http.status === 204) {
                     location.reload();
                 } else if (http.status === 401) {
+                    location.reload();
 
                 } else {
                     console.log("Response: " + http.status);
+                    location.reload();
                 }
             }
         };
@@ -981,9 +998,11 @@ document.addEventListener('DOMContentLoaded', function () {
                 if (http.status === 200 || http.status === 204) {
                     location.reload();
                 } else if (http.status === 401) {
+                    location.reload();
 
                 } else {
                     console.log("Response: " + http.status);
+                    location.reload();
                 }
             }
         };
@@ -1004,9 +1023,11 @@ document.addEventListener('DOMContentLoaded', function () {
                 if (http.status === 200 || http.status === 204) {
                     location.reload();
                 } else if (http.status === 401) {
+                    location.reload();
 
                 } else {
                     console.log("Response: " + http.status);
+                    location.reload();
                 }
             }
         };
@@ -1071,9 +1092,11 @@ document.addEventListener('DOMContentLoaded', function () {
                 if (http.status === 200 || http.status === 204) {
 
                 } else if (http.status === 401) {
+                    location.reload();
 
                 } else {
                     console.log("Response: " + http.status);
+                    location.reload();
                 }
             }
         };
