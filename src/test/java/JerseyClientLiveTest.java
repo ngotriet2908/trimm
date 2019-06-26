@@ -5,6 +5,8 @@ import org.junit.Test;
 import utwente.team2.model.User;
 import utwente.team2.settings.ApplicationSettings;
 
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.sql.*;
@@ -18,12 +20,11 @@ import static org.junit.Assert.assertTrue;
 
 public class JerseyClientLiveTest {
 
+    private Client clientRest = ClientBuilder.newClient();
 
     public static Connection getCon() {
-//        System.out.println("Connecting to databse...");
         try {
             Class.forName("org.postgresql.Driver");
-//            System.out.println("Driver found.");
         } catch (ClassNotFoundException cnfe) {
             System.err.println("Error loading driver: " + cnfe);
         }
@@ -35,7 +36,6 @@ public class JerseyClientLiveTest {
 
         try {
             Connection con = DriverManager.getConnection(url, user, password);
-//            System.out.println("Connection established.");
             return con;
         } catch (SQLException e) {
             e.printStackTrace();
@@ -90,7 +90,7 @@ public class JerseyClientLiveTest {
     @Test
     public void testLoadLoginHTML() {
 
-        RestClient client = new RestClient();
+        RestClient client = new RestClient(clientRest);
 
         Response response = client.loadingLoginHTML();
 
@@ -109,7 +109,7 @@ public class JerseyClientLiveTest {
     public void testLoginWithData() {
 
         User emp = new User(username, password);
-        RestClient client = new RestClient(emp.getUsername(), emp.getPassword());
+        RestClient client = new RestClient(emp.getUsername(), emp.getPassword(), clientRest);
 
         Response response = client.loginTest(emp);
 
@@ -121,9 +121,7 @@ public class JerseyClientLiveTest {
         System.out.println("Media Type: " + response.getMediaType().toString());
         if (response.getStatus() == 200) {
             client.setToken(getToken());
-//            System.out.println(client.getToken());
             System.out.println("Token: " + client.getToken());
-
         }
         System.out.println();
 
@@ -135,7 +133,7 @@ public class JerseyClientLiveTest {
     @Test
     public void testLoadProfilesHTML() {
 
-        RestClient client = new RestClient();
+        RestClient client = new RestClient(clientRest);
         client.setToken(getToken());
 
         Response response = client.loadingProfilesHTML();
@@ -154,7 +152,7 @@ public class JerseyClientLiveTest {
     public void testLoadingProfilePicture() {
 
         User emp = new User(username, password);
-        RestClient client = new RestClient(emp.getUsername(), emp.getPassword());
+        RestClient client = new RestClient(emp.getUsername(), emp.getPassword(), clientRest);
         client.setToken(getToken());
         Response response = client.profilePictureTest(emp);
 
@@ -175,7 +173,7 @@ public class JerseyClientLiveTest {
     public void testLoadingProfilePictureBase64() {
 
         User emp = new User(username, password);
-        RestClient client = new RestClient(emp.getUsername(), emp.getPassword());
+        RestClient client = new RestClient(emp.getUsername(), emp.getPassword(), clientRest);
         client.setToken(getToken());
         Response response = client.profilePictureBase64Test(emp);
 
@@ -198,7 +196,7 @@ public class JerseyClientLiveTest {
 
         String nameWantToChange = "Testing";
         User emp = new User(username, password);
-        RestClient client = new RestClient(emp.getUsername(), emp.getPassword());
+        RestClient client = new RestClient(emp.getUsername(), emp.getPassword(), clientRest);
         client.setToken(getToken());
         Response response = client.profileGetnameFavoriteLayoutTest(emp);
 
@@ -281,7 +279,7 @@ public class JerseyClientLiveTest {
     public void testShoesPieChart() {
 
         User emp = new User(username, password);
-        RestClient client = new RestClient(emp.getUsername(), emp.getPassword());
+        RestClient client = new RestClient(emp.getUsername(), emp.getPassword(), clientRest);
         client.setToken(getToken());
         Response response = client.profileShoePieChart(emp);
 
@@ -302,7 +300,7 @@ public class JerseyClientLiveTest {
     public void testUser() {
 
         User emp = new User(username, password);
-        RestClient client = new RestClient(emp.getUsername(), emp.getPassword());
+        RestClient client = new RestClient(emp.getUsername(), emp.getPassword(), clientRest);
         client.setToken(getToken());
         Response response = client.profileUser(emp);
 
@@ -325,7 +323,7 @@ public class JerseyClientLiveTest {
     public void testRunHTML() {
 
         User emp = new User(username, password);
-        RestClient client = new RestClient(emp.getUsername(), emp.getPassword());
+        RestClient client = new RestClient(emp.getUsername(), emp.getPassword(), clientRest);
         client.setToken(getToken());
         Response response = client.loadRunHTML();
 
@@ -345,7 +343,7 @@ public class JerseyClientLiveTest {
     public void testDefaultLayout() {
 
         User emp = new User(username, password);
-        RestClient client = new RestClient(emp.getUsername(), emp.getPassword());
+        RestClient client = new RestClient(emp.getUsername(), emp.getPassword(), clientRest);
         client.setToken(getToken());
         Response response = client.testDefaultLayout(emp);
 
@@ -363,7 +361,7 @@ public class JerseyClientLiveTest {
 
         String nameWantToChange = "Testing";
         User emp = new User(username, password);
-        RestClient client = new RestClient(emp.getUsername(), emp.getPassword());
+        RestClient client = new RestClient(emp.getUsername(), emp.getPassword(), clientRest);
         client.setToken(getToken());
         Response response = client.profileGetnameLayoutTest(emp);
 
@@ -446,7 +444,7 @@ public class JerseyClientLiveTest {
     public void testLayoutData() {
 
         User emp = new User(username, password);
-        RestClient client = new RestClient(emp.getUsername(), emp.getPassword());
+        RestClient client = new RestClient(emp.getUsername(), emp.getPassword(), clientRest);
         client.setToken(getToken());
         Response response = client.testLayoutData(emp);
 
@@ -467,7 +465,7 @@ public class JerseyClientLiveTest {
     public void testGetIndividual() {
 
         User emp = new User(username, password);
-        RestClient client = new RestClient(emp.getUsername(), emp.getPassword());
+        RestClient client = new RestClient(emp.getUsername(), emp.getPassword(), clientRest);
         client.setToken(getToken());
         Response response = client.testIndividual(emp);
 
@@ -488,7 +486,7 @@ public class JerseyClientLiveTest {
     public void testGetGraph() {
 
         User emp = new User(username, password);
-        RestClient client = new RestClient(emp.getUsername(), emp.getPassword());
+        RestClient client = new RestClient(emp.getUsername(), emp.getPassword(), clientRest);
         client.setToken(getToken());
         Response response = client.testGraph(emp);
 
@@ -509,7 +507,7 @@ public class JerseyClientLiveTest {
     public void testGetGraphWithIndicator() {
 
         User emp = new User(username, password);
-        RestClient client = new RestClient(emp.getUsername(), emp.getPassword());
+        RestClient client = new RestClient(emp.getUsername(), emp.getPassword(), clientRest);
         client.setToken(getToken());
         Response response = client.testGraphWithIndicator(emp);
 
@@ -530,7 +528,7 @@ public class JerseyClientLiveTest {
     public void testGetDistribution() {
 
         User emp = new User(username, password);
-        RestClient client = new RestClient(emp.getUsername(), emp.getPassword());
+        RestClient client = new RestClient(emp.getUsername(), emp.getPassword(), clientRest);
         client.setToken(getToken());
         Response response = client.testDistribution(emp);
 
@@ -551,7 +549,7 @@ public class JerseyClientLiveTest {
     public void testGetNote() {
 
         User emp = new User(username, password);
-        RestClient client = new RestClient(emp.getUsername(), emp.getPassword());
+        RestClient client = new RestClient(emp.getUsername(), emp.getPassword(), clientRest);
         client.setToken(getToken());
         Response response = client.testNote(emp);
 
@@ -572,7 +570,7 @@ public class JerseyClientLiveTest {
     public void testGetRunInfo() {
 
         User emp = new User(username, password);
-        RestClient client = new RestClient(emp.getUsername(), emp.getPassword());
+        RestClient client = new RestClient(emp.getUsername(), emp.getPassword(), clientRest);
         client.setToken(getToken());
         Response response = client.testRunInfo(emp);
 
@@ -593,7 +591,7 @@ public class JerseyClientLiveTest {
     public void testGetInfographic() {
 
         User emp = new User(username, password);
-        RestClient client = new RestClient(emp.getUsername(), emp.getPassword());
+        RestClient client = new RestClient(emp.getUsername(), emp.getPassword(), clientRest);
         client.setToken(getToken());
         Response response = client.testInfographic(emp);
 
@@ -615,7 +613,7 @@ public class JerseyClientLiveTest {
     @Test
     public void testLoadRegisterHTML() {
 
-        RestClient client = new RestClient();
+        RestClient client = new RestClient(clientRest);
 
         Response response = client.loadingRegisterHTML();
 
@@ -633,7 +631,7 @@ public class JerseyClientLiveTest {
     public void testGetExistingUsername() {
 
         User emp = new User(username, password);
-        RestClient client = new RestClient(emp.getUsername(), emp.getPassword());
+        RestClient client = new RestClient(emp.getUsername(), emp.getPassword(), clientRest);
         client.setToken(getToken());
         Response response = client.testGetExistingUsername(emp);
 
@@ -669,7 +667,7 @@ public class JerseyClientLiveTest {
     public void testLoadCompareHTML() {
 
         User emp = new User(username, password);
-        RestClient client = new RestClient(emp.getUsername(), emp.getPassword());
+        RestClient client = new RestClient(emp.getUsername(), emp.getPassword(), clientRest);
         client.setToken(getToken());
 
         Response response = client.loadingCompareHTML();
@@ -687,7 +685,7 @@ public class JerseyClientLiveTest {
     public void testSelectOptions() {
 
         User emp = new User(username, password);
-        RestClient client = new RestClient(emp.getUsername(), emp.getPassword());
+        RestClient client = new RestClient(emp.getUsername(), emp.getPassword(), clientRest);
         client.setToken(getToken());
         Response response = client.testSelectOptions(emp);
 
@@ -709,7 +707,7 @@ public class JerseyClientLiveTest {
     public void testLoadLogoutHTML() {
 
         User emp = new User(username, password);
-        RestClient client = new RestClient(emp.getUsername(), emp.getPassword());
+        RestClient client = new RestClient(emp.getUsername(), emp.getPassword(), clientRest);
         client.setToken(getToken());
 
         Response response = client.loadingLogoutHTML();
@@ -728,7 +726,7 @@ public class JerseyClientLiveTest {
     public void loadingPremiumHTML() {
 
         User emp = new User(username, password);
-        RestClient client = new RestClient(emp.getUsername(), emp.getPassword());
+        RestClient client = new RestClient(emp.getUsername(), emp.getPassword(), clientRest);
         client.setToken(getToken());
 
         Response response = client.loadingPremiumHTML();
@@ -748,7 +746,7 @@ public class JerseyClientLiveTest {
     public void loadingSettingsHTML() {
 
         User emp = new User(username, password);
-        RestClient client = new RestClient(emp.getUsername(), emp.getPassword());
+        RestClient client = new RestClient(emp.getUsername(), emp.getPassword(), clientRest);
         client.setToken(getToken());
 
         Response response = client.loadingSettingHTML();
