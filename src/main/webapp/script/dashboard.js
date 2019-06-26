@@ -152,12 +152,13 @@ document.addEventListener('DOMContentLoaded', function () {
 
         http.onreadystatechange = function () {
             if (http.readyState === XMLHttpRequest.DONE) {
-                if (http.status === 200) {
+                if (http.status === 200 || http.status === 204) {
 
                     // TODO print some line in the bottom like "layout saved..."
-                } else if (http.status === 401) {
-                    console.log("code 401");
+                } else if (http.status === 404) {
+                    console.log("code 404");
                 } else {
+                    location.reload();
                     console.log("Response: " + http.status);
                 }
             }
@@ -232,7 +233,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
                 } else {
-                    console.log("something else...");
+                    console.log("Response: " + http.status);
                 }
             }
         };

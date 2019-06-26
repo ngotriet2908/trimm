@@ -189,13 +189,56 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
     if ($("#password-reset-enter").length > 0) {
+        var constraints = {
+            password: {
+                presence: true,
+                length: {
+                    minimum: 8
+                },
+                format: {
+                    pattern: "(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z]{8,}",
+                    message: "must contain at least one uppercase letter, lowercase letter and number."
+                }
+            },
+            "confirm-password": {
+                presence: true,
+                equality: {
+                    attribute: "password",
+                    message: "^Passwords do not match"
+                }
+            }
+        };
+
+        function handleResetEnterForm(form) {
+            // validate the form against the constraints
+            var errors = validate(form, constraints);
+            // then we update the form to reflect the results
+
+            showErrors(form, errors || {});
+            if (!errors) {
+                submitResetEnterForm();
+            }
+        }
+
         var resetEnterForm = document.querySelector("form");
         resetEnterForm.addEventListener("submit", function (ev) {
             ev.preventDefault();
-            handleResetEnterFormSubmit();
+            handleResetEnterForm(resetEnterForm);
         });
 
-        function handleResetEnterFormSubmit() {
+        // validate inputs on fly
+        var inputs = document.querySelectorAll("input");
+
+        for (var i = 0; i < inputs.length; i += 1) {
+            inputs.item(i).addEventListener("change", function (event) {
+                var errors = validate(resetEnterForm, constraints) || {};
+
+                // if not available, add to errors
+                showErrorsForInput(this, errors[this.name])
+            });
+        }
+
+        function submitResetEnterForm() {
             var recoveryToken = getQueryParam("token");
             var recoveryPassword = $("#password-reset-enter form input[name=password]").val().trim();
             var recoveryPasswordConfirm = $("#password-reset-enter form input[name=confirm-password]").val().trim();
@@ -650,7 +693,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 };
 
                 http.open("GET", "/runner/register/username?" + param, true);
-                http.setRequestHeader('Accept', 'application/json'); // TODO
+                http.setRequestHeader('Accept', 'application/json');
                 http.setRequestHeader('Cache-Control', 'no-store');
                 http.send();
             });
@@ -675,11 +718,11 @@ document.addEventListener('DOMContentLoaded', function () {
         var form = document.querySelector("form");
         form.addEventListener("submit", function (ev) {
             ev.preventDefault();
-            handleFormSubmit(form);
+            handleRegistrationFormSubmit(form);
         });
 
         // validate inputs on fly
-        var inputs = document.querySelectorAll("input, textarea, select");
+        var inputs = document.querySelectorAll("input");
         for (var i = 0; i < inputs.length; ++i) {
             inputs.item(i).addEventListener("change", function (event) {
                 var errors = validate(form, constraints) || {};
@@ -695,7 +738,7 @@ document.addEventListener('DOMContentLoaded', function () {
             });
         }
 
-        function handleFormSubmit(form, input) {
+        function handleRegistrationFormSubmit(form, input) {
             // validate the form against the constraints
             var errors = validate(form, constraints);
             // then we update the form to reflect the results
@@ -704,92 +747,92 @@ document.addEventListener('DOMContentLoaded', function () {
                 submitRegistrationForm();
             }
         }
+    }
 
-        // Updates the inputs with the validation errors
-        function showErrors(form, errors) {
-            // We loop through all the inputs and show the errors for that input
-            form.querySelectorAll("input[name], select[name]").forEach(function (input) {
-                // Since the errors can be null if no errors were found we need to handle that
-                showErrorsForInput(input, errors && errors[input.name]);
+    // Updates the inputs with the validation errors
+    function showErrors(form, errors) {
+        // We loop through all the inputs and show the errors for that input
+        form.querySelectorAll("input[name]").forEach(function (input) {
+            // Since the errors can be null if no errors were found we need to handle that
+            showErrorsForInput(input, errors && errors[input.name]);
+        });
+    }
+
+    // Shows the errors for a specific input
+    function showErrorsForInput(input, errors) {
+        // This is the root of the input
+        var formGroup = closestParent(input.parentNode, "input-group")
+            // Find where the error messages will be insert into
+            , messages = formGroup.querySelector(".messages");
+        // First we remove any old messages and resets the classes
+        resetFormGroup(formGroup);
+        // If we have errors
+        var errorElem;
+
+        if (errors) {
+            // we first mark the group has having errors
+            formGroup.classList.add("has-error");
+
+            // add icon and tooltip
+            errorElem = document.createElement("span");
+            errorElem.classList.add("input-error");
+
+            var errorContainer = document.createElement("div");
+            errorContainer.classList.add("input-error-tooltip-text");
+
+            // then we append all the errors
+            errors.forEach(function (error) {
+                addError(errorContainer, error);
             });
-        }
 
-        // Shows the errors for a specific input
-        function showErrorsForInput(input, errors) {
-            // This is the root of the input
-            var formGroup = closestParent(input.parentNode, "input-group")
-                // Find where the error messages will be insert into
-                , messages = formGroup.querySelector(".messages");
-            // First we remove any old messages and resets the classes
-            resetFormGroup(formGroup);
-            // If we have errors
-            var errorElem;
+            errorElem.innerHTML = '<i class="fas fa-exclamation-triangle"></i>';
 
-            if (errors) {
-                // we first mark the group has having errors
-                formGroup.classList.add("has-error");
+            var div = document.createElement("div");
+            div.appendChild(errorContainer);
+            errorElem.appendChild(div);
 
-                // add icon and tooltip
-                errorElem = document.createElement("span");
-                errorElem.classList.add("input-error");
+            formGroup.appendChild(errorElem);
+        } else {
+            // otherwise we simply mark it as success
+            formGroup.classList.add("has-success");
 
-                var errorContainer = document.createElement("div");
-                errorContainer.classList.add("input-error-tooltip-text");
-
-                // then we append all the errors
-                errors.forEach(function (error) {
-                    addError(errorContainer, error);
-                });
-
-                errorElem.innerHTML = '<i class="fas fa-exclamation-triangle"></i>';
-
-                var div = document.createElement("div");
-                div.appendChild(errorContainer);
-                errorElem.appendChild(div);
-
-                formGroup.appendChild(errorElem);
-            } else {
-                // otherwise we simply mark it as success
-                formGroup.classList.add("has-success");
-
-                errorElem = formGroup.querySelector("input-error");
-                if (errorElem != null) {
-                    errorElem.remove();
-                }
+            errorElem = formGroup.querySelector("input-error");
+            if (errorElem != null) {
+                errorElem.remove();
             }
         }
+    }
 
-        // Recursively finds the closest parent that has the specified class
-        function closestParent(child, className) {
-            if (!child || child === document) {
-                return null;
-            }
-            if (child.classList.contains(className)) {
-                return child;
-            } else {
-                return closestParent(child.parentNode, className);
-            }
+    // Recursively finds the closest parent that has the specified class
+    function closestParent(child, className) {
+        if (!child || child === document) {
+            return null;
         }
-
-        function resetFormGroup(formGroup) {
-            // Remove the success and error classes
-            formGroup.classList.remove("has-error");
-            formGroup.classList.remove("has-success");
-
-            // and remove any old messages
-            formGroup.querySelectorAll(".input-error").forEach(function (el) {
-                el.remove();
-            });
+        if (child.classList.contains(className)) {
+            return child;
+        } else {
+            return closestParent(child.parentNode, className);
         }
+    }
 
-        // Adds the specified error with the following markup
-        function addError(errorElem, error) {
-            var block = document.createElement("p");
-            block.classList.add("help-block");
-            block.classList.add("error");
-            block.innerText = error;
-            errorElem.appendChild(block);
-        }
+    function resetFormGroup(formGroup) {
+        // Remove the success and error classes
+        formGroup.classList.remove("has-error");
+        formGroup.classList.remove("has-success");
+
+        // and remove any old messages
+        formGroup.querySelectorAll(".input-error").forEach(function (el) {
+            el.remove();
+        });
+    }
+
+    // Adds the specified error with the following markup
+    function addError(errorElem, error) {
+        var block = document.createElement("p");
+        block.classList.add("help-block");
+        block.classList.add("error");
+        block.innerText = error;
+        errorElem.appendChild(block);
     }
 
 

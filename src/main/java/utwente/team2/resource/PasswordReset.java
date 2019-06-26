@@ -12,7 +12,6 @@ import utwente.team2.model.User;
 import utwente.team2.settings.ApplicationSettings;
 
 import javax.mail.MessagingException;
-import javax.mail.internet.AddressException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.*;
@@ -49,6 +48,10 @@ public class PasswordReset {
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     public void sendResetToken(@FormParam("username") String username, @Context HttpServletResponse servletResponse,
                                @Context HttpServletRequest servletRequest) throws MessagingException, IOException, NoSuchMethodException, NoSuchMethodError {
+
+        if (!username.matches("[a-zA-Z_]{2,}")) {
+            return;
+        }
 
         User user = UserDao.instance.getUserDetails(username);
 
@@ -89,8 +92,12 @@ public class PasswordReset {
     public void resetEnter(@FormParam("token") String token, @FormParam("password") String password,
                            @Context HttpServletResponse servletResponse,
                            @Context HttpServletRequest servletRequest) throws Exception {
-
         try {
+            if (!password.matches("(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z]{8,}")) {
+                servletResponse.sendError(400);
+                return;
+            }
+
             String username = Login.getTokenClaims(token).getBody().getSubject();
 
             String passwordHash = UserDao.instance.getUsersPassword(username);

@@ -4,6 +4,7 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
+import utwente.team2.dao.UserDao;
 import utwente.team2.resource.Login;
 import utwente.team2.settings.ApplicationSettings;
 
@@ -90,8 +91,15 @@ public class AuthenticationFilter implements ContainerRequestFilter {
         }
     }
 
-    private void validateToken(String token) throws JwtException {
-        Jws<Claims> jws = Jwts.parser().setSigningKey(ApplicationSettings.APP_KEY).parseClaimsJws(token);
+    private synchronized void validateToken(String token) throws JwtException {
+        String username = Login.getTokenClaims(token).getBody().getSubject();
+        String passwordHash = UserDao.instance.getUsersPassword(username);
+
+        if (passwordHash != null) {
+            Jws<Claims> jws = Jwts.parser().require("key", passwordHash.substring(0, 5)).setSigningKey(ApplicationSettings.APP_KEY).parseClaimsJws(token);
+        } else {
+            throw new JwtException("No user/password combination available. The token cannot be validated.");
+        }
     }
 
     private void forwardUnauthorized(String error) {

@@ -89,6 +89,7 @@ public class Login {
             claims.put("sub", username);
             claims.put("exp", String.valueOf(LocalDateTime.now().plusMinutes(60).atZone(zoneId).toEpochSecond()));
             claims.put("iat", String.valueOf(LocalDateTime.now().atZone(zoneId)));
+            claims.put("key", (UserDao.instance.getUsersPassword(username)).substring(0, 5));
 
             String jws = Jwts.builder().setClaims(claims).signWith(ApplicationSettings.APP_KEY).compact();
 
