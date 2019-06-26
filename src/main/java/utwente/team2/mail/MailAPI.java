@@ -22,18 +22,18 @@ public class MailAPI {
         setupMailProperties();
 
         Session mailSession = Session.getDefaultInstance(mailServerProperties, null);
-        MimeMessage message = createMessage(recipient, subject, mailSession);
+        MimeMessage message = createMessage(body, recipient, subject, mailSession);
 
         getTransportLayer(message, mailSession);
         System.out.println("Successfully sent an email to " + recipient);
     }
 
-    public synchronized static void generateAndSendEmailWithAttachment(String context, String subject, String recipient, BufferedImage image)
+    public synchronized static void generateAndSendEmailWithAttachment(String body, String subject, String recipient, BufferedImage image)
             throws MessagingException, NoSuchMethodError {
         setupMailProperties();
 
         Session mailSession = Session.getDefaultInstance(mailServerProperties, null);
-        MimeMessage message = createMessage(recipient, subject, mailSession);
+        MimeMessage message = createMessage(body, recipient, subject, mailSession);
 
         BodyPart messageBodyPart = new MimeBodyPart();
         messageBodyPart.setText("You can find your infographic in the attachment below.");
@@ -68,10 +68,12 @@ public class MailAPI {
         mailServerProperties.put("mail.smtp.starttls.enable", "true");
     }
 
-    public synchronized static MimeMessage createMessage(String recipient, String subject, Session mailSession) throws MessagingException {
+    public synchronized static MimeMessage createMessage(String body, String recipient, String subject, Session mailSession) throws MessagingException {
         MimeMessage mailMessage = new MimeMessage(mailSession);
         mailMessage.addRecipient(Message.RecipientType.TO, new InternetAddress(recipient));
         mailMessage.setSubject(subject + " " + LocalDateTime.now().toString());
+
+        mailMessage.setContent(body, "text/html");
         return mailMessage;
     }
 
