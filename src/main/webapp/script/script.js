@@ -163,6 +163,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 error = "You need to sign in to access this page."
             } else if (error === "token_expired") {
                 error = "Your session expired. Sign in to access this page."
+            } else if (error === "password_change") {
+                error = "Password has been reset. Sign in to access this page."
             } else if (error === "incorrect_credentials") {
                 error = "Incorrect username or password. Please, try again."
             }

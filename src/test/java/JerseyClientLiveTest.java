@@ -2,13 +2,12 @@ import io.jsonwebtoken.Jwts;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.Test;
-import utwente.team2.dao.UserDao;
 import utwente.team2.model.User;
 import utwente.team2.settings.ApplicationSettings;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.nio.charset.StandardCharsets;
+import java.sql.*;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.HashMap;
@@ -20,12 +19,56 @@ import static org.junit.Assert.assertTrue;
 public class JerseyClientLiveTest {
 
 
+    public static Connection getCon() {
+//        System.out.println("Connecting to databse...");
+        try {
+            Class.forName("org.postgresql.Driver");
+//            System.out.println("Driver found.");
+        } catch (ClassNotFoundException cnfe) {
+            System.err.println("Error loading driver: " + cnfe);
+        }
+        String host = "farm02.ewi.utwente.nl";
+        String dbName = "docker";
+        String url = "jdbc:postgresql://" + host + ":7005/" + dbName;
+        String user = "docker";
+        String password = "1Pu7WY99OW";
+
+        try {
+            Connection con = DriverManager.getConnection(url, user, password);
+//            System.out.println("Connection established.");
+            return con;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public String getUsersPassword(String username) {
+        try {
+            String query = "SELECT * FROM getUsersPassword(?)";
+
+
+            PreparedStatement statement = getCon().prepareStatement(query);
+            statement.setString(1, username);
+
+            ResultSet resultSet = statement.executeQuery();
+
+            // should be only one row
+            if (resultSet.next()) {
+                return resultSet.getString("r_password");
+            } else {
+                return null;
+            }
+        } catch (SQLException se) {
+            se.printStackTrace();
+        }
+
+        return null;
+    }
 
     public static final int HTTP_CREATED = 201;
     public static final String username = "CvdB";
     public static final String  password = "Password7";
-    public static final String salt = "iuItUVNy8PpGNL7FT2s32FcQLbnEQRev0rtUtNY9hk5kL9QI7N";
-    public static final byte[] saltBytes = salt.getBytes(StandardCharsets.UTF_8);
 
     private String getToken() {
         ZoneId zoneId = ZoneId.systemDefault();
@@ -35,7 +78,8 @@ public class JerseyClientLiveTest {
         claims.put("sub", username);
         claims.put("exp", String.valueOf(LocalDateTime.now().plusMinutes(5).atZone(zoneId).toEpochSecond()));
         claims.put("iat", String.valueOf(LocalDateTime.now().atZone(zoneId)));
-        claims.put("key", (UserDao.instance.getSHA256(UserDao.instance.getSHA256(password) + salt).substring(0, 5)));
+        claims.put("key", (getUsersPassword(username)).substring(0, 5));
+
 
         String jws = Jwts.builder().setClaims(claims).signWith(ApplicationSettings.APP_KEY).compact();
         return jws;

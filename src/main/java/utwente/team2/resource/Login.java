@@ -87,7 +87,7 @@ public class Login {
             Map<String, Object> claims = new HashMap<>();
             claims.put("iss", "runner");
             claims.put("sub", username);
-            claims.put("exp", String.valueOf(LocalDateTime.now().plusMinutes(60).atZone(zoneId).toEpochSecond()));
+            claims.put("exp", String.valueOf(LocalDateTime.now().plusMinutes(1).atZone(zoneId).toEpochSecond()));
             claims.put("iat", String.valueOf(LocalDateTime.now().atZone(zoneId)));
             claims.put("key", (UserDao.instance.getUsersPassword(username)).substring(0, 5));
 
