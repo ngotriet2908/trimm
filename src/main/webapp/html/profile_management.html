@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html class="full-height" lang="en">
+<head>
+    <meta content="width=device-width,initial-scale=1.0" name="viewport">
+    <meta charset="UTF-8">
+    <title>Profile Management</title>
+    <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css"
+          integrity="sha384-oS3vJWv+0UjzBfQzYUhtDYW+Pj2yciDJxpsK1OYPAYjqT085Qq/1cq5FLXAZQ7Ay" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Montserrat" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="/style/style.css" rel="stylesheet">
+</head>
+<body id="profile-management">
+
+<div class="popup-overlay hidden">
+</div>
+
+<div class="profile-top">
+</div>
+
+<nav>
+	<span class="nav-logo">
+			<a class="font-bold" href="/">runner</a>
+	</span>
+
+    <span class="nav-button">
+			<a class="font-bold">
+				<i class="fas fa-bars"></i>
+			</a>
+	</span>
+
+    <div>
+        <ul class="hidden">
+
+            <li class="nav-item">
+                <a href="/">home</a>
+            </li>
+
+            <li class="nav-item upgrade hidden">
+                <a class="button-raised" href="/runner/premium/join"><span>upgrade</span></a>
+            </li>
+
+            <li class="nav-item">
+                <a href="/runner/profiles">profile</a>
+            </li>
+
+            <li class="nav-item">
+                <a href="/runner/logout">sign out</a>
+            </li>
+
+        </ul>
+    </div>
+</nav>
+
+
+<main class="profile-main">
+    <div class="profile-card" id="profile-picture-container">
+
+        <div id="profile-picture-img">
+            <!--<img id="profile-picture" src="../img/profile_bluer.png" alt="profile picture">-->
+            <img alt="profile picture" id="profile-picture" src="">
+        </div>
+
+        <div id="profile-picture-general">
+            <!--<button class="button" type="button" id="replace-profile-image-open"><span><i class="fas fa-image"></i>Change</span></button>-->
+
+            <!--<input type="file" id="profile-image-field" name="profile-image" accept="image/*">-->
+
+            <button class="button-raised" id="upload-new-picture" type="button"><span>upload new</span></button>
+        </div>
+    </div>
+
+    <div id="profile-right">
+
+        <div id="profile-name-container">
+            <div>
+                <span></span>
+                <!--<span>Christian Van Den Berge</span>-->
+            </div>
+            <!--<div id="pro">-->
+            <!--<span>PRO</span>-->
+            <!--</div>-->
+        </div>
+
+        <div class="profile-card" id="profile-management-my-information-container">
+            <header>
+                <h2>My Information</h2>
+            </header>
+
+            <div id="profile-management-my-information-data-container">
+
+                <form action="/" method="POST">
+
+                    <div class="input-group">
+                        <input autocomplete="new-password" id="first-name-field" name="username" required
+                               type="text" value="Johnny">
+                        <label for="first-name-field">First Name</label>
+                    </div>
+
+                    <div class="input-group">
+                        <input autocomplete="new-password" id="last-name-field" name="username" required
+                               type="text" value="English">
+                        <label for="first-name-field">Last Name</label>
+                    </div>
+
+                    <button class="button-raised" id="save-my-information" type="button"><span>Save</span></button>
+
+                    <a class="button-raised" href="/" id="link-strava" type="button">
+						<span>
+							<i class="fab fa-strava"></i>
+							Link Strava
+						</span>
+                    </a>
+
+                </form>
+            </div>
+        </div>
+
+
+        <!--<div id="profile-management-security-container" class="data-container">-->
+        <!--<header>-->
+        <!--<h2>Security</h2>-->
+        <!--</header>-->
+        <!--<div id="profile-management-security-data-container">-->
+        <!--<label for="old-password-field">Old password</label>-->
+        <!--<input type="text" id="old-password-field" name="username">-->
+
+        <!--<label for="new-password-field">New password</label>-->
+        <!--<input type="text" id="new-password-field" name="username">-->
+
+        <!--<label for="repeat-new-password-field">Confirm new password</label>-->
+        <!--<input type="text" id="repeat-new-password-field" name="username">-->
+
+        <!--<button type="button" id="save-security">Change Password</button>-->
+        <!--</div>-->
+        <!--</div>-->
+
+    </div>
+</main>
+
+<section class="upload-new-picture-dialog hidden dashboard-dialog">
+    <div>
+        <h1>Upload new picture</h1>
+        <p>Select new profile picture and save the changes.</p>
+
+        <input accept="image/*" id="profile-image-field" name="profile-image" type="file">
+
+        <div class="button-group">
+            <button class="button-text cancel" type="button"><span>Cancel</span></button>
+            <button class="button-raised upload" type="submit"><span>save</span></button>
+        </div>
+    </div>
+</section>
+
+
+<footer>
+    <div>
+        <p>
+            runner
+        </p>
+        <p>
+            (c) 2019 Runner
+        </p>
+    </div>
+    <div>
+        <p>
+            Created with Love and Passion.
+        </p>
+    </div>
+</footer>
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<!--<script src="/script/jquery.nicescroll.js"></script>-->
+<script src="/script/prefixfree.min.js"></script>
+<script src="/script/script.js"></script>
+</body>
+</html>
+
+
+<!-- password: NoEncryptionForNow -->

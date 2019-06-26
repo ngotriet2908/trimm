@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html class="full-height" lang="en">
+<head>
+    <meta content="width=device-width,initial-scale=1.0" name="viewport">
+    <meta charset="UTF-8">
+    <title>Dashboard</title>
+    <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css"
+          integrity="sha384-oS3vJWv+0UjzBfQzYUhtDYW+Pj2yciDJxpsK1OYPAYjqT085Qq/1cq5FLXAZQ7Ay" rel="stylesheet">
+    <link href="/style/style.css" rel="stylesheet">
+</head>
+<body id="dashboard">
+
+
+<div class="popup-overlay hidden">
+</div>
+
+<div class="profile-top">
+</div>
+
+<nav>
+	<span class="nav-logo">
+			<a class="font-bold" href="/">runner</a>
+	</span>
+
+    <span class="nav-button">
+			<a class="font-bold">
+				<i class="fas fa-bars"></i>
+			</a>
+	</span>
+
+    <div>
+        <ul class="hidden">
+            <li class="nav-item">
+                <a href="/">home</a>
+            </li>
+
+            <li class="nav-item">
+                <a href="/runner/profiles">profile</a>
+            </li>
+
+            <li class="nav-item">
+                <a href="/runner/logout">sign out</a>
+            </li>
+        </ul>
+    </div>
+</nav>
+
+
+<main>
+    <div id="dashboard-overview-container">
+
+        <div id="dashboard-overview-container-grid">
+
+            <div class="dashboard-overview-item">
+                <p>
+                    <span>Title</span>
+                </p>
+                <p>
+                    <span>Typical Run</span>
+                </p>
+            </div>
+
+            <div class="dashboard-overview-item">
+                <p>
+                    <span>Date</span>
+                </p>
+                <p>
+                    <span>Date</span>
+                </p>
+            </div>
+
+            <div class="dashboard-overview-item">
+                <p>
+                    <span>Shoes</span>
+                </p>
+                <p>
+                    <span>Salomon</span>
+                </p>
+            </div>
+
+            <div class="dashboard-overview-item">
+                <p>
+                    <span>Duration</span>
+                </p>
+                <p>
+                    <span>00:55:33</span>
+                </p>
+            </div>
+
+            <div class="dashboard-overview-item">
+                <p>
+                    <span>Distance</span>
+                </p>
+                <p>
+                    <span>8.7 km</span>
+                </p>
+            </div>
+
+            <div class="dashboard-overview-item">
+                <p>
+                    <span>Steps</span>
+                </p>
+                <p>
+                    <span>11342</span>
+                </p>
+            </div>
+        </div>
+
+        <div class="dashboard-controls">
+
+            <div class="input-group">
+                <input autocomplete="off" class="control-search-field" name="search" required type="text">
+                <label>Search</label>
+            </div>
+
+            <div class="input-group input-select">
+                <select class="control-filter-field">
+                    <!--<option hidden disabled selected value></option>-->
+                    <option value="">All</option>
+                    <option value="individual">Individual</option>
+                    <option value="graph">Graphs</option>
+                    <option value="distribution">Distributions</option>
+                    <option value="note">Notes</option>
+                </select>
+                <label class="select-label">Filter</label>
+            </div>
+
+            <div class="input-group input-select">
+                <select class="control-sort-field">
+                    <option selected="" value="order">Order</option>
+                    <option value="title">Title (no drag)</option>
+                </select>
+                <label class="select-label">Sort</label>
+            </div>
+
+        </div>
+    </div>
+
+    <section id="dashboard-tiles-container">
+        <div class="dashboard-tile-grid">
+
+        </div>
+    </section>
+
+</main>
+
+<section id="controls">
+
+    <div class="hidden" id="menu-options">
+
+        <div id="add">
+            <button class="button-raised" type="button"><span><i class="fas fa-plus"></i></span></button>
+        </div>
+
+        <div id="select-layout">
+            <i class="fas fa-star star"></i>
+            <button class="button-raised" type="button"><span><i class="fas fa-layer-group"></i></span></button>
+        </div>
+
+        <div id="select-favorite-layout">
+            <i class="fas fa-star star"></i>
+            <button class="button-raised" type="button"><span><i class="fas fa-bookmark"></i></span></button>
+        </div>
+
+
+        <div id="reset-to-default">
+            <button class="button-raised" type="button"><span><i class="fas fa-sync"></i></span></button>
+        </div>
+
+        <div id="remove-all">
+            <button class="button-raised" type="button"><span><i class="fas fa-trash-alt"></i></span></button>
+        </div>
+
+        <div id="export-eink">
+            <button class="button-raised" type="button"><span><i class="fas fa-file-export"></i></span></button>
+        </div>
+    </div>
+
+    <div id="open-menu">
+        <button class="button-raised" type="button"><span><i class="fas fa-bars"></i></span></button>
+    </div>
+
+</section>
+
+<section class="add-dialog hidden dashboard-dialog">
+    <div>
+
+        <h1>Add card</h1>
+
+        <div class="input-group input-select">
+            <select id="select-type">
+                <option value="individual">Individual</option>
+                <option value="graph">Graph</option>
+                <option value="distribution">Distribution</option>
+                <option value="note">Note</option>
+            </select>
+            <label class="select-label">Type</label>
+        </div>
+
+
+        <div class="input-group input-select">
+            <select id="select-indicator">
+                <option value="axtibacc">Axtibacc</option>
+                <option value="tibimpact">Tibimpact</option>
+                <option value="axsacacc">Axsacacc</option>
+                <option value="sacimpact">Sacimpact</option>
+                <option value="brakingforce">Brakingforce</option>
+                <option value="pushoffpower">Pushoffpower</option>
+                <option value="tibintrot">Tibintrot</option>
+                <option value="vll">Vll</option>
+            </select>
+            <label class="select-label">Indicator</label>
+        </div>
+
+
+        <div class="option-group" id="select-side">
+            <div>
+                <input checked id="select-side-left" name="select-side" type="radio" value="_left">
+                <label for="select-side-left">Left side</label>
+            </div>
+
+            <div>
+                <input id="select-side-right" name="select-side" type="radio" value="_right">
+                <label for="select-side-right">Right side</label>
+            </div>
+        </div>
+
+        <div class="button-group">
+            <button class="button-text cancel" type="button"><span>Close</span></button>
+            <button class="button-raised add" type="button"><span>Add</span></button>
+        </div>
+    </div>
+</section>
+
+
+<section class="remove-all-dialog hidden dashboard-dialog">
+    <div>
+        <h1>Remove all cards</h1>
+        <p>Are you sure you want to remove all cards from the dashboard?</p>
+        <p class="red-text">This action is irreversible.</p>
+
+        <div class="button-group">
+            <button class="button-text cancel" type="button"><span>Cancel</span></button>
+            <button class="button-raised remove-all" type="button"><span>Remove</span></button>
+        </div>
+    </div>
+</section>
+
+
+<section class="eink-sent-dialog hidden dashboard-dialog">
+    <div>
+        <h1>Export infographic</h1>
+        <p>Please, enter the address to which the email will be sent.</p>
+        <div class="input-group">
+            <input autocomplete="off" name="email" required type="text">
+            <label>Email</label>
+        </div>
+
+        <p id="eink-new-window">
+            or open infographic in a <a href="/" target="_blank">new window</a>
+        </p>
+
+        <div class="button-group">
+            <button class="button-text cancel" type="button"><span>Close</span></button>
+            <button class="button-raised export-eink" type="button"><span>Send</span></button>
+        </div>
+    </div>
+</section>
+
+
+<section class="restore-layout-dialog hidden dashboard-dialog">
+    <div>
+        <h1>Restore default layout</h1>
+        <p>Are you sure you want to restore your dashboard to default view?</p>
+        <p class="red-text">This action is irreversible.</p>
+
+        <div class="button-group">
+            <button class="button-text cancel" type="button"><span>Cancel</span></button>
+            <button class="button-raised restore" type="button"><span>Restore</span></button>
+        </div>
+    </div>
+</section>
+
+<section class="select-layout-dialog hidden dashboard-dialog premium-required">
+    <div>
+        <h1>You discovered a premium feature!</h1>
+
+        <p>With RunnerPro you can create up to 5 different dashboard layouts for every run.</p>
+
+        <p>
+            Upgrading to Runner Premium will unlock it.
+        </p>
+
+        <div class="button-group">
+            <button class="button-text cancel" type="button"><span>Later</span></button>
+            <a class="button-raised" href="/runner/premium/join"><span>get premium now</span></a>
+        </div>
+
+    </div>
+</section>
+
+<section class="favorite-layout-dialog hidden dashboard-dialog premium-required">
+    <div>
+        <h1>You discovered a premium feature!</h1>
+
+        <p>With RunnerPro you can store your favourite layouts and use them to show your desired dashboard in no
+            time.</p>
+
+        <p>
+            Upgrading to Runner Premium will unlock it.
+        </p>
+
+        <div class="button-group">
+            <button class="button-text cancel" type="button"><span>Later</span></button>
+            <a class="button-raised" href="/runner/premium/join"><span>get premium now</span></a>
+        </div>
+    </div>
+</section>
+
+
+<footer>
+    <div>
+        <p>
+            runner
+        </p>
+        <p>
+            (c) 2019 Runner
+        </p>
+    </div>
+    <div>
+        <p>
+            Created with Love and Passion.
+        </p>
+    </div>
+</footer>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.bundle.js"></script>
+<script src="https://unpkg.com/web-animations-js@2.3.1/web-animations.min.js"></script>
+<script src="https://unpkg.com/hammerjs@2.0.8/hammer.min.js"></script>
+<script src="https://unpkg.com/muuri@0.7.1/dist/muuri.min.js"></script>
+
+<script src="/script/prefixfree.min.js"></script>
+<script src="/script/script.js"></script>
+<script src="/script/dashboard.js"></script>
+</body>
+</html>

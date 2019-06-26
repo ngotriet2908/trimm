@@ -1,0 +1,137 @@
+<!DOCTYPE HTML>
+
+<html lang="en">
+<head>
+    <meta content="width=device-width,initial-scale=1.0" name="viewport">
+    <meta charset="UTF-8">
+    <title>Register</title>
+    <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css"
+          integrity="sha384-oS3vJWv+0UjzBfQzYUhtDYW+Pj2yciDJxpsK1OYPAYjqT085Qq/1cq5FLXAZQ7Ay" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Montserrat" rel="stylesheet">
+    <link href="/style/style.css" rel="stylesheet">
+</head>
+<body id="register">
+
+<div class="popup-overlay hidden">
+</div>
+
+
+<nav>
+	<span class="nav-logo">
+			<a class="font-bold" href="/">runner</a>
+	</span>
+
+    <span class="nav-button">
+			<a class="font-bold">
+				<i class="fas fa-bars"></i>
+			</a>
+	</span>
+
+    <div>
+        <ul class="hidden">
+
+            <li class="nav-item">
+                <a href="/">home</a>
+            </li>
+
+            <li class="nav-item">
+                <a href="/runner/login">sign in</a>
+            </li>
+        </ul>
+    </div>
+</nav>
+
+
+<main>
+    <div id="register-background-overlay">
+    </div>
+
+    <div id="registration-form">
+        <form action="/" class="input-form" method="POST" novalidate>
+            <h1>Sign up</h1>
+
+            <p class="response-message-hidden" id="response-message"></p>
+
+            <!--<input type="text" placeholder="username" name="username" pattern="[a-z]{1,15}" required/>-->
+            <!--<input type="email" placeholder="email" name="email" required/>-->
+
+            <!--<input type="text" placeholder="first name" name="firstName" required/>-->
+            <!--<input type="text" placeholder="last name" name="lastName" required/>-->
+
+            <!--<input type="password" placeholder="password" name="password"-->
+            <!--pattern="^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z]{8,}$" required/>-->
+            <!--<input type="password" placeholder="confirm password" name="confirmPassword"-->
+            <!--pattern="^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z]{8,}$" required/>-->
+
+            <!--<button type="submit"><span>Sign up</span></button>-->
+            <!--<p>Already have an account? <a href="/runner/login">Sign in</a></p>-->
+
+
+            <div class="input-group">
+                <input autocomplete="new-password" id="username" name="username"
+                       required type="text">
+                <label for="username">Username</label>
+
+                <!--<span class="input-error">-->
+                <!--<i class="fas fa-exclamation-triangle"></i>-->
+                <!--<div>-->
+                <!--<div class="input-error-tooltip-text"><p>Tooltip text</p></div>-->
+                <!--</div>-->
+                <!--</span>-->
+
+                <!--<div class="messages"></div>-->
+            </div>
+
+            <div class="input-group">
+                <input id="email" name="email" required type="text">
+                <label for="email">Email</label>
+
+                <!--<div class="messages"></div>-->
+            </div>
+
+            <div class="input-group">
+                <input id="first-name" name="first-name" required type="text">
+                <label for="first-name">First Name</label>
+
+                <!--<div class="messages"></div>-->
+            </div>
+
+            <div class="input-group">
+                <input id="last-name" name="last-name" required type="text">
+                <label for="first-name">Last Name</label>
+
+                <!--<div class="messages"></div>-->
+            </div>
+
+            <div class="input-group">
+                <input autocomplete="new-password" id="password" name="password"
+                       required type="password">
+                <label for="password">Password</label>
+
+                <!--<div class="messages"></div>-->
+            </div>
+
+            <div class="input-group">
+                <input id="confirm-password" name="confirm-password"
+                       required type="password">
+                <label for="confirm-password">Confirm password</label>
+
+                <!--<div class="messages"></div>-->
+            </div>
+
+
+            <button class="button-raised" type="submit"><span>Sign up</span></button>
+            <p>Already have an account? <a href="/runner/login">Sign in</a></p>
+
+        </form>
+    </div>
+</main>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<!--<script src="/script/jquery.nicescroll.js"></script>-->
+<script src="//cdnjs.cloudflare.com/ajax/libs/validate.js/0.12.0/validate.min.js"></script>
+<script src="/script/prefixfree.min.js"></script>
+<script src="/script/script.js"></script>
+</body>
+</html>

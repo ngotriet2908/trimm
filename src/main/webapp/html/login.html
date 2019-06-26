@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta content="width=device-width,initial-scale=1.0" name="viewport">
+    <meta charset="UTF-8">
+    <title>Login</title>
+    <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css"
+          integrity="sha384-oS3vJWv+0UjzBfQzYUhtDYW+Pj2yciDJxpsK1OYPAYjqT085Qq/1cq5FLXAZQ7Ay" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Montserrat" rel="stylesheet">
+    <link href="/style/style.css" rel="stylesheet">
+</head>
+<body id="login">
+
+<div class="popup-overlay hidden">
+</div>
+
+<nav>
+	<span class="nav-logo">
+			<a class="font-bold" href="/">runner</a>
+	</span>
+
+    <span class="nav-button">
+		<a class="font-bold">
+			<i class="fas fa-bars"></i>
+		</a>
+	</span>
+
+    <div>
+        <ul class="hidden">
+            <li class="nav-item">
+                <a href="/">home</a>
+            </li>
+
+            <li class="nav-item">
+                <a href="/runner/register">sign up</a>
+            </li>
+
+        </ul>
+    </div>
+</nav>
+
+<main>
+    <div id="login-form">
+        <form action="/" class="input-form" method="POST">
+            <h1>Sign in</h1>
+
+            <p class="response-message-hidden" id="response-message"></p>
+
+            <div class="input-group">
+                <input autocomplete="new-password" name="username" required type="text">
+                <label>Username</label>
+            </div>
+
+            <div class="input-group">
+                <input autocomplete="new-password" name="password" required type="password">
+                <label>Password</label>
+            </div>
+
+            <!--<div>-->
+            <!--<input type="text" placeholder="username" name="username" required>-->
+            <!--</div>-->
+
+            <!--<div>-->
+            <!--<input type="password" placeholder="password" name="password" required>-->
+            <!--</div>-->
+
+            <!--<p class="login-error-hidden" id="login-error">Incorrect credentials. Please try again.</p>-->
+            <button class="button-raised" type="submit"><span>Sign in</span></button>
+
+            <p>Don't have an account? <a href="/runner/register">Sign up</a></p>
+            <p><a href="/runner/password/reset">Forgot your password?</a></p>
+
+        </form>
+    </div>
+</main>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<!--<script src="/script/jquery.nicescroll.js"></script>-->
+<script src="/script/prefixfree.min.js"></script>
+<script src="/script/script.js"></script>
+
+</body>
+</html>

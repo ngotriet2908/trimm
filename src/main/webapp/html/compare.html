@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html class="full-height" lang="en">
+<head>
+    <meta content="width=device-width,initial-scale=1.0" name="viewport">
+    <meta charset="UTF-8">
+    <title>Compare</title>
+    <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css"
+          integrity="sha384-oS3vJWv+0UjzBfQzYUhtDYW+Pj2yciDJxpsK1OYPAYjqT085Qq/1cq5FLXAZQ7Ay" rel="stylesheet">
+
+    <link href="../style/style.css" rel="stylesheet">
+</head>
+<body id="compare">
+
+<div class="profile-top">
+</div>
+
+<nav>
+        <span class="nav-logo">
+                <a class="font-bold" href="/">runner</a>
+        </span>
+
+    <span class="nav-button">
+                <a class="font-bold">
+                    <i class="fas fa-bars"></i>
+                </a>
+        </span>
+
+    <div>
+        <ul class="hidden">
+            <li class="nav-item">
+                <a href="/">home</a>
+            </li>
+
+            <li class="nav-item">
+                <a href="/runner/profiles">profile</a>
+            </li>
+
+            <li class="nav-item">
+                <a href="/runner/logout">sign out</a>
+            </li>
+        </ul>
+    </div>
+</nav>
+
+
+<main>
+
+    <div id="dashboard-overview-container">
+
+        <div class="checkbox-group" id="compare-checkbox">
+
+        </div>
+
+        <div>
+            <div class="input-group input-select">
+                <select id="select-indicator-compare">
+                    <option value="axtibacc">Axtibacc</option>
+                    <option value="tibimpact">Tibimpact</option>
+                    <option value="axsacacc">Axsacacc</option>
+                    <option value="sacimpact">Sacimpact</option>
+                    <option value="brakingforce">Brakingforce</option>
+                    <option value="pushoffpower">Pushoffpower</option>
+                    <option value="tibintrot">Tibintrot</option>
+                    <option value="vll">Vll</option>
+                </select>
+                <label class="select-label">Indicator</label>
+            </div>
+
+            <div class="option-group" id="select-side-compare">
+                <div>
+                    <input checked id="select-side-left-compare" name="select-side" type="radio" value="_left">
+                    <label for="select-side-left-compare">Left side</label>
+                </div>
+
+                <div>
+                    <input id="select-side-right-compare" name="select-side" type="radio" value="_right">
+                    <label for="select-side-right-compare">Right side</label>
+                </div>
+            </div>
+
+            <div id="compare-button-container">
+                <button class="button-raised" id="compare-button" type="button"><span>Compare</span></button>
+            </div>
+        </div>
+    </div>
+
+
+    <section id="dashboard-tiles-container">
+
+        <div class="dashboard-card">
+            <div class="dashboard-card-front dashboard-card-front-graph">
+                <header>
+                    <h3 class="dashboard-card-id">Graph</h3>
+                </header>
+                <div class="dashboard-card-content dashboard-card-graph" id="chart-compare">
+                    <!--                        <canvas></canvas>-->
+                </div>
+            </div>
+        </div>
+
+    </section>
+</main>
+
+<footer>
+    <div>
+        <p>
+            runner
+        </p>
+        <p>
+            (c) 2019 Runner
+        </p>
+    </div>
+    <div>
+        <p>
+            Created with Love and Passion.
+        </p>
+    </div>
+</footer>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.bundle.js"></script>
+
+<script src="../script/prefixfree.min.js"></script>
+<script src="../script/script.js"></script>
+<script src="../script/compare.js"></script>
+</body>
+</html>

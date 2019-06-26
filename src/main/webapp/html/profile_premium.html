@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html class="full-height" lang="en">
+<head>
+    <meta content="width=device-width,initial-scale=1.0" name="viewport">
+    <meta charset="UTF-8">
+    <title>Profile</title>
+    <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css"
+          integrity="sha384-oS3vJWv+0UjzBfQzYUhtDYW+Pj2yciDJxpsK1OYPAYjqT085Qq/1cq5FLXAZQ7Ay" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Montserrat" rel="stylesheet">
+    <link href="/style/style.css" rel="stylesheet">
+</head>
+<body id="profile">
+
+<div class="popup-overlay hidden">
+</div>
+
+<div class="profile-top">
+</div>
+
+<nav>
+	<span class="nav-logo">
+			<a class="font-bold" href="/">runner</a>
+	</span>
+
+    <span class="nav-button">
+			<a class="font-bold">
+				<i class="fas fa-bars"></i>
+			</a>
+	</span>
+
+    <div>
+        <ul class="hidden">
+
+            <li class="nav-item">
+                <a href="/">home</a>
+            </li>
+
+            <li class="nav-item upgrade hidden">
+                <a class="button-raised" href="/runner/premium/join"><span>upgrade</span></a>
+            </li>
+
+            <li class="nav-item">
+                <a href="/runner/settings">settings</a>
+            </li>
+
+            <li class="nav-item">
+                <a href="/runner/logout">sign out</a>
+            </li>
+        </ul>
+    </div>
+</nav>
+
+<main class="profile-main">
+
+    <div class="profile-card" id="profile-picture-container">
+
+        <div id="profile-picture-img">
+            <img alt="profile picture" id="profile-picture" src="">
+        </div>
+
+        <div id="profile-picture-general">
+            <div class="profile-picture-general-item">
+                <p>
+                    <span>Runs</span>
+                    <span></span>
+                </p>
+            </div>
+            <div class="profile-picture-general-item">
+                <p>
+                    <span>Distance</span>
+                    <span></span>
+                </p>
+            </div>
+            <div class="profile-picture-general-item">
+                <p>
+                    <span>Total steps</span>
+                    <span></span>
+                </p>
+            </div>
+            <div class="profile-picture-general-item profile-picture-general-item-multiline">
+                <p>
+                    Last activity
+                </p>
+                <p>
+                    <span></span>
+                </p>
+            </div>
+
+            <div class="profile-picture-general-item" id="compare-button-container">
+                <a class="button-raised" href="/runner/compare">
+                    <span>Compare runs</span>
+                </a>
+            </div>
+        </div>
+    </div>
+
+
+    <div id="profile-right">
+
+        <div id="profile-name-container">
+            <div>
+                <span></span>
+                <!--<span>Christian Van Den Berge</span>-->
+            </div>
+            <!--<div id="pro">-->
+            <!--<span>PRO</span>-->
+            <!--</div>-->
+        </div>
+
+
+        <div class="profile-card" id="overview-container">
+            <div id="overview-data-container">
+                <div class="overview-data-item" id="overview-distance">
+                    <h3>
+                        <span>total</span>
+                        <span> distance</span>
+                    </h3>
+                    <p>
+                        <span>44334 </span><span>km</span>
+                    </p>
+                </div>
+                <div class="overview-data-item" id="overview-time">
+                    <h3>
+                        <span>total</span>
+                        <span> time</span>
+                    </h3>
+                    <p>
+                        <span>434 </span><span>h</span>
+                    </p>
+                </div>
+                <div class="overview-data-item" id="overview-steps">
+                    <h3>
+                        <span>total</span>
+                        <span> steps</span>
+                    </h3>
+                    <p>
+                        <span>344334</span>
+                    </p>
+                </div>
+
+            </div>
+        </div>
+
+
+        <div id="runs-container">
+            <header>
+                <h1>Activity</h1>
+                <div>
+                    <div class="input-group input-select">
+                        <select id="select-sort-type">
+                            <option value="dated">Date [Z-A]</option>
+
+                            <option value="dateu">Date [A-Z]</option>
+
+                            <option value="timeu">Time [A-Z]</option>
+                            <option value="timed">Time [Z-A]</option>
+
+                            <option value="stepu">Steps [A-Z]</option>
+                            <option value="stepd">Steps [Z-A]</option>
+
+                            <option value="distanceu">Distance [A-Z]</option>
+                            <option value="distanced">Distance [Z-A]</option>
+
+                        </select>
+                        <label class="select-label">Sort</label>
+                    </div>
+                </div>
+            </header>
+
+            <div id="runs-data-container">
+
+                <!--<div class="profile-card profile-run-card">-->
+                <!--<div class="run-card-blocks">-->
+                <!--<div>-->
+                <!--<div class="run-card-title">-->
+                <!--<h4><a href="/">Typical Run</a></h4>-->
+                <!--</div>-->
+                <!--<div class="run-card-date">2019-04-13</div>-->
+                <!--</div>-->
+
+                <!--<div class="run-card-distance">-->
+                <!--<div>Distance</div>-->
+                <!--<div>8.7 km</div>-->
+                <!--</div>-->
+
+                <!--<div class="run-card-time">-->
+                <!--<div>Time</div>-->
+                <!--<div>00:55:33</div>-->
+                <!--</div>-->
+
+                <!--<div class="run-card-steps">-->
+                <!--<div>Steps</div>-->
+                <!--<div>11342</div>-->
+                <!--</div>-->
+
+                <!--<div class="run-card-see-more"><a class="button-raised" href="/"><span><i-->
+                <!--class="fas fa-angle-right"></i></span></a></div>-->
+
+                <!--</div>-->
+                <!--</div>-->
+
+
+            </div>
+        </div>
+    </div>
+</main>
+
+
+<footer>
+    <div>
+        <p>
+            runner
+        </p>
+        <p>
+            (c) 2019 Runner
+        </p>
+    </div>
+    <div>
+        <p>
+            Created with Love and Passion.
+        </p>
+    </div>
+</footer>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<!--<script src="/script/jquery.nicescroll.js"></script>-->
+<script src="/script/prefixfree.min.js"></script>
+<script src="/script/script.js"></script>
+
+</body>
+</html>
