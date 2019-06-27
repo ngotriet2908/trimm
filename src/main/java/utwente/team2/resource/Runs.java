@@ -396,6 +396,13 @@ public class Runs {
     @Path("/{run_id}/infographic/email")
     @GET
     public String sentToEmail(@PathParam("run_id") String runId, @QueryParam("email") String email) {
+        Principal principal = securityContext.getUserPrincipal();
+        String tokenUsername = principal.getName();
+
+        if (!UserDao.instance.isPremiumUser(tokenUsername)) {
+            premiumFeatureAccessForbidden();
+            return null;
+        }
 
         Run run = RunDao.instance.getRun(Integer.parseInt(runId));
 
@@ -429,6 +436,14 @@ public class Runs {
     @GET
     @Produces(MediaType.TEXT_HTML)
     public String prepareInfographic(@PathParam("run_id") String runId) {
+        Principal principal = securityContext.getUserPrincipal();
+        String tokenUsername = principal.getName();
+
+        if (!UserDao.instance.isPremiumUser(tokenUsername)) {
+            premiumFeatureAccessForbidden();
+            return null;
+        }
+
         Run run = RunDao.instance.getRun(Integer.parseInt(runId));
 
         if (run != null) {

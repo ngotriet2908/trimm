@@ -332,8 +332,17 @@ public class DataExporter {
             statement.setString(5, UserDao.instance.getSHA256(UserDao.instance.getSHA256("Password7")+ salt));
             statement.setString(6, salt);
             statement.setBoolean(7, true);
+            statement.execute();
 
+            salt = UserDao.instance.getAlphaNumericString(50);
 
+            statement.setString(1, "testuser");
+            statement.setString(2, "Tasty");
+            statement.setString(3, "Test");
+            statement.setString(4, "ngotriet2908@gmail.com");
+            statement.setString(5, UserDao.instance.getSHA256(UserDao.instance.getSHA256("Password7")+ salt));
+            statement.setString(6, salt);
+            statement.setBoolean(7, true);
             statement.execute();
         } catch (SQLException se) {
             se.printStackTrace();

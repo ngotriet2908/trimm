@@ -159,7 +159,7 @@
 
         <div id="select-favorite-layout">
             <i class="fas fa-star star"></i>
-            <button class="button-raised" type="button"><span><i class="fas fa-bookmark"></i></span></button>
+            <button class="button-raised" type="button"><span><i class="fas fa-heart"></i></span></button>
         </div>
 
 
@@ -172,6 +172,7 @@
         </div>
 
         <div id="export-eink">
+            <i class="fas fa-star star"></i>
             <button class="button-raised" type="button"><span><i class="fas fa-file-export"></i></span></button>
         </div>
     </div>
@@ -247,22 +248,20 @@
 </section>
 
 
-<section class="eink-sent-dialog hidden dashboard-dialog">
+<section class="eink-sent-dialog hidden dashboard-dialog premium-required">
     <div>
-        <h1>Export infographic</h1>
-        <p>Please, enter the address to which the email will be sent.</p>
-        <div class="input-group">
-            <input autocomplete="off" name="email" required type="text">
-            <label>Email</label>
-        </div>
+        <h1>You discovered a premium feature!</h1>
 
-        <p id="eink-new-window">
-            or open infographic in a <a href="/" target="_blank">new window</a>
+        <p>With RunnerPro you can create stylish infographics of your runs. These infographics can be
+            viewed in a browser or exported to your email as images.
+            time.</p>
+        <p>
+            Upgrading to Runner Premium will unlock it.
         </p>
 
         <div class="button-group">
-            <button class="button-text cancel" type="button"><span>Close</span></button>
-            <button class="button-raised export-eink" type="button"><span>Send</span></button>
+            <button class="button-text cancel" type="button"><span>Later</span></button>
+            <a class="button-raised" href="/runner/premium/join"><span>get premium now</span></a>
         </div>
     </div>
 </section>

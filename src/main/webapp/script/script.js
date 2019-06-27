@@ -120,8 +120,9 @@ document.addEventListener('DOMContentLoaded', function () {
         var password = $("#login input[type='password']").val().trim();
         if (username !== "" && password !== "") {
             var params = "username=" + username + "&password=" + password;
-
             var http = new XMLHttpRequest();
+
+            var spinnerContainer = $("#login form");
 
             http.onreadystatechange = function () {
                 if (http.readyState === XMLHttpRequest.DONE) {
@@ -131,21 +132,26 @@ document.addEventListener('DOMContentLoaded', function () {
                         usernameFromToken = getTokenData(getCookieValue("token")).sub;
                         window.location.replace("/runner/profiles/" + usernameFromToken);
                     } else if (http.status === 401) {
-                        // responseMessage.text("Incorrect username or password. Please, try again.");
-                        // responseMessage.removeClass("response-message-hidden");
-                        // responseMessage.addClass("response-message-hidden-red");
-                        // TODO verify that this works
-                        window.location.replace("/runner/login?error=incorrect_credentials");
+                        responseMessage.text("Incorrect username or password. Please, try again.");
+                        responseMessage.removeClass("response-message-hidden");
+                        responseMessage.addClass("response-message-hidden-red");
+                        $(".loader-container-absolute").remove();
                     } else if (http.status === 402) {
-                        // responseMessage.text("Account is not activated");
-                        // responseMessage.removeClass("response-message-hidden");
-                        // responseMessage.addClass("response-message-hidden-red");
-                        window.location.replace("/runner/login?error=not_activated");
+                        responseMessage.text("Account is not activated");
+                        responseMessage.removeClass("response-message-hidden");
+                        responseMessage.addClass("response-message-hidden-red");
+
+                        $(".loader-container-absolute").remove();
                     } else {
                         console.log("Response: " + http.status);
                     }
                 }
             };
+
+            // show loading spinner
+            spinnerContainer.append('<div class="loader-container-absolute loader-container-radius">' +
+                '<div class="loader"></div>' +
+                '</div>');
 
             http.open("POST", "/runner/login", true);
             http.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
@@ -305,7 +311,6 @@ document.addEventListener('DOMContentLoaded', function () {
                             window.location.replace("/runner/login?message=reset_request_success");
                         } else if (http.status === 401) {
 
-
                         } else {
                             console.log("Response: " + http.status);
                         }
@@ -315,7 +320,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 // show loading spinner
                 spinnerContainer.css("height", formHeight);
                 spinnerContainer.css("display", "block");
-                spinnerContainer.html('<div class="loader-container">' +
+                spinnerContainer.html('<div class="loader-container-absolute loader-container-radius">' +
                     '<div class="loader"></div>' +
                     '</div>');
 
@@ -354,8 +359,6 @@ document.addEventListener('DOMContentLoaded', function () {
         http.onreadystatechange = function () {
             if (http.readyState === 4 && http.status === 200) {
                 var parsedResponse = JSON.parse(http.response);
-
-                console.log(parsedResponse);
 
                 $("#profile-name-container span")[0].innerText = parsedResponse.firstName + " " + parsedResponse.lastName;
 
@@ -403,8 +406,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     $container.append('<div class="profile-card profile-run-card">Nothing here yet...</div>');
                 }
 
-                // show the hidden page
-                $("#profile").css("display", "flex");
+                $(".loader-container-absolute").remove();
             }
         };
 
@@ -772,47 +774,98 @@ document.addEventListener('DOMContentLoaded', function () {
     // Shows the errors for a specific input
     function showErrorsForInput(input, errors) {
         // This is the root of the input
-        var formGroup = closestParent(input.parentNode, "input-group")
-            // Find where the error messages will be insert into
-            , messages = formGroup.querySelector(".messages");
+        var inputGroup = closestParent(input.parentNode, "input-group");
+
         // First we remove any old messages and resets the classes
-        resetFormGroup(formGroup);
-        // If we have errors
+        resetFormGroup(inputGroup);
+
         var errorElem;
 
         if (errors) {
-            // we first mark the group has having errors
-            formGroup.classList.add("has-error");
 
-            // add icon and tooltip
-            errorElem = document.createElement("span");
-            errorElem.classList.add("input-error");
+            if (document.querySelector("html").offsetWidth > 750) {
+                // we first mark the group has having errors
+                inputGroup.classList.add("has-error");
 
-            var errorContainer = document.createElement("div");
-            errorContainer.classList.add("input-error-tooltip-text");
+                // add icon and tooltip
+                errorElem = document.createElement("span");
+                errorElem.classList.add("input-error");
 
-            // then we append all the errors
-            errors.forEach(function (error) {
-                addError(errorContainer, error);
-            });
+                var errorContainer = document.createElement("div");
+                errorContainer.classList.add("input-error-tooltip-text");
 
-            errorElem.innerHTML = '<i class="fas fa-exclamation-triangle"></i>';
+                // then we append all the errors
+                errors.forEach(function (error) {
+                    addError(errorContainer, error);
+                });
 
-            var div = document.createElement("div");
-            div.appendChild(errorContainer);
-            errorElem.appendChild(div);
+                errorElem.innerHTML = '<i class="fas fa-exclamation-triangle"></i>';
 
-            formGroup.appendChild(errorElem);
+                var div = document.createElement("div");
+                div.appendChild(errorContainer);
+                errorElem.appendChild(div);
+
+                inputGroup.appendChild(errorElem);
+            } else {
+                // we first mark the group as having errors
+                inputGroup.classList.add("has-error");
+
+                // add paragraph with error
+                errorElem = document.createElement("div");
+                errorElem.classList.add("input-error");
+                errorElem.classList.add("inline-error");
+
+                // then we append all the errors
+                errors.forEach(function (error) {
+                    addError(errorElem, error);
+                });
+
+                inputGroup.appendChild(errorElem);
+            }
         } else {
             // otherwise we simply mark it as success
-            formGroup.classList.add("has-success");
+            inputGroup.classList.add("has-success");
 
-            errorElem = formGroup.querySelector("input-error");
+            errorElem = inputGroup.querySelector("input-error");
             if (errorElem != null) {
                 errorElem.remove();
             }
         }
     }
+
+    // function showErrorsForInputOnSmallScreens(input, errors) {
+    //     // This is the root of the input
+    //     var inputGroup = closestParent(input.parentNode, "input-group");
+    //
+    //     // First we remove any old messages and resets the classes
+    //     resetFormGroup(inputGroup);
+    //
+    //     var errorElem;
+    //
+    //     if (errors) {
+    //         // we first mark the group as having errors
+    //         inputGroup.classList.add("has-error");
+    //
+    //         // add paragraph with error
+    //         errorElem = document.createElement("div");
+    //         errorElem.classList.add("input-error");
+    //
+    //         // then we append all the errors
+    //         errors.forEach(function (error) {
+    //             addError(errorElem, error);
+    //         });
+    //
+    //         inputGroup.appendChild(errorElem);
+    //     } else {
+    //         // otherwise we simply mark it as success
+    //         inputGroup.classList.add("has-success");
+    //
+    //         errorElem = inputGroup.querySelector("input-error");
+    //         if (errorElem != null) {
+    //             errorElem.remove();
+    //         }
+    //     }
+    // }
 
     // Recursively finds the closest parent that has the specified class
     function closestParent(child, className) {
@@ -926,8 +979,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 $("#last-name-field").val(parsedResponse.lastName);
 
                 // show the hidden page
-                profileManagementPage.css("display", "flex");
-
+                $(".loader-container-absolute").remove();
             } else {
                 console.log("Response: " + http.status);
             }

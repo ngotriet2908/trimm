@@ -23,6 +23,8 @@ html, body {
     font-family: AvenirNext-Regular-D, sans-serif;
     letter-spacing: 0;
     z-index: 1;
+
+    position: relative;
 }
 
 body {
@@ -43,8 +45,10 @@ body {
     display: grid;
     grid-template-rows: 100%;
     grid-template-columns: 1fr;
-    background: black url("../img/blue_runner.jpg") no-repeat right bottom;
+    background: black url("../img/blue_runner_index.jpg") no-repeat right bottom;
     background-size: cover;
+
+    min-height: 100vh;
 }
 
 nav {
@@ -109,7 +113,6 @@ nav ul {
     color: white;
 }
 
-
 #login, #register, #password-reset-request, #password-reset-enter, #upgrade {
     grid-template-columns: 100%;
 
@@ -132,6 +135,7 @@ nav ul {
     align-items: center;
     justify-content: center;
     position: relative;
+    margin-top: 5em;
 }
 
 
@@ -142,6 +146,11 @@ form.input-form {
     position: relative;
     padding: 2em 3em;
     text-align: center;
+
+    flex: 1;
+
+    max-width: 20em;
+    width: auto;
 }
 
 .input-form h1 {
@@ -298,6 +307,7 @@ form.input-form {
     grid-column-gap: 2em;
     align-items: center;
     z-index: 1;
+    min-width: 50%;
 }
 
 #register .input-group {
@@ -311,6 +321,19 @@ form.input-form {
     right: 1em;
     top: 1em;
 }
+
+.inline-error.input-error {
+    position: relative;
+    display: inline-block;
+    right: 0;
+    top: 0;
+}
+
+.inline-error.input-error p {
+    margin: 0.2em 0;
+    color: #a94442;
+}
+
 
 .input-error i {
     position: relative;
@@ -335,10 +358,9 @@ form.input-form {
     z-index: 3;
 }
 
-.input-error:hover .input-error-tooltip-text {
+.input-error:hover .input-error-tooltip-text, .input-error:active .input-error-tooltip-text {
     visibility: visible;
 }
-
 
 #register .has-error input {
     border-color: #a94442;
@@ -368,44 +390,26 @@ form.input-form {
     justify-content: center;
 }
 
-.progress, .reset-success {
+.loader-container-absolute {
     position: absolute;
     top: 0;
     bottom: 0;
     left: 0;
     right: 0;
+    background: white;
+    z-index: 15;
 
     display: flex;
-    flex-direction: column;
     align-items: center;
     justify-content: center;
+}
 
-    background-color: white;
+.loader-container-fixed {
+    position: fixed;
+}
 
+.loader-container-radius {
     border-radius: 0.8em;
-
-    padding: 2em 3em;
-}
-
-.reset-success {
-    text-align: center;
-    color: black;
-    font-size: 1.2em;
-}
-
-.reset-success a {
-    text-decoration: none;
-    color: white;
-    width: auto;
-}
-
-.progress.progress-hidden, .reset-success.reset-success-hidden {
-    visibility: hidden;
-    display: none;
-}
-
-.progress, .reset {
-    transition: visibility 0s 1s;
 }
 
 .loader {
@@ -416,7 +420,6 @@ form.input-form {
     height: 60px;
     animation: spin 2s linear infinite;
 }
-
 
 @keyframes spin {
     0% {
@@ -438,13 +441,8 @@ form.input-form {
     background-color: rgb(250, 250, 255);
 }
 
-#profile, #profile-management {
-    display: none;
-}
-
-
 .profile-top {
-    background: url("../img/blue_runner_cropped.jpg") no-repeat bottom right;
+    background: url("../img/blue_runner_cropped.jpg") no-repeat center right;
     background-size: cover;
     position: absolute;
     top: 0;
@@ -455,22 +453,9 @@ form.input-form {
     height: 10em;
 }
 
-
-.nav-item.upgrade a {
-    box-shadow: none;
-    transition: all ease-out 0.3s;
-    background-color: transparent;
-    border: 1px solid white;
-}
-
-.nav-item.upgrade a:hover {
-    color: white;
-}
-
 .upgrade.hidden {
     display: none;
 }
-
 
 /*.profile-main {*/
 /*    display: flex;*/
@@ -663,6 +648,10 @@ footer div p {
     position: relative;
 }
 
+#dashboard main {
+    /*padding: 0 2em;*/
+}
+
 
 .dashboard-card, #dashboard-overview-container {
     border-radius: 0.8rem;
@@ -766,7 +755,6 @@ footer div p {
 
 .option-group input[type="radio"]:checked + label:before {
     border-color: #296785;
-    animation: ripple 0.2s linear forwards;
 }
 
 .option-group input[type="radio"]:checked + label:after {
@@ -787,8 +775,6 @@ footer div p {
     position: absolute;
     content: '';
     border-radius: 50%;
-    transition: all .3s ease;
-    transition-property: transform, border-color;
 }
 
 .option-group label:before {
@@ -885,16 +871,14 @@ footer div p {
     display: inline-block;
 
     margin: 0;
-
     text-align: center;
+
     border: none;
     cursor: pointer;
     font-size: 1em;
     background-color: transparent;
-
     transform: scale(0);
-    transition: all 0.15s ease-out;
-
+    transition: all 0.2s ease-out;
     color: inherit;
 }
 
@@ -1070,7 +1054,7 @@ footer div p {
     position: relative;
 
     animation-name: slideUp;
-    animation-duration: 1s;
+    animation-duration: 0.3s;
     animation-timing-function: ease;
 }
 
@@ -1079,6 +1063,7 @@ footer div p {
         opacity: 0;
         transform: translate(0px, 50px);
     }
+
     100% {
         opacity: 1;
         transform: translate(0px, 0px);
@@ -1128,6 +1113,7 @@ footer div p {
     box-shadow: 0 24px 38px 3px rgba(0, 0, 0, 0.14), 0 9px 46px 8px rgba(0, 0, 0, 0.12), 0 11px 15px -7px rgba(0, 0, 0, 0.20);
 
     width: calc(100% - 1em);
+    max-width: 30em;
 }
 
 .dashboard-dialog a.button-raised {
@@ -1211,6 +1197,10 @@ footer div p {
 }
 
 
+#upgrade-container {
+    margin: 0.5em 0.5em 2em 0.5em;
+}
+
 .upgrade-card h1 {
     font-weight: normal;
     font-size: 1.8em;
@@ -1225,6 +1215,8 @@ footer div p {
 }
 
 .upgrade-feature i {
+    height: 24px;
+    width: 24px;
     font-size: 1.5em;
 }
 
@@ -1237,7 +1229,7 @@ footer div p {
 }
 
 .upgrade-feature:nth-of-type(3) i {
-    color: #b181e2;
+    color: #6c5884;
 }
 
 .upgrade-feature:nth-of-type(4) i {
@@ -1302,7 +1294,7 @@ footer div p {
 
 #compare #dashboard-tiles-container .dashboard-card {
     position: relative;
-    width: calc(100% - 1em);
+    width: calc(99.5% - 1em);
     height: calc((100vw - 1em) * 2 / 3.5);
 }
 
@@ -1324,8 +1316,8 @@ footer div p {
     }
 
     #profile .profile-top, #profile-management .profile-top {
-        background: rgb(0,0,0);
-        background: linear-gradient(8deg, rgba(0,0,0,1) 0%, rgba(41,103,133,1) 100%);
+        background: rgb(39,41,51);
+        background: linear-gradient(292deg, rgba(39,41,51,1) 0%, rgba(41,103,133,1) 100%);
     }
 
 
@@ -1346,7 +1338,7 @@ footer div p {
         border-radius: 0 0 0.8em 0.8em;
 
         animation-name: slideDown;
-        animation-duration: 1s;
+        animation-duration: 0.3s;
         animation-timing-function: ease;
         box-shadow: 0 24px 38px 3px rgba(0, 0, 0, 0.14), 0 9px 46px 8px rgba(0, 0, 0, 0.12), 0 11px 15px -7px rgba(0, 0, 0, 0.20);
     }
@@ -1383,13 +1375,8 @@ footer div p {
 
     .nav-button.active i {
         animation-name: slideDown;
-        -webkit-animation-name: slideDown;
-
-        animation-duration: 1s;
-        -webkit-animation-duration: 1s;
-
+        animation-duration: 0.6s;
         animation-timing-function: ease;
-        -webkit-animation-timing-function: ease;
     }
 
 
@@ -1467,8 +1454,8 @@ footer div p {
     #login main, #register main, #password-reset-request main, #password-reset-enter main,
     #upgrade main {
         z-index: 1;
-        align-items: start;
-        margin: 6em 0 2em 0;
+        /*align-items: start;*/
+        /*margin: 6em 0 2em 0;*/
     }
 
     #login form, #password-reset-request form, #password-reset-enter form {
@@ -1480,7 +1467,7 @@ footer div p {
     /* - - - - - REGISTER - - - - - - - */
     #register form {
         grid-template-columns: 1fr;
-        max-width: 36em;
+        max-width: 20em;
         width: auto;
         margin: 0 0.5em;
     }
@@ -1706,7 +1693,7 @@ footer div p {
 
     .dashboard-card {
         position: absolute;
-        width: calc((100% - 1em));
+        width: calc((99.5% - 1em));
         height: 10em;
         margin: 0.5em;
         z-index: 1;
@@ -1717,16 +1704,16 @@ footer div p {
     }
 
     .dashboard-card.w2 {
-        width: calc((100% - 1em));
+        width: calc((99.5% - 1em));
     }
 
     #controls {
         bottom: 5em;
     }
 
-    .dashboard-dialog > div {
-        width: calc(100% - 1em);
-    }
+    /*.dashboard-dialog > div {*/
+    /*    width: calc(100% - 1em);*/
+    /*}*/
 
     .dashboard-dialog button, .dashboard-dialog a.button-raised {
         margin-left: 0.5em;
@@ -1738,7 +1725,7 @@ footer div p {
     .upgrade-card {
         max-width: 30rem;
         width: auto;
-        margin: 5em 0.5em;
+        margin: 0.5em;
     }
 
     .upgrade-feature {
@@ -1760,7 +1747,7 @@ footer div p {
     }
 
     .dashboard-card {
-        width: calc((100% - 2em) / 2);
+        width: calc((99.5% - 2em) / 2);
 
         height: 10em;
     }
@@ -1770,7 +1757,7 @@ footer div p {
     }
 
     .dashboard-card.w2 {
-        width: calc((100% - 1em));
+        width: calc((99.5% - 1em));
     }
 
     /*#compare #dashboard-tiles-container .dashboard-card {*/
@@ -1793,7 +1780,7 @@ footer div p {
     }
 
     .dashboard-card {
-        width: calc((100% - 3em) / 3);
+        width: calc((99.5% - 3em) / 3);
 
         height: 11em;
     }
@@ -1803,7 +1790,7 @@ footer div p {
     }
 
     .dashboard-card.w2 {
-        width: calc((100% - 2em) * 2 / 3);
+        width: calc((99.5% - 2em) * 2 / 3);
     }
 
     /*#compare #dashboard-tiles-container .dashboard-card {*/
@@ -1820,7 +1807,7 @@ footer div p {
     }
 
     #index, #login, #password-reset-enter, #password-reset-request, #upgrade {
-        height: 100vh;
+        /*height: 100vh;*/
     }
 
     nav {
@@ -1883,8 +1870,9 @@ footer div p {
         color: #cccccc;
     }
 
+
     #welcome-main {
-        width: 50%;
+        width: 70%;
     }
 
 
@@ -1906,6 +1894,7 @@ footer div p {
     #register form {
         grid-template-columns: 1fr 1fr;
         width: 36em;
+        max-width: 40em;
     }
 
     #register h1 {
@@ -2111,8 +2100,17 @@ footer div p {
         z-index: 3;
     }
 
+    #dashboard main {
+        /*width: calc(100% - 4em);*/
+        margin: auto;
+        /*max-width: 75em;*/
+        padding: 0 2em;
+        width: 100%;
+    }
+
     #dashboard-overview-container {
-        width: 64em;
+        max-width: 64em;
+        width: 100%;
         margin: 6em auto 1em;
         background: white;
     }
@@ -2128,7 +2126,7 @@ footer div p {
 
     #dashboard-tiles-container {
         padding-top: 0;
-        width: 65em;
+        max-width: 65em;
         text-align: left;
         margin: auto auto 0.5rem;
     }
@@ -2152,17 +2150,20 @@ footer div p {
     /* grid */
     .dashboard-tile-grid {
         position: relative;
-        width: 65em;
+        /*width: 65em;*/
         margin: 0;
         box-sizing: content-box;
     }
 
     .dashboard-card {
         position: absolute;
-        width: 15em;
-        height: 10em;
-        margin: 0.6em;
+        /*width: 15em;*/
+        /*height: 10em;*/
+        margin: 0.5em;
         z-index: 1;
+
+        width: calc((99.5% - 4em) / 4);
+        height: 10em;
     }
 
     .dashboard-card.h2 {
@@ -2170,7 +2171,8 @@ footer div p {
     }
 
     .dashboard-card.w2 {
-        width: 31.250em;
+        /*width: 31.250em;*/
+       width: calc((99.5% - 2em) / 2)
     }
 
     #controls {
@@ -2183,13 +2185,19 @@ footer div p {
     }
 
     /* UPGRADE */
+    #upgrade main {
+        margin-top: 5em;
+    }
+
     .upgrade-card {
         width: 30rem;
     }
 
     .upgrade-feature {
+        /*width: calc((99% - 4em) / 2);*/
+        box-sizing: border-box;
         width: 50%;
-        margin: 1em auto;
+        padding: 1em 1em;
     }
 
     #compare #dashboard-tiles-container .dashboard-card {

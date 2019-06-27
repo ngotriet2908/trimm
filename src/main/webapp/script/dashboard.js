@@ -359,7 +359,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
                 innerContent = '<div class="dashboard-card-front">' +
                     '<header>' +
-                    '<h3 class="dashboard-card-id">' + nameSplit[0] + " " + nameSplit[1] +
+                    '<h3 class="dashboard-card-id">' + nameSplit[0] + " " + nameSplit[1].charAt(0) +
                     '</h3>' +
                     '<button class="dashboard-card-remove"><i class="fas fa-times"></i></button>' +
                     '</header>' +
@@ -651,15 +651,15 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
 
-    $(".popup-overlay").on("click", function (event) {
-        // hide
-        document.querySelector(".popup-overlay").classList.add("hidden");
-
-        // remove all dialogs
-        document.querySelector(".remove-all-dialog").classList.add("hidden");
-        document.querySelector(".add-dialog").classList.add("hidden");
-        document.querySelector(".eink-sent-dialog").classList.add("hidden");
-    });
+    // $(".popup-overlay").on("click", function (event) {
+    //     // hide
+    //     document.querySelector(".popup-overlay").classList.add("hidden");
+    //
+    //     // remove all dialogs
+    //     document.querySelector(".remove-all-dialog").classList.add("hidden");
+    //     document.querySelector(".add-dialog").classList.add("hidden");
+    //     document.querySelector(".eink-sent-dialog").classList.add("hidden");
+    // });
 
     $("#controls #add").on("click", function (event) {
         // show overlay
