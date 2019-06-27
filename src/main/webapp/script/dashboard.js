@@ -27,7 +27,7 @@ document.addEventListener('DOMContentLoaded', function () {
         usernameFromToken = tokenJson.sub;
     }
 
-    dragEnabled = document.querySelector("html").offsetWidth > 400;
+    dragEnabled = document.querySelector("html").offsetWidth > 1023;
 
     function getTokenData(token) {
         if (token === null) {
@@ -1065,9 +1065,11 @@ document.addEventListener('DOMContentLoaded', function () {
     window.addEventListener('resize', function (event) {
         // if the window is resized below the threshold, disable muuri's drag and drop
         if (document.querySelector("html").offsetWidth <= 1023) {
+            console.log("Window width is small. Drag is disabled now.");
             grid.dragEnabled = false;
         } else {
-            // enable drag and drag
+            // enable drag and drop
+            console.log("Window width is wide enough. Drag is enabled now.");
             grid.dragEnabled = true;
         }
     });
