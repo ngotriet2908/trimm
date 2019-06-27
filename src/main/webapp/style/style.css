@@ -1,26 +1,10 @@
-@font-face {
-    font-family: AvenirNext-Regular-D;
-    src: url("../fonts/AvenirNext-Regular.woff") format("woff"), url("../fonts/AvenirNext-Regular.ttf") format("truetype");
-}
-
-@font-face {
-    font-family: AvenirNext-Medium-D;
-    src: url("../fonts/AvenirNext-Medium.woff") format("woff"), url("../fonts/AvenirNext-Medium.ttf") format("truetype");
-}
-
-@font-face {
-    font-family: AvenirNext-Bold-D;
-    src: url("../fonts/AvenirNextLTPro-Bold.woff") format("woff"), url("../fonts/AvenirNextLTPro-Bold.ttf") format("truetype");
-}
-
-
 /* COMMON */
 html, body {
     min-height: 100%;
     width: 100%;
     margin: 0;
     padding: 0;
-    font-family: AvenirNext-Regular-D, sans-serif;
+    font-family: 'Lato', sans-serif;
     letter-spacing: 0;
     z-index: 1;
 
@@ -65,7 +49,8 @@ nav ul {
 }
 
 .nav-logo {
-    font-family: AvenirNext-Bold-D, sans-serif;
+    /*font-family: AvenirNext-Bold-D, sans-serif;*/
+    font-weight: bold;
 }
 
 #index main {
@@ -106,11 +91,21 @@ nav ul {
 #welcome-main button {
     margin: 1rem auto;
     width: auto;
+    background: #ecf0f1;
 }
 
 #welcome-main button a {
     text-decoration: none;
-    color: white;
+    color: #296785;
+}
+
+#welcome-main button:hover, #welcome-main button:focus {
+    background-color: white;
+    box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 3px 1px -2px rgba(0, 0, 0, 0.12), 0 1px 5px 0 rgba(0, 0, 0, 0.20);
+}
+
+#welcome-main button:disabled:hover {
+    background-color: white;
 }
 
 #login, #register, #password-reset-request, #password-reset-enter, #upgrade {
@@ -239,7 +234,7 @@ form.input-form {
     cursor: pointer;
     text-transform: uppercase;
 
-    font-family: AvenirNext-Regular-D, sans-serif;
+    /*font-family: AvenirNext-Regular-D, sans-serif;*/
     overflow: hidden;
     border: 0 none;
     border-radius: 0.4em;
@@ -479,7 +474,7 @@ form.input-form {
 
 #profile-picture-general {
     font-size: 1em;
-    font-family: AvenirNext-Regular-D, sans-serif;
+    /*font-family: AvenirNext-Regular-D, sans-serif;*/
 }
 
 .profile-picture-general-item p {
@@ -503,7 +498,7 @@ form.input-form {
 }
 
 .profile-picture-general-item-multiline p span {
-    font-family: AvenirNext-Medium-D, sans-serif;
+    /*font-family: AvenirNext-Medium-D, sans-serif;*/
 }
 
 #profile-picture-general #compare-button-container {
@@ -637,7 +632,7 @@ footer div p {
 }
 
 .dashboard-overview-item p:nth-of-type(2) {
-    font-weight: bold;
+    /*font-weight: bold;*/
     margin: 0 0 1em 0;
 }
 
@@ -857,7 +852,7 @@ footer div p {
     justify-content: flex-end;
 
     font-size: 1em;
-    font-family: AvenirNext-Regular-D, sans-serif;
+    /*font-family: AvenirNext-Regular-D, sans-serif;*/
     text-transform: capitalize;
     color: #4A4A4A;
 }
@@ -865,6 +860,7 @@ footer div p {
 .dashboard-card header h3 {
     display: inline-block;
     margin: 0 auto 0 0;
+    font-weight: normal;
 }
 
 .dashboard-card header button {
@@ -882,7 +878,6 @@ footer div p {
     color: inherit;
 }
 
-
 .dashboard-card-front:hover .dashboard-card-remove {
     transform: scale(1);
 }
@@ -898,6 +893,7 @@ footer div p {
     grid-template-rows: 1fr 1fr;
     grid-template-columns: 1fr 1fr;
     align-items: center;
+    line-height: 1.5;
 }
 
 .dashboard-card-single div:nth-child(1) {
@@ -1148,7 +1144,7 @@ footer div p {
 
     cursor: pointer;
 
-    font-family: AvenirNext-Regular-D, sans-serif;
+    /*font-family: AvenirNext-Regular-D, sans-serif;*/
     overflow: hidden;
     border: 0 none;
     border-radius: 0.4em;
@@ -1515,7 +1511,8 @@ footer div p {
         margin: 1em 0 1em 0;
 
         color: black;
-        font-family: AvenirNext-Bold, sans-serif;
+        /*font-family: AvenirNext-Bold, sans-serif;*/
+        font-weight: bold;
         font-size: 1.5em;
         text-align: center;
     }
@@ -1533,7 +1530,8 @@ footer div p {
         color: #296785;
         display: block;
 
-        font-family: AvenirNext-Medium-D, sans-serif;
+        /*font-family: AvenirNext-Medium-D, sans-serif;*/
+        font-weight: normal;
     }
 
     #profile-right .profile-card h2 {
@@ -1559,7 +1557,7 @@ footer div p {
 
     .overview-data-item h3 {
         text-transform: capitalize;
-        font-family: AvenirNext-Regular-D, sans-serif;
+        /*font-family: AvenirNext-Regular-D, sans-serif;*/
         font-size: 1.4em;
         color: #4A4A4A;
         margin: 0;
@@ -1570,7 +1568,7 @@ footer div p {
         /*display: inline-block;*/
         margin: 0;
 
-        font-family: AvenirNext-Regular-D, sans-serif;
+        /*font-family: AvenirNext-Regular-D, sans-serif;*/
         font-size: 2em;
         color: #296785;
     }
@@ -1599,7 +1597,6 @@ footer div p {
 
     .run-card-blocks div div:nth-of-type(2) {
         font-size: 1em;
-        font-weight: bold;
     }
 
     footer {
@@ -1625,7 +1622,7 @@ footer div p {
     }
 
     footer div:nth-child(1) p:nth-child(1) {
-        font-family: AvenirNext-Bold-D, sans-serif;
+        /*font-family: AvenirNext-Bold-D, sans-serif;*/
         text-transform: uppercase;
         font-size: 1.2em;
         text-align: center;
@@ -1972,8 +1969,8 @@ footer div p {
         margin-bottom: 0.4em;
 
         color: white;
-        font-family: AvenirNext-Bold, sans-serif;
-        font-size: 2.875em;
+        /*font-family: AvenirNext-Bold, sans-serif;*/
+        font-size: 2.8em;
 
         display: flex;
         align-items: center;
@@ -1986,6 +1983,7 @@ footer div p {
         text-align: center;
         padding: 0.3em;
         margin-left: 0.8em;
+        margin-top: 0.4em;
         border-radius: 0.3rem;
     }
 
@@ -2006,7 +2004,7 @@ footer div p {
 
     .overview-data-item h3 {
         text-transform: uppercase;
-        font-family: AvenirNext-Regular-D, sans-serif;
+        /*font-family: AvenirNext-Regular-D, sans-serif;*/
         font-size: 1.1em;
         color: #4A4A4A;
         margin: 0 auto;
@@ -2019,7 +2017,7 @@ footer div p {
 
     .overview-data-item p {
         margin: 0;
-        font-family: AvenirNext-Regular-D, sans-serif;
+        /*font-family: AvenirNext-Regular-D, sans-serif;*/
         font-size: 2.8em;
         color: #296785;
         text-align: center;
@@ -2047,7 +2045,6 @@ footer div p {
 
     .run-card-blocks div div:nth-of-type(2) {
         font-size: 1.2em;
-        font-weight: bold;
     }
 
     footer {
@@ -2076,7 +2073,8 @@ footer div p {
     }
 
     footer div:nth-child(1) p:nth-child(1) {
-        font-family: AvenirNext-Bold-D, sans-serif;
+        /*font-family: AvenirNext-Bold-D, sans-serif;*/
+        font-weight: bold;
         text-transform: uppercase;
         font-size: 1.8em;
         text-align: left;
