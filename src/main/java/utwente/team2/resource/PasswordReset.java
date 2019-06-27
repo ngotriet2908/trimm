@@ -77,12 +77,34 @@ public class PasswordReset {
     }
 
 
-    @Path("/reset/enter") // TODO if the token is invalid, immediately show warning
+    @Path("/reset/enter")
     @GET
     @Produces(MediaType.TEXT_HTML)
-    public InputStream showResetEnterPage() {
-        ClassLoader classLoader = getClass().getClassLoader();
-        return classLoader.getResourceAsStream("../../html/password_reset_enter.html");
+    public InputStream showResetEnterPage(@QueryParam("token") String token,
+                                          @Context HttpServletResponse servletResponse) throws IOException {
+
+        try {
+            if (token == null || token.equals("")) {
+                servletResponse.sendError(401);
+                return null;
+            }
+
+            String username = Login.getTokenClaims(token).getBody().getSubject();
+
+            if (verifyResetJwt(token, username)) {
+                // success
+                ClassLoader classLoader = getClass().getClassLoader();
+                return classLoader.getResourceAsStream("../../html/password_reset_enter.html");
+            } else {
+                servletResponse.sendError(404, "Invalid token.");
+                return null;
+            }
+        } catch (JwtException e) {
+            System.out.println("JWT exception.");
+            servletResponse.setStatus(404);
+            servletResponse.sendRedirect("/runner/login/?error=reset_token_invalid");
+            return null;
+        }
     }
 
 
@@ -91,8 +113,14 @@ public class PasswordReset {
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     public void resetEnter(@FormParam("token") String token, @FormParam("password") String password,
                            @Context HttpServletResponse servletResponse,
-                           @Context HttpServletRequest servletRequest) throws Exception {
+                           @Context HttpServletRequest servletRequest) throws IOException {
         try {
+
+            if (token == null || token.equals("")) {
+                servletResponse.sendError(401);
+                return;
+            }
+
             if (!password.matches("(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z]{8,}")) {
                 servletResponse.sendError(400);
                 return;
@@ -100,23 +128,37 @@ public class PasswordReset {
 
             String username = Login.getTokenClaims(token).getBody().getSubject();
 
-            String passwordHash = UserDao.instance.getUsersPassword(username);
+            if (!UserDao.instance.isActivated(username)) {
+                System.out.println("Account is not activated");
+                servletResponse.sendError(402, "account is not activated");
+                return;
+            }
 
-            if (passwordHash != null) {
-                Jws<Claims> jws = Jwts.parser().require("purpose", "password_reset").require("key", passwordHash.substring(0, 5))
-                        .setSigningKey(ApplicationSettings.APP_KEY).parseClaimsJws(token);
-                System.out.println("Password reset JWT is valid.");
-
+            if (verifyResetJwt(token, username)) {
+                // success
                 UserDao.instance.updatePassword(username, password);
-
                 servletResponse.sendRedirect("/runner/login?message=reset_success");
             } else {
-                System.out.println("JWT exception.");
-                servletResponse.sendError(404, "Invalid token.");
+                servletResponse.sendError(404);
             }
         } catch (JwtException e) {
             System.out.println("JWT exception.");
-            servletResponse.sendError(404, "Invalid token.");
+            servletResponse.sendError(404);
+        }
+    }
+
+
+    public synchronized boolean verifyResetJwt(String token, String username) throws JwtException {
+        String passwordHash = UserDao.instance.getUsersPassword(username);
+
+        if (passwordHash != null) {
+            Jws<Claims> jws = Jwts.parser().require("purpose", "password_reset").require("key", passwordHash.substring(0, 5))
+                    .setSigningKey(ApplicationSettings.APP_KEY).parseClaimsJws(token);
+            System.out.println("Password reset JWT is valid.");
+            return true;
+        } else {
+            System.out.println("No user/password combination available. The token cannot be validated.");
+            return false;
         }
     }
 }

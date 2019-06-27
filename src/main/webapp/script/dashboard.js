@@ -119,10 +119,20 @@ document.addEventListener('DOMContentLoaded', function () {
     // get layout from server
     function getLayoutFromServer() {
         var http = new XMLHttpRequest();
+        var spinnerContainer = $("#dashboard-tiles-container");
+        spinnerContainer.css("height", window.innerHeight -
+            $("#dashboard-overview-container").outerHeight(true) -
+            $("footer").outerHeight(true));
+
+        var spinner;
 
         http.onreadystatechange = function () {
             if (http.readyState === XMLHttpRequest.DONE) {
                 if (http.status === 200) {
+                    // remove spinner
+                    spinnerContainer.css("height", "");
+                    document.querySelector("#dashboard-tiles-container > div:nth-of-type(2)").remove();
+
                     var parsedResponse = JSON.parse(http.response);
 
                     if (parsedResponse.cards.length < 1) {
@@ -139,6 +149,13 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
             }
         };
+
+        // show loading spinner
+        spinner = document.createElement("div");
+
+        spinnerContainer.append('<div class="loader-container">' +
+            '<div class="loader"></div>' +
+            '</div>');
 
         http.open("GET", window.location.href + "/layout", true);
         http.setRequestHeader("Accept", "application/json");

@@ -131,14 +131,16 @@ document.addEventListener('DOMContentLoaded', function () {
                         usernameFromToken = getTokenData(getCookieValue("token")).sub;
                         window.location.replace("/runner/profiles/" + usernameFromToken);
                     } else if (http.status === 401) {
-                        responseMessage.text("Incorrect username or password. Please, try again.");
-                        responseMessage.removeClass("response-message-hidden");
-                        responseMessage.addClass("response-message-hidden-red");
-
+                        // responseMessage.text("Incorrect username or password. Please, try again.");
+                        // responseMessage.removeClass("response-message-hidden");
+                        // responseMessage.addClass("response-message-hidden-red");
+                        // TODO verify that this works
+                        window.location.replace("/runner/login?error=incorrect_credentials");
                     } else if (http.status === 402) {
-                        responseMessage.text("Account is not activated");
-                        responseMessage.removeClass("response-message-hidden");
-                        responseMessage.addClass("response-message-hidden-red");
+                        // responseMessage.text("Account is not activated");
+                        // responseMessage.removeClass("response-message-hidden");
+                        // responseMessage.addClass("response-message-hidden-red");
+                        window.location.replace("/runner/login?error=not_activated");
                     } else {
                         console.log("Response: " + http.status);
                     }
@@ -163,10 +165,12 @@ document.addEventListener('DOMContentLoaded', function () {
                 error = "You need to sign in to access this page."
             } else if (error === "token_expired") {
                 error = "Your session expired. Sign in to access this page."
-            } else if (error === "password_change") {
-                error = "Password has been reset. Sign in to access this page."
             } else if (error === "incorrect_credentials") {
                 error = "Incorrect username or password. Please, try again."
+            } else if (error === "not_activated") {
+                error = "Account has not been activated yet."
+            } else if (error === "reset_token_invalid") {
+                error = "Password reset link is invalid."
             }
 
             // insert error into the page
@@ -180,6 +184,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 message = "Password was successfully reset."
             } else if (message === "activate_success") {
                 message = "Account was successfully activated."
+            } else if (message === "registration_success") {
+                message = "Your account was successfully registered. Confirm your email address with the link we just sent to you."
             }
 
             // insert message into the page
@@ -251,19 +257,14 @@ document.addEventListener('DOMContentLoaded', function () {
 
                 http.onreadystatechange = function () {
                     if (http.readyState === XMLHttpRequest.DONE) {
-                        var responseMessage = $("#response-message");
-
                         if (http.status === 200) {
                             window.location.replace("/runner/login?message=reset_success");
                         } else if (http.status === 401) {
-                            responseMessage.text("Access not allowed.");
-                            responseMessage.removeClass("response-message-hidden");
+                            window.location.replace("/runner/login?error=not_authorized");
                         } else if (http.status === 402) {
-                            responseMessage.text("Account is not activated.");
-                            responseMessage.removeClass("response-message-hidden");
+                            window.location.replace("/runner/login?error=not_activated");
                         } else if (http.status === 404) {
-                            responseMessage.text("Password reset link is invalid.");
-                            responseMessage.removeClass("response-message-hidden");
+                            window.location.replace("/runner/login?error=reset_token_invalid");
                         } else {
                             console.log("Response: " + http.status);
                         }
@@ -856,7 +857,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 if (http.readyState === XMLHttpRequest.DONE) {
                     if (http.status === 200) {
                         console.log("code 200");
-                        window.location.replace("login");
+                        window.location.replace("/runner/login?message=registration_success");
                     } else {
                         console.log("Response: " + http.status);
                     }

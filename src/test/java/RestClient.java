@@ -11,18 +11,20 @@ public class RestClient {
     private static final String REST_URI = "http://farm02.ewi.utwente.nl:7004/runner/";
 //    private static final String REST_URI = "http://localhost:8080/runner/";
 
-    private Client client = ClientBuilder.newClient();
+    private Client client;
 
     private String username;
     private String token;
     private String password;
 
-    public RestClient(String username, String password) {
+    public RestClient(String username, String password, Client client) {
         this.username = username;
         this.password = password;
+        this.client = client;
     }
 
-    public RestClient() {
+    public RestClient(Client client) {
+        this.client = client;
     }
 
     public String getUsername() {
