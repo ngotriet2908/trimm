@@ -186,6 +186,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 message = "Account was successfully activated."
             } else if (message === "registration_success") {
                 message = "Your account was successfully registered. Confirm your email address with the link we just sent to you."
+            } else if (message === "reset_request_success") {
+                message = "If a matching account was found, an email was sent to allow you to reset your password.."
             }
 
             // insert message into the page
@@ -238,7 +240,7 @@ document.addEventListener('DOMContentLoaded', function () {
         var inputs = document.querySelectorAll("input");
 
         for (var i = 0; i < inputs.length; i += 1) {
-            inputs.item(i).addEventListener("change", function (event) {
+            inputs.item(i).addEventListener("keyup", function (event) {
                 var errors = validate(resetEnterForm, constraints) || {};
 
                 // if not available, add to errors
@@ -294,28 +296,34 @@ document.addEventListener('DOMContentLoaded', function () {
                 var param = "username=" + username;
                 var http = new XMLHttpRequest();
 
+                var spinnerContainer = $("#password-reset-request form");
+                var formHeight = spinnerContainer.height();
+
                 http.onreadystatechange = function () {
                     if (http.readyState === XMLHttpRequest.DONE) {
                         if (http.status === 200) {
-                            document.querySelector(".progress").classList.remove("progress-hidden");
-                            document.querySelector(".progress").classList.add("progress-hidden");
-                            document.querySelector(".reset-success").classList.remove("reset-success-hidden");
+                            window.location.replace("/runner/login?message=reset_request_success");
                         } else if (http.status === 401) {
-                            document.querySelector(".progress").classList.add("progress-hidden");
-                            $("#response-message").removeClass("response-message-hidden");
+
+
                         } else {
                             console.log("Response: " + http.status);
                         }
                     }
                 };
 
+                // show loading spinner
+                spinnerContainer.css("height", formHeight);
+                spinnerContainer.css("display", "block");
+                spinnerContainer.html('<div class="loader-container">' +
+                    '<div class="loader"></div>' +
+                    '</div>');
+
                 http.open("POST", "/runner/password/reset", true);
                 http.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
                 http.setRequestHeader('Accept', 'text/html');
                 http.setRequestHeader('Cache-Control', 'no-store');
                 http.send(param);
-
-                document.querySelector(".progress").classList.remove("progress-hidden");
             }
         }
     }
@@ -727,7 +735,7 @@ document.addEventListener('DOMContentLoaded', function () {
         // validate inputs on fly
         var inputs = document.querySelectorAll("input");
         for (var i = 0; i < inputs.length; ++i) {
-            inputs.item(i).addEventListener("change", function (event) {
+            inputs.item(i).addEventListener("keyup", function (event) {
                 var errors = validate(form, constraints) || {};
 
                 // if no errors for input username and username was typed, then check it for availability
@@ -847,7 +855,11 @@ document.addEventListener('DOMContentLoaded', function () {
         var email = $("#register form input[name='email']").val().trim();
         var password = $("#register form input[name='password']").val().trim();
 
-        if (username !== "" && password !== "") { // etc. TODO
+        if (username !== "" && password !== "") {
+
+            var spinnerContainer = $("#register form");
+            var formHeight = spinnerContainer.height();
+
             var params = "username=" + username + "&password=" + password +
                 "&first_name=" + firstName + "&last_name=" + lastName + "&email=" + email;
 
@@ -863,6 +875,13 @@ document.addEventListener('DOMContentLoaded', function () {
                     }
                 }
             };
+
+            // show loading spinner
+            spinnerContainer.css("height", formHeight);
+            spinnerContainer.css("display", "block");
+            spinnerContainer.html('<div class="loader-container">' +
+                '<div class="loader"></div>' +
+                '</div>');
 
             http.open("POST", "register", true);
             http.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');

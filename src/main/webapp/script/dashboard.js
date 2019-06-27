@@ -151,8 +151,6 @@ document.addEventListener('DOMContentLoaded', function () {
         };
 
         // show loading spinner
-        spinner = document.createElement("div");
-
         spinnerContainer.append('<div class="loader-container">' +
             '<div class="loader"></div>' +
             '</div>');
