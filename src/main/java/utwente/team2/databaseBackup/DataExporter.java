@@ -533,7 +533,7 @@ public class DataExporter {
 
                     statement.setInt(1, j);
                     statement.setInt(2, i);
-                    statement.setString(3, "Layout " + j);
+                    statement.setString(3, "Dashboard " + j);
                     statement.execute();
                 }
             }
