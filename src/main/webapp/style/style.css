@@ -9,6 +9,8 @@ html, body {
     z-index: 1;
 
     position: relative;
+
+    overflow: hidden;
 }
 
 body {
@@ -351,6 +353,7 @@ form.input-form {
 
     position: absolute;
     z-index: 3;
+    right: 0;
 }
 
 .input-error:hover .input-error-tooltip-text, .input-error:active .input-error-tooltip-text {
@@ -600,6 +603,10 @@ footer div p {
 #profile-management #profile-picture-general {
     padding: 1em;
 }
+
+/*#profile-management .profile-card {*/
+/*    overflow: ;*/
+/*}*/
 
 #link-strava {
     background-color: #fc4c01;
