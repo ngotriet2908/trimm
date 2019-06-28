@@ -61,7 +61,6 @@ public class Register {
 
         // verifying/sanitizing input
         // check if the user already exists
-        // email regex from TODO
         if (username.matches("[a-zA-Z0-9_]{2,20}") &&
                 firstName.matches("[a-zA-Z\\-\\s]+") &&
                 lastName.matches("[a-zA-Z\\-\\s]+") &&
@@ -75,7 +74,7 @@ public class Register {
                 Map<String, Object> claims = new HashMap<>();
                 claims.put("iss", "runner");
                 claims.put("sub", username);
-                claims.put("exp", String.valueOf(LocalDateTime.now().plusMinutes(1440).atZone(zoneId).toEpochSecond())); // TODO 15 min
+                claims.put("exp", String.valueOf(LocalDateTime.now().plusMinutes(1440).atZone(zoneId).toEpochSecond()));
                 claims.put("purpose", "activate");
 
                 String token = Jwts.builder().setClaims(claims).signWith(ApplicationSettings.APP_KEY).compact();

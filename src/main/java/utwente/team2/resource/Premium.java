@@ -47,8 +47,6 @@ public class Premium {
         Principal principal = securityContext.getUserPrincipal();
         String tokenUsername = principal.getName();
 
-        // check if user is already a premium user TODO
-
         boolean upgraded = UserDao.instance.upgradeToPremium(tokenUsername);
 
         if (upgraded) {

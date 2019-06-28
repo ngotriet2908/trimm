@@ -369,7 +369,7 @@ public enum UserDao {
     public boolean updatePassword(String username, String password) {
         int totalRowsAffected = 0;
 
-        String salt = getAlphaNumericString(50); // TODO secure random?
+        String salt = getAlphaNumericString(50);
 
         try {
             String updatePassword = "UPDATE general_user " +
@@ -395,7 +395,7 @@ public enum UserDao {
 
     public boolean register(String username, String firstName, String lastName, String email, String password) {
         try {
-            String salt = getAlphaNumericString(50); // TODO secure random?
+            String salt = getAlphaNumericString(50);
 
             String query = "INSERT INTO general_user (username, first_name, last_name, email, password, salt) VALUES (?, ?, ?, ?, ?, ?) ";
 

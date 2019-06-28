@@ -171,7 +171,6 @@ document.addEventListener('DOMContentLoaded', function () {
             if (http.readyState === XMLHttpRequest.DONE) {
                 if (http.status === 200 || http.status === 204) {
 
-                    // TODO print some line in the bottom like "layout saved..."
                 } else if (http.status === 401) {
                     console.log("code 401");
                     location.reload();
@@ -803,7 +802,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 if (http.readyState === XMLHttpRequest.DONE) {
                     if (http.status === 200 || http.status === 204) {
                         console.log(http.status);
-                        // TODO show email sent!
                         console.log("sent");
                         // location.reload();
                         ss[ss.selectedIndex].innerText = layout_name;

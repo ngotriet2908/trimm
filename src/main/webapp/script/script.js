@@ -1040,7 +1040,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 document.querySelector("#dashboard-overview-container-grid div:nth-child(5) p:nth-of-type(2) span").innerText = parsedResponse.distance + "m";
                 document.querySelector("#dashboard-overview-container-grid div:nth-child(4) p:nth-of-type(2) span").innerText = convertTime(parsedResponse.duration);
                 document.querySelector("#dashboard-overview-container-grid div:nth-child(6) p:nth-of-type(2) span").innerText = parsedResponse.steps;
-                document.querySelector("#dashboard-overview-container-grid div:nth-child(1) p:nth-of-type(2) span").innerText = parsedResponse.name; // TODO
+                document.querySelector("#dashboard-overview-container-grid div:nth-child(1) p:nth-of-type(2) span").innerText = parsedResponse.name;
                 document.querySelector("#dashboard-overview-container-grid div:nth-child(3) p:nth-of-type(2) span").innerText = parsedResponse.shoes;
 
                 if (document.querySelector(".premium-required") == null) {

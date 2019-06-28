@@ -116,7 +116,7 @@ public class Runs {
 
         if (UserDao.instance.isPremiumUser(tokenUsername)) {
             if (!RunDao.instance.saveLayoutName(Integer.parseInt(run_id), Integer.parseInt(layout_id), name)) {
-                //TODO put something when replace with the same name
+
             }
         } else {
             premiumFeatureAccessForbidden();
@@ -147,7 +147,7 @@ public class Runs {
 
         if (UserDao.instance.isPremiumUser(tokenUsername)) {
             if (!RunDao.instance.saveCurrentLayout(Integer.parseInt(run_id), Integer.parseInt(current_layout))) {
-                //TODO do something, only error when the update with the same thing as before
+
             }
         } else {
             premiumFeatureAccessForbidden();
@@ -168,7 +168,7 @@ public class Runs {
 
         if (UserDao.instance.isPremiumUser(tokenUsername)) {
             if (!UserDao.instance.saveFavoriteLayout(Integer.parseInt(layout_id), Integer.parseInt(run_id))) {
-                //TODO put something when replace with the same name
+
             }
         } else {
             premiumFeatureAccessForbidden();
@@ -188,7 +188,7 @@ public class Runs {
 
         if (UserDao.instance.isPremiumUser(tokenUsername)) {
             if (!UserDao.instance.loadFavoriteLayout(Integer.parseInt(layout_id), Integer.parseInt(run_id))) {
-                //TODO put something when replace with the same name
+
             }
         } else {
             premiumFeatureAccessForbidden();

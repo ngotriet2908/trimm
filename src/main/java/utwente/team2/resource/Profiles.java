@@ -74,7 +74,7 @@ public class Profiles {
                              @Context HttpServletResponse servletResponse,
                              @Context HttpServletRequest servletRequest) throws IOException {
         if (!UserDao.instance.saveFavoriteLayoutName(username, Integer.parseInt(layout_id), name)) {
-            //TODO put something when replace with the same name
+
         }
     }
 
