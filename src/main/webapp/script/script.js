@@ -695,12 +695,8 @@ document.addEventListener('DOMContentLoaded', function () {
                             } else {
                                 reject("Username already exists");
                             }
-
-                        } else if (http.status === 404) {
-                            // show error
-                            console.log("404")
                         } else {
-                            console.log("something else: " + http.status);
+                            console.log("Response: " + http.status);
                         }
                     }
                 };
@@ -712,9 +708,42 @@ document.addEventListener('DOMContentLoaded', function () {
             });
         };
 
+        validate.validators.emailAvailabilityValidator = function (value) {
+            return new validate.Promise(function (resolve, reject) {
+
+                var param = "email=" + value;
+                var http = new XMLHttpRequest();
+
+                http.onreadystatechange = function () {
+                    if (http.readyState === XMLHttpRequest.DONE) {
+                        if (http.status === 200) {
+                            if (!JSON.parse(http.response).exists) {
+                                resolve();
+                            } else {
+                                reject("Email is taken.");
+                            }
+                        } else {
+                            console.log("Response: " + http.status);
+                        }
+                    }
+                };
+
+                http.open("GET", "/runner/register/email?" + param, true);
+                http.setRequestHeader('Accept', 'application/json');
+                http.setRequestHeader('Cache-Control', 'no-store');
+                http.send();
+            });
+        };
+
         var usernameConstraints = {
             username: {
                 usernameAvailabilityValidator: true
+            }
+        };
+
+        var emailConstraints = {
+            email: {
+                emailAvailabilityValidator: true
             }
         };
 
@@ -736,14 +765,16 @@ document.addEventListener('DOMContentLoaded', function () {
 
         // validate inputs on fly
         var inputs = document.querySelectorAll("input");
+
         for (var i = 0; i < inputs.length; ++i) {
             inputs.item(i).addEventListener("keyup", function (event) {
                 var errors = validate(form, constraints) || {};
 
                 // if no errors for input username and username was typed, then check it for availability
                 if (!errors.hasOwnProperty("username") && event.target.id === "username") {
-                    // Will call the success callback
                     validate.async({username: this.value}, usernameConstraints).then(success, error);
+                } else if (!errors.hasOwnProperty("email") && event.target.id === "email") {
+                    validate.async({email: this.value}, emailConstraints).then(success, error);
                 }
 
                 // if not available, add to errors
@@ -832,40 +863,6 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         }
     }
-
-    // function showErrorsForInputOnSmallScreens(input, errors) {
-    //     // This is the root of the input
-    //     var inputGroup = closestParent(input.parentNode, "input-group");
-    //
-    //     // First we remove any old messages and resets the classes
-    //     resetFormGroup(inputGroup);
-    //
-    //     var errorElem;
-    //
-    //     if (errors) {
-    //         // we first mark the group as having errors
-    //         inputGroup.classList.add("has-error");
-    //
-    //         // add paragraph with error
-    //         errorElem = document.createElement("div");
-    //         errorElem.classList.add("input-error");
-    //
-    //         // then we append all the errors
-    //         errors.forEach(function (error) {
-    //             addError(errorElem, error);
-    //         });
-    //
-    //         inputGroup.appendChild(errorElem);
-    //     } else {
-    //         // otherwise we simply mark it as success
-    //         inputGroup.classList.add("has-success");
-    //
-    //         errorElem = inputGroup.querySelector("input-error");
-    //         if (errorElem != null) {
-    //             errorElem.remove();
-    //         }
-    //     }
-    // }
 
     // Recursively finds the closest parent that has the specified class
     function closestParent(child, className) {

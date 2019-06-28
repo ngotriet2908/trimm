@@ -2,12 +2,13 @@ package utwente.team2.mail;
 
 import utwente.team2.dao.UserDao;
 import utwente.team2.model.User;
-import utwente.team2.settings.ApplicationSettings;
 
 public class EmailHtmlTemplate {
-    public static String createEmailHtml(String username, String token, String messageBody, String messageButton, String url) {
+    public static String createEmailHtml(String username, String token, String messageBody, String messageButton, String url, String domain) {
         User user = UserDao.instance.getUserDetails(username);
-        return part1 + user.getFirstName() + " " + user.getLastName() + part2 + messageBody + part3 + url + token + part4 + messageButton + part5;
+
+        return part1 + user.getFirstName() + " " + user.getLastName() + part2 + messageBody + part3 + domain + part4
+                + url + token + part5 + messageButton + part6 + domain + part7;
     }
 
     private static String part1 = "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional //EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">" +
@@ -435,20 +436,25 @@ public class EmailHtmlTemplate {
             "<!--[if mso]></td></tr></table><![endif]-->" +
             "<div align=\"center\" class=\"button-container\" style=\"padding-top:25px;padding-right:0px;padding-bottom:0px;padding-left:0px;\">" +
 
-            "<!--[if mso]><table width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" style=\"border-spacing: 0; border-collapse: collapse; mso-table-lspace:0pt; mso-table-rspace:0pt;\"><tr><td style=\"padding-top: 25px; padding-right: 0px; padding-bottom: 0px; padding-left: 0px\" align=\"center\"><v:roundrect xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:w=\"urn:schemas-microsoft-com:office:word\" href=\"" + ApplicationSettings.DOMAIN + "/\" style=\"height:39pt; width:199.5pt; v-text-anchor:middle;\" arcsize=\"8%\" stroke=\"false\" fillcolor=\"#296785\"><w:anchorlock/><v:textbox inset=\"0,0,0,0\"><center style=\"color:#ffffff; font-family:Arial, sans-serif; font-size:16px\"><![endif]--><a href=\"";
+            "<!--[if mso]><table width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" style=\"border-spacing: 0; border-collapse: collapse; mso-table-lspace:0pt; mso-table-rspace:0pt;\"><tr><td style=\"padding-top: 25px; padding-right: 0px; padding-bottom: 0px; padding-left: 0px\" align=\"center\"><v:roundrect xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:w=\"urn:schemas-microsoft-com:office:word\" href=\"";
 
 
-    private static String part4 = "\" style=\"-webkit-text-size-adjust: none; text-decoration: none; display: inline-block; color: #ffffff; background-color: #296785; border-radius: 4px; -webkit-border-radius: 4px; -moz-border-radius: 4px; width: auto; width: auto; border-top: 1px solid #296785; border-right: 1px solid #296785; border-bottom: 1px solid #296785; border-left: 1px solid #296785; padding-top: 10px; padding-bottom: 10px; font-family: Arial, 'Helvetica Neue', Helvetica, sans-serif; text-align: center; mso-border-alt: none; word-break: keep-all;\" target=\"_blank\"><span style=\"padding-left:20px;padding-right:20px;font-size:16px;display:inline-block;\">" +
+    private static String part4 = "/\" style=\"height:39pt; width:199.5pt; v-text-anchor:middle;\" arcsize=\"8%\" stroke=\"false\" fillcolor=\"#296785\"><w:anchorlock/><v:textbox inset=\"0,0,0,0\"><center style=\"color:#ffffff; font-family:Arial, sans-serif; font-size:16px\"><![endif]--><a href=\"";
+
+
+    private static String part5 = "\" style=\"-webkit-text-size-adjust: none; text-decoration: none; display: inline-block; color: #ffffff; background-color: #296785; border-radius: 4px; -webkit-border-radius: 4px; -moz-border-radius: 4px; width: auto; width: auto; border-top: 1px solid #296785; border-right: 1px solid #296785; border-bottom: 1px solid #296785; border-left: 1px solid #296785; padding-top: 10px; padding-bottom: 10px; font-family: Arial, 'Helvetica Neue', Helvetica, sans-serif; text-align: center; mso-border-alt: none; word-break: keep-all;\" target=\"_blank\"><span style=\"padding-left:20px;padding-right:20px;font-size:16px;display:inline-block;\">" +
             "<span style=\"font-size: 16px; line-height: 32px;\"><span style=\"font-size: 16px; line-height: 32px;\">";
 
-    private static String part5 = "</span></span>" +
+    private static String part6 = "</span></span>" +
             "</span></a>" +
             "<!--[if mso]></center></v:textbox></v:roundrect></td></tr></table><![endif]-->" +
             "</div>" +
             "<!--[if mso]><table width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\"><tr><td style=\"padding-right: 20px; padding-left: 20px; padding-top: 20px; padding-bottom: 30px; font-family: Arial, sans-serif\"><![endif]-->" +
             "<div style=\"color:#555555;font-family:Arial, 'Helvetica Neue', Helvetica, sans-serif;line-height:120%;padding-top:20px;padding-right:20px;padding-bottom:30px;padding-left:20px;\">" +
             "<div style=\"font-family: Arial, 'Helvetica Neue', Helvetica, sans-serif; font-size: 12px; line-height: 14px; color: #555555;\">" +
-            "<p style=\"font-size: 14px; line-height: 16px; text-align: center; margin: 0;\"><span style=\"font-size: 14px; line-height: 16px;\"><a href=\"" + ApplicationSettings.DOMAIN + "/\" rel=\"noopener\" style=\"text-decoration: underline; color: #296785;\" target=\"_blank\" title=\"website\">Or go to our website</a></span></p>" +
+            "<p style=\"font-size: 14px; line-height: 16px; text-align: center; margin: 0;\"><span style=\"font-size: 14px; line-height: 16px;\"><a href=\"";
+
+    private static String part7 = "/\" rel=\"noopener\" style=\"text-decoration: underline; color: #296785;\" target=\"_blank\" title=\"website\">Or go to our website</a></span></p>" +
             "</div>" +
             "</div>" +
             "<!--[if mso]></td></tr></table><![endif]-->" +

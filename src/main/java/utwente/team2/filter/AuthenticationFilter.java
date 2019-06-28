@@ -17,6 +17,8 @@ import javax.ws.rs.container.ContainerRequestFilter;
 import javax.ws.rs.core.*;
 import javax.ws.rs.ext.Provider;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.security.Principal;
 
 @Secured
@@ -38,6 +40,13 @@ public class AuthenticationFilter implements ContainerRequestFilter {
         System.out.println("=================");
         System.out.println("Filter started...");
         System.out.println("Resource requested: " + requestContext.getUriInfo().getPath());
+
+        try {
+            URL serverUrl = new URL(servletRequest.getRequestURL().toString());
+            System.out.println("Server's domain: " + serverUrl.getProtocol() + "://" + serverUrl.getHost() + ":" + serverUrl.getPort());
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
 
         Cookie jwsCookie = headers.getCookies().get("token");
 

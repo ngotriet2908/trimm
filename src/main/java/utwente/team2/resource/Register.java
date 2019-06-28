@@ -19,6 +19,7 @@ import javax.ws.rs.core.Request;
 import javax.ws.rs.core.UriInfo;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.HashMap;
@@ -70,10 +71,14 @@ public class Register {
 
                 String token = Jwts.builder().setClaims(claims).signWith(ApplicationSettings.APP_KEY).compact();
 
+                URL serverUrl = new URL(servletRequest.getRequestURL().toString());
+                String callbackDomain = serverUrl.getProtocol() + "://" + serverUrl.getHost() + ":" + serverUrl.getPort();
+                System.out.println("Server's domain: " + callbackDomain);
+
                 MailAPI.generateAndSendEmail(EmailHtmlTemplate.createEmailHtml(username, token,
                         "You're receiving this email because you register an account on Runner.",
                         "ACTIVATE YOUR ACCOUNT",
-                        ApplicationSettings.DOMAIN + "/runner/register/activate?token="),
+                        callbackDomain + "/runner/register/activate?token=", callbackDomain),
                         "Activate your account", email);
 
                 servletResponse.sendRedirect("/");

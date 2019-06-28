@@ -18,6 +18,7 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.*;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.HashMap;
@@ -67,10 +68,14 @@ public class PasswordReset {
 
             String token = Jwts.builder().setClaims(claims).signWith(ApplicationSettings.APP_KEY).compact();
 
+            URL serverUrl = new URL(servletRequest.getRequestURL().toString());
+            String callbackDomain = serverUrl.getProtocol() + "://" + serverUrl.getHost() + ":" + serverUrl.getPort();
+            System.out.println("Server's domain: " + callbackDomain);
+
             MailAPI.generateAndSendEmail(EmailHtmlTemplate.createEmailHtml(username, token,
                     "You're receiving this email because you requested a password reset for your user account on Runner. If you didn't request a password change, you can just ignore this message.",
                     "RESET YOUR PASSWORD",
-                    ApplicationSettings.DOMAIN + "/runner/password/reset/enter?token="), "Reset your password - Runner", user.getEmail());
+                    callbackDomain + "/runner/password/reset/enter?token=", callbackDomain), "Reset your password - Runner", user.getEmail());
         }
 
         servletResponse.sendRedirect("/");

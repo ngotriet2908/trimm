@@ -47,11 +47,25 @@ public class Settings {
 
     @PUT
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    public void updateProfile(@FormParam("firstname") String firstname, @FormParam("lastname") String lastname, @Context HttpHeaders headers, @Context HttpServletResponse servletResponse) {
+    public void updateProfile(@FormParam("firstname") String firstName, @FormParam("lastname") String lastName, @Context HttpHeaders headers, @Context HttpServletResponse servletResponse) {
         Principal principal = securityContext.getUserPrincipal();
         String tokenUsername = principal.getName();
 
-        UserDao.instance.updateProfile(tokenUsername, firstname, lastname);
+        // TODO check with regex
+        if (lastName.matches("[a-zA-Z\\-\\s]+") &&
+                firstName.matches("[a-zA-Z\\-\\s]+")) {
+            UserDao.instance.updateProfile(tokenUsername, firstName, lastName);
+        } else {
+            // if some of the checks fails, respond with failure
+            System.out.println("400: Invalid data supplied");
+
+            try {
+                servletResponse.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid data supplied.");
+            } catch (IOException io) {
+                io.printStackTrace();
+            }
+            return;
+        }
     }
 
     @Path("/link_strava")

@@ -31,11 +31,10 @@ public class InfographicImageGenerator {
     }
 
     public BufferedImage generate() {
-        BufferedImage image = null;
+        BufferedImage image;
         try {
             ClassLoader classLoader = getClass().getClassLoader();
             image = ImageIO.read(classLoader.getResourceAsStream("../../img/infographic/template.png"));
-            //Name
             Graphics g = image.getGraphics();
 
             try {
