@@ -6,7 +6,7 @@ import io.jsonwebtoken.Jwts;
 import utwente.team2.dao.UserDao;
 import utwente.team2.mail.EmailHtmlTemplate;
 import utwente.team2.mail.MailAPI;
-import utwente.team2.model.Username;
+import utwente.team2.model.AvailabilityCheck;
 import utwente.team2.settings.ApplicationSettings;
 
 import javax.mail.MessagingException;
@@ -57,7 +57,7 @@ public class Register {
                 lastName.matches("[a-zA-Z\\-\\s]+") &&
                 email.matches("(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|\"(?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21\\x23-\\x5b\\x5d-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])*\")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21-\\x5a\\x53-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])+)\\])") &&
                 password.matches("(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z]{8,}") &&
-                UserDao.instance.getUser(username, "", false) == null) {
+                UserDao.instance.getUser(username, "", false) == null && !UserDao.instance.emailExist(email)) {
 
             if (UserDao.instance.register(username, firstName, lastName, email, password)) {
                 ZoneId zoneId = ZoneId.systemDefault();
@@ -92,15 +92,30 @@ public class Register {
     @Path("/username")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public Username checkUsernameAvailability(@QueryParam("username") String usernameToCheck, @Context HttpServletResponse servletResponse) {
+    public AvailabilityCheck checkUsernameAvailability(@QueryParam("username") String usernameToCheck, @Context HttpServletResponse servletResponse) {
         if (usernameToCheck == null) {
             return null; // TODO
         }
 
-        Username username = new Username(usernameToCheck);
-        username.setExists(UserDao.instance.getUser(username.getUsername(), "", false) != null);
+        AvailabilityCheck availabilityCheck = new AvailabilityCheck(UserDao.instance.getUser(usernameToCheck, "", false) != null);
 
-        return username;
+
+        return availabilityCheck;
+    }
+
+    @Path("/email")
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    public AvailabilityCheck checkEmailAvailability(@QueryParam("email") String emailToCheck, @Context HttpServletResponse servletResponse) {
+        if (emailToCheck == null) {
+            return null; // TODO
+        }
+
+        AvailabilityCheck availabilityCheck = new AvailabilityCheck(UserDao.instance.emailExist(emailToCheck));
+
+
+        return availabilityCheck;
+
     }
 
     @Path("/activate")
