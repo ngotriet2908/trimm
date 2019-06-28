@@ -713,7 +713,6 @@ document.addEventListener('DOMContentLoaded', function () {
         http.send();
     }
 
-    // send ajax request for user to check the username availability
     // based on example from validate.js
     if ($("#register").length > 0) {
         var constraints = {

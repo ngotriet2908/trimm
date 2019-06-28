@@ -270,22 +270,13 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
     function addItem(typeName, indicatorName, data, initialLayout) {
-        // Generate new elements.
         console.log("generating element with id: " + (uuid + 1) + " of type: " + typeName);
 
         var newElement = generateElement(++uuid, indicatorName, typeName, data);
-
-        // Set the display of the new elements to "none" so it will be hidden by
-        // default.
         newElement.style.display = 'none';
-
-        // Add the elements to the grid.
         var newItem = grid.add(newElement);
-
-        // Update UI indices.
         updateIds();
 
-        // Sort the items only if the drag sorting is not active.
         if (sortFieldValue !== 'order') {
             grid.sort('title');
             dragOrder = dragOrder.concat(newItem);
