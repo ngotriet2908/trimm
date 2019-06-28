@@ -82,18 +82,18 @@
                 <form action="/" method="POST">
 
                     <div class="input-group">
-                        <input autocomplete="new-password" id="first-name-field" name="username" required
-                               type="text" value="Johnny">
-                        <label for="first-name-field">First Name</label>
+                        <input autocomplete="new-password" id="first-name" name="first-name" required
+                               type="text">
+                        <label for="first-name">First Name</label>
                     </div>
 
                     <div class="input-group">
-                        <input autocomplete="new-password" id="last-name-field" name="username" required
-                               type="text" value="English">
-                        <label for="first-name-field">Last Name</label>
+                        <input autocomplete="new-password" id="last-name" name="last-name" required
+                               type="text">
+                        <label for="last-name">Last Name</label>
                     </div>
 
-                    <button class="button-raised" id="save-my-information" type="button"><span>Save</span></button>
+                    <button class="button-raised" id="save-my-information" type="submit"><span>Save</span></button>
 
                     <a class="button-raised" href="/" id="link-strava" type="button">
 						<span>
@@ -159,13 +159,13 @@
     </div>
 </footer>
 
+<div class="loader-container-absolute loader-container-fixed">
+    <div class="loader"></div>
+</div>
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-<!--<script src="/script/jquery.nicescroll.js"></script>-->
+<script src="//cdnjs.cloudflare.com/ajax/libs/validate.js/0.12.0/validate.min.js"></script>
 <script src="/script/prefixfree.min.js"></script>
 <script src="/script/script.js"></script>
 </body>
 </html>
-
-
-<!-- password: NoEncryptionForNow -->

@@ -99,13 +99,10 @@ public class Register {
     @Produces(MediaType.APPLICATION_JSON)
     public AvailabilityCheck checkUsernameAvailability(@QueryParam("username") String usernameToCheck, @Context HttpServletResponse servletResponse) {
         if (usernameToCheck == null) {
-            return null; // TODO
+            return null;
         }
 
-        AvailabilityCheck availabilityCheck = new AvailabilityCheck(UserDao.instance.getUser(usernameToCheck, "", false) != null);
-
-
-        return availabilityCheck;
+        return new AvailabilityCheck(UserDao.instance.getUser(usernameToCheck, "", false) != null);
     }
 
     @Path("/email")
@@ -113,29 +110,22 @@ public class Register {
     @Produces(MediaType.APPLICATION_JSON)
     public AvailabilityCheck checkEmailAvailability(@QueryParam("email") String emailToCheck, @Context HttpServletResponse servletResponse) {
         if (emailToCheck == null) {
-            return null; // TODO
+            return null;
         }
 
-        AvailabilityCheck availabilityCheck = new AvailabilityCheck(UserDao.instance.emailExist(emailToCheck));
-
-
-        return availabilityCheck;
-
+        return new AvailabilityCheck(UserDao.instance.emailExist(emailToCheck));
     }
 
     @Path("/activate")
     @GET
     @Produces(MediaType.TEXT_HTML)
-    public void showResetRequestPage(@QueryParam("token") String token, @Context HttpServletResponse servletResponse) throws IOException {
-
+    public void activate(@QueryParam("token") String token, @Context HttpServletResponse servletResponse) throws IOException {
         Jws<Claims> jws = Jwts.parser().require("purpose", "activate")
                 .setSigningKey(ApplicationSettings.APP_KEY).parseClaimsJws(token);
         System.out.println("Account activation JWT is valid.");
         String username = Login.getTokenClaims(token).getBody().getSubject();
 
-
         UserDao.instance.activateAccount(username);
-
         servletResponse.sendRedirect("/runner/login?message=activate_success");
     }
 }

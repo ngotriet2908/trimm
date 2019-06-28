@@ -74,13 +74,60 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // saves updated information (currently, full name) entered by user in profile settings
     if (profileManagementPage.length > 0) {
-        $("#save-my-information").on("click", function () {
-            var firstname = $("#first-name-field").val().trim();
-            var lastname = $("#last-name-field").val().trim();
+
+        var constraints = {
+            "first-name": {
+                presence: true,
+                format: {
+                    pattern: "[a-zA-Z\\-\\s]+",
+                    message: "can only contain letters, spaces and dashes"
+                }
+            },
+            "last-name": {
+                presence: true,
+                format: {
+                    pattern: "[a-zA-Z\\-\\s]+",
+                    message: "can only contain letters, spaces and dashes"
+                }
+            }
+        };
+
+        function handleSettingsSaveForm(form) {
+            var errors = validate(form, constraints);
+
+            showErrors(form, errors || {});
+            if (!errors) {
+                submitSettingsSaveForm();
+            }
+        }
+
+        var settingsSaveForm = document.querySelector("form");
+        settingsSaveForm.addEventListener("submit", function (ev) {
+            ev.preventDefault();
+            console.log("reached.");
+            handleSettingsSaveForm(settingsSaveForm);
+        });
+
+        // validate inputs on fly
+        var inputs = document.querySelectorAll("input");
+
+        for (var i = 0; i < inputs.length; i += 1) {
+            inputs.item(i).addEventListener("keyup", function (event) {
+                var errors = validate(settingsSaveForm, constraints) || {};
+
+                // if not available, add to errors
+                showErrorsForInput(this, errors[this.name])
+            });
+        }
+
+        // $("#save-my-information").on("click", function () {
+        function submitSettingsSaveForm() {
+            var firstName = $("#first-name").val().trim();
+            var lastName = $("#last-name").val().trim();
 
             // ignores if fields are empty
-            if (!(firstname === "" && lastname === "")) {
-                var params = "firstname=" + firstname + "&lastname=" + lastname;
+            if (!(firstName === "" && lastName === "")) {
+                var params = "firstname=" + firstName + "&lastname=" + lastName;
                 var http = new XMLHttpRequest();
 
                 http.onreadystatechange = function () {
@@ -98,7 +145,50 @@ document.addEventListener('DOMContentLoaded', function () {
                 http.setRequestHeader('Cache-Control', 'no-store');
                 http.send(params);
             }
-        });
+        }
+    }
+
+    // loading data to show on settings page
+    if (profileManagementPage.length > 0) {
+        document.querySelector("#link-strava").setAttribute("href", "https://www.strava.com/oauth/authorize?client_id=35158&redirect_uri="
+            + window.location.protocol + "//" + window.location.host + "/runner/settings/link_strava&response_type=code&scope=read,read_all,profile:read_all,profile:write,activity:read_all,activity:write");
+
+        getImage(usernameFromToken);
+
+        var http = new XMLHttpRequest();
+        var url = "/runner/profiles/" + usernameFromToken;
+
+        http.open('GET', url, true);
+        http.setRequestHeader('Accept', 'application/json');
+        http.setRequestHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+        http.setRequestHeader('Pragma', 'no-cache');
+        http.setRequestHeader('Expires', '0');
+
+        http.onreadystatechange = function () {
+            if (http.readyState === 4 && http.status === 200) {
+                var parsedResponse = JSON.parse(http.response);
+
+                $("#profile-name-container span")[0].innerText = parsedResponse.firstName + " " + parsedResponse.lastName;
+
+                if (parsedResponse.isPremium === 1) {
+                    // show pro tag
+                    $("#profile-name-container").append('<span id="pro">PRO</span>');
+                } else {
+                    document.querySelector(".nav-item.upgrade").classList.remove("hidden");
+                }
+
+                // populate first and last name fields
+                $("#first-name").val(parsedResponse.firstName);
+                $("#last-name").val(parsedResponse.lastName);
+
+                // show the hidden page
+                $(".loader-container-absolute").remove();
+            } else {
+                console.log("Response: " + http.status);
+            }
+        };
+
+        http.send();
     }
 
 
@@ -668,14 +758,14 @@ document.addEventListener('DOMContentLoaded', function () {
             "first-name": {
                 presence: true,
                 format: {
-                    pattern: "[a-zA-Z\-\s]+",
+                    pattern: "[a-zA-Z\\-\\s]+",
                     message: "can only contain letters, spaces and dashes"
                 }
             },
             "last-name": {
                 presence: true,
                 format: {
-                    pattern: "[a-zA-Z\-\s]+",
+                    pattern: "[a-zA-Z\\-\\s]+",
                     message: "can only contain letters, spaces and dashes"
                 }
             },
@@ -747,13 +837,22 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         };
 
-        var success = function () {
+        var successUsername = function () {
             showErrorsForInput(document.querySelector("#register input[name='username']"), null);
         };
 
 
-        var error = function (errors) {
+        var errorUsername = function (errors) {
             showErrorsForInput(document.querySelector("#register input[name='username']"), [errors]);
+        };
+
+        var successEmail = function () {
+            showErrorsForInput(document.querySelector("#register input[name='email']"), null);
+        };
+
+
+        var errorEmail = function (errors) {
+            showErrorsForInput(document.querySelector("#register input[name='email']"), [errors]);
         };
 
 
@@ -765,16 +864,35 @@ document.addEventListener('DOMContentLoaded', function () {
 
         // validate inputs on fly
         var inputs = document.querySelectorAll("input");
+        var timeout;
 
         for (var i = 0; i < inputs.length; ++i) {
+
             inputs.item(i).addEventListener("keyup", function (event) {
                 var errors = validate(form, constraints) || {};
 
                 // if no errors for input username and username was typed, then check it for availability
                 if (!errors.hasOwnProperty("username") && event.target.id === "username") {
-                    validate.async({username: this.value}, usernameConstraints).then(success, error);
+                    if (timeout) {
+                        clearTimeout(timeout);
+                    }
+
+                    var username = this.value;
+
+                    timeout = setTimeout(function () {
+                        validate.async({username: username}, usernameConstraints).then(successUsername, errorUsername);
+                    }, 500);
                 } else if (!errors.hasOwnProperty("email") && event.target.id === "email") {
-                    validate.async({email: this.value}, emailConstraints).then(success, error);
+
+                    if (timeout) {
+                        clearTimeout(timeout);
+                    }
+
+                    var email = this.value;
+
+                    timeout = setTimeout(function () {
+                        validate.async({email: email}, emailConstraints).then(successEmail, errorEmail);
+                    }, 500);
                 }
 
                 // if not available, add to errors
@@ -783,11 +901,10 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         function handleRegistrationFormSubmit(form, input) {
-            // validate the form against the constraints
-            var errors = validate(form, constraints);
-            // then we update the form to reflect the results
-            showErrors(form, errors || {});
-            if (!errors) {
+            // var errors = validate(form, constraints);
+            // showErrors(form, errors || {});
+
+            if (document.querySelectorAll(".input-error").length === 0) {
                 submitRegistrationForm();
             }
         }
@@ -854,8 +971,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 inputGroup.appendChild(errorElem);
             }
         } else {
-            // otherwise we simply mark it as success
-            inputGroup.classList.add("has-success");
+            inputGroup.classList.add("has-success"); // paint in green?
 
             errorElem = inputGroup.querySelector("input-error");
             if (errorElem != null) {
@@ -877,11 +993,9 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function resetFormGroup(formGroup) {
-        // Remove the success and error classes
         formGroup.classList.remove("has-error");
         formGroup.classList.remove("has-success");
 
-        // and remove any old messages
         formGroup.querySelectorAll(".input-error").forEach(function (el) {
             el.remove();
         });
@@ -907,8 +1021,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
         if (username !== "" && password !== "") {
 
-            var spinnerContainer = $("#register form");
-            var formHeight = spinnerContainer.height();
+            var spinner = document.querySelector(".loader-container-absolute");
+            spinner.classList.remove("hidden");
 
             var params = "username=" + username + "&password=" + password +
                 "&first_name=" + firstName + "&last_name=" + lastName + "&email=" + email;
@@ -920,18 +1034,17 @@ document.addEventListener('DOMContentLoaded', function () {
                     if (http.status === 200) {
                         console.log("code 200");
                         window.location.replace("/runner/login?message=registration_success");
+                    } else if (http.status === 400) {
+                        spinner.classList.add("hidden");
+                        var responseMessage = $("#response-message");
+                        responseMessage.text("Fix the errors!");
+                        responseMessage.removeClass("response-message-hidden");
+                        responseMessage.addClass("response-message-hidden-red");
                     } else {
                         console.log("Response: " + http.status);
                     }
                 }
             };
-
-            // show loading spinner
-            spinnerContainer.css("height", formHeight);
-            spinnerContainer.css("display", "block");
-            spinnerContainer.html('<div class="loader-container">' +
-                '<div class="loader"></div>' +
-                '</div>');
 
             http.open("POST", "register", true);
             http.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
@@ -939,50 +1052,6 @@ document.addEventListener('DOMContentLoaded', function () {
             http.setRequestHeader('Cache-Control', 'no-store');
             http.send(params);
         }
-    }
-
-
-    // loading data to show on settings page
-    if (profileManagementPage.length > 0) {
-        document.querySelector("#link-strava").setAttribute("href", "https://www.strava.com/oauth/authorize?client_id=35158&redirect_uri="
-            + window.location.protocol + "//" + window.location.host + "/runner/settings/link_strava&response_type=code&scope=read,read_all,profile:read_all,profile:write,activity:read_all,activity:write");
-
-        getImage(usernameFromToken);
-
-        var http = new XMLHttpRequest();
-        var url = "/runner/profiles/" + usernameFromToken;
-
-        http.open('GET', url, true);
-        http.setRequestHeader('Accept', 'application/json');
-        http.setRequestHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
-        http.setRequestHeader('Pragma', 'no-cache');
-        http.setRequestHeader('Expires', '0');
-
-        http.onreadystatechange = function () {
-            if (http.readyState === 4 && http.status === 200) {
-                var parsedResponse = JSON.parse(http.response);
-
-                $("#profile-name-container span")[0].innerText = parsedResponse.firstName + " " + parsedResponse.lastName;
-
-                if (parsedResponse.isPremium === 1) {
-                    // show pro tag
-                    $("#profile-name-container").append('<span id="pro">PRO</span>');
-                } else {
-                    document.querySelector(".nav-item.upgrade").classList.remove("hidden");
-                }
-
-                // populate first and last name fields
-                $("#first-name-field").val(parsedResponse.firstName);
-                $("#last-name-field").val(parsedResponse.lastName);
-
-                // show the hidden page
-                $(".loader-container-absolute").remove();
-            } else {
-                console.log("Response: " + http.status);
-            }
-        };
-
-        http.send();
     }
 
 

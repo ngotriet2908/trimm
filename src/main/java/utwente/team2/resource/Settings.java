@@ -51,7 +51,6 @@ public class Settings {
         Principal principal = securityContext.getUserPrincipal();
         String tokenUsername = principal.getName();
 
-        // TODO check with regex
         if (lastName.matches("[a-zA-Z\\-\\s]+") &&
                 firstName.matches("[a-zA-Z\\-\\s]+")) {
             UserDao.instance.updateProfile(tokenUsername, firstName, lastName);

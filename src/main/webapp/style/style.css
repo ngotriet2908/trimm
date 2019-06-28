@@ -385,6 +385,10 @@ form.input-form {
     justify-content: center;
 }
 
+.loader-container-absolute.hidden {
+    display: none;
+}
+
 .loader-container-absolute {
     position: absolute;
     top: 0;
@@ -621,7 +625,7 @@ footer div p {
 }
 
 
-#dashboard, #compare {
+#dashboard, #compare, #profile-management, #profile {
     height: auto;
 }
 
@@ -636,15 +640,11 @@ footer div p {
     margin: 0 0 1em 0;
 }
 
-#dashboard main, #compare main {
+#dashboard main, #compare main, #profile-management main, #profile main {
     z-index: 2;
     flex: 1 0 auto;
 
     position: relative;
-}
-
-#dashboard main {
-    /*padding: 0 2em;*/
 }
 
 

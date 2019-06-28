@@ -1039,7 +1039,6 @@ document.addEventListener('DOMContentLoaded', function () {
                     location.reload();
                 } else if (http.status === 401) {
                     location.reload();
-
                 } else {
                     console.log("Response: " + http.status);
                     location.reload();
