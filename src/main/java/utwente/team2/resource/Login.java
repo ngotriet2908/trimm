@@ -49,11 +49,19 @@ public class Login {
     public InputStream showLoginPage(@Context HttpServletResponse response, @Context HttpServletRequest request,
                                      @QueryParam("error") String error, @QueryParam("message") String message) throws IOException {
         if (error != null) {
-            response.addHeader("error", error);
+            if (error.equals("not_authorized") ||
+                error.equals("not_activated") ||
+                error.equals("reset_token_invalid")) {
+                response.addHeader("error", error);
+            }
         }
 
         if (message != null) {
-            response.addHeader("message", message);
+            if (message.equals("reset_success") ||
+                message.equals("reset_request_success") ||
+                message.equals("registration_success")) {
+                response.addHeader("message", message);
+            }
         }
 
         ClassLoader classLoader = getClass().getClassLoader();

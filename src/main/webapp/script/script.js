@@ -108,19 +108,16 @@ document.addEventListener('DOMContentLoaded', function () {
             handleSettingsSaveForm(settingsSaveForm);
         });
 
-        // validate inputs on fly
         var inputs = document.querySelectorAll("input");
 
         for (var i = 0; i < inputs.length; i += 1) {
             inputs.item(i).addEventListener("keyup", function (event) {
                 var errors = validate(settingsSaveForm, constraints) || {};
 
-                // if not available, add to errors
                 showErrorsForInput(this, errors[this.name])
             });
         }
 
-        // $("#save-my-information").on("click", function () {
         function submitSettingsSaveForm() {
             var firstName = $("#first-name").val().trim();
             var lastName = $("#last-name").val().trim();
@@ -316,9 +313,7 @@ document.addEventListener('DOMContentLoaded', function () {
         };
 
         function handleResetEnterForm(form) {
-            // validate the form against the constraints
             var errors = validate(form, constraints);
-            // then we update the form to reflect the results
 
             showErrors(form, errors || {});
             if (!errors) {
@@ -332,7 +327,6 @@ document.addEventListener('DOMContentLoaded', function () {
             handleResetEnterForm(resetEnterForm);
         });
 
-        // validate inputs on fly
         var inputs = document.querySelectorAll("input");
 
         for (var i = 0; i < inputs.length; i += 1) {
@@ -720,6 +714,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // send ajax request for user to check the username availability
+    // based on example from validate.js
     if ($("#register").length > 0) {
         var constraints = {
             email: {
@@ -862,10 +857,8 @@ document.addEventListener('DOMContentLoaded', function () {
             handleRegistrationFormSubmit(form);
         });
 
-        // validate inputs on fly
         var inputs = document.querySelectorAll("input");
         var timeout;
-
         for (var i = 0; i < inputs.length; ++i) {
 
             inputs.item(i).addEventListener("keyup", function (event) {
@@ -883,7 +876,6 @@ document.addEventListener('DOMContentLoaded', function () {
                         validate.async({username: username}, usernameConstraints).then(successUsername, errorUsername);
                     }, 500);
                 } else if (!errors.hasOwnProperty("email") && event.target.id === "email") {
-
                     if (timeout) {
                         clearTimeout(timeout);
                     }
@@ -901,48 +893,33 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         function handleRegistrationFormSubmit(form, input) {
-            // var errors = validate(form, constraints);
-            // showErrors(form, errors || {});
-
             if (document.querySelectorAll(".input-error").length === 0) {
                 submitRegistrationForm();
             }
         }
     }
 
-    // Updates the inputs with the validation errors
     function showErrors(form, errors) {
-        // We loop through all the inputs and show the errors for that input
         form.querySelectorAll("input[name]").forEach(function (input) {
-            // Since the errors can be null if no errors were found we need to handle that
             showErrorsForInput(input, errors && errors[input.name]);
         });
     }
 
-    // Shows the errors for a specific input
     function showErrorsForInput(input, errors) {
-        // This is the root of the input
         var inputGroup = closestParent(input.parentNode, "input-group");
-
-        // First we remove any old messages and resets the classes
         resetFormGroup(inputGroup);
 
         var errorElem;
 
         if (errors) {
-
             if (document.querySelector("html").offsetWidth > 750) {
-                // we first mark the group has having errors
                 inputGroup.classList.add("has-error");
-
-                // add icon and tooltip
                 errorElem = document.createElement("span");
                 errorElem.classList.add("input-error");
 
                 var errorContainer = document.createElement("div");
                 errorContainer.classList.add("input-error-tooltip-text");
 
-                // then we append all the errors
                 errors.forEach(function (error) {
                     addError(errorContainer, error);
                 });
@@ -955,15 +932,12 @@ document.addEventListener('DOMContentLoaded', function () {
 
                 inputGroup.appendChild(errorElem);
             } else {
-                // we first mark the group as having errors
                 inputGroup.classList.add("has-error");
 
-                // add paragraph with error
                 errorElem = document.createElement("div");
                 errorElem.classList.add("input-error");
                 errorElem.classList.add("inline-error");
 
-                // then we append all the errors
                 errors.forEach(function (error) {
                     addError(errorElem, error);
                 });
@@ -971,7 +945,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 inputGroup.appendChild(errorElem);
             }
         } else {
-            inputGroup.classList.add("has-success"); // paint in green?
+            inputGroup.classList.add("has-success");
 
             errorElem = inputGroup.querySelector("input-error");
             if (errorElem != null) {
@@ -980,7 +954,6 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-    // Recursively finds the closest parent that has the specified class
     function closestParent(child, className) {
         if (!child || child === document) {
             return null;
@@ -1001,7 +974,6 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // Adds the specified error with the following markup
     function addError(errorElem, error) {
         var block = document.createElement("p");
         block.classList.add("help-block");
@@ -1009,7 +981,6 @@ document.addEventListener('DOMContentLoaded', function () {
         block.innerText = error;
         errorElem.appendChild(block);
     }
-
 
     // sends ajax request to register the user
     function submitRegistrationForm() {

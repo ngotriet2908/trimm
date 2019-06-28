@@ -198,7 +198,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-
+    // based on example from muuri
     function filter() {
         filterFieldValue = filterField.value;
 
@@ -210,26 +210,22 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
+    // based on example from muuri
     function sort() {
-        // Do nothing if sort value did not change.
         var currentSort = sortField.value;
         if (sortFieldValue === currentSort) {
             return;
         }
 
-        // If we are changing from "order" sorting to something else
-        // let's store the drag order.
         if (sortFieldValue === 'order') {
             dragOrder = grid.getItems();
         }
 
-        // Sort the items.
         grid.sort(
             currentSort === 'title' ? compareTitles :
                 dragOrder
         );
 
-        // Update indices and active sort value.
         updateIds();
         sortFieldValue = currentSort;
     }
@@ -313,6 +309,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
+    // based on example from muuri
     function removeItem(e, saveLayoutFlag) {
         var elem;
 
@@ -340,6 +337,60 @@ document.addEventListener('DOMContentLoaded', function () {
                 updateIds();
             }
         });
+    }
+
+    function compareTitles(a, b) {
+        const aVal = a.getElement().getAttribute('data-title') || '';
+        const bVal = b.getElement().getAttribute('data-title') || '';
+        return aVal < bVal ? -1 : aVal > bVal ? 1 : 0;
+    }
+
+    function updateIds() {
+        var maxId = 1;
+        grid.getItems().forEach(function (item, i) {
+            item.getElement().setAttribute('data-id', i + 1);
+            maxId = i + 1;
+        });
+    }
+
+    function elementMatches(element, selector) {
+        const p = Element.prototype;
+        return (p.matches || p.matchesSelector || p.webkitMatchesSelector || p.mozMatchesSelector || p.msMatchesSelector || p.oMatchesSelector).call(element, selector);
+    }
+
+    function elementClosest(element, selector) {
+        if (window.Element && !Element.prototype.closest) {
+            var isMatch = elementMatches(element, selector);
+            while (!isMatch && element && element !== document) {
+                element = element.parentNode;
+                isMatch = element && element !== document && elementMatches(element, selector);
+            }
+            return element && element !== document ? element : null;
+        } else {
+            return element.closest(selector);
+        }
+    }
+
+    function initControls() {
+        searchField.value = "";
+        [sortField, filterField].forEach(function (field) {
+            field.value = field.querySelectorAll('option')[0].value;
+        });
+
+        searchFieldValue = searchField.value.toLowerCase();
+        filterFieldValue = filterField.value;
+        sortFieldValue = sortField.value;
+
+        searchField.addEventListener('keyup', function () {
+            var newSearch = searchField.value.toLowerCase();
+            if (searchFieldValue !== newSearch) {
+                searchFieldValue = newSearch;
+                filter();
+            }
+        });
+
+        filterField.addEventListener('change', filter);
+        sortField.addEventListener('change', sort);
     }
 
 
@@ -433,64 +484,6 @@ document.addEventListener('DOMContentLoaded', function () {
         return itemElem.firstChild;
     }
 
-    function compareTitles(a, b) {
-        const aVal = a.getElement().getAttribute('data-title') || '';
-        const bVal = b.getElement().getAttribute('data-title') || '';
-        return aVal < bVal ? -1 : aVal > bVal ? 1 : 0;
-    }
-
-    function updateIds() {
-        var maxId = 1;
-        grid.getItems().forEach(function (item, i) {
-            item.getElement().setAttribute('data-id', i + 1);
-            maxId = i + 1;
-        });
-    }
-
-    function elementMatches(element, selector) {
-        const p = Element.prototype;
-        return (p.matches || p.matchesSelector || p.webkitMatchesSelector || p.mozMatchesSelector || p.msMatchesSelector || p.oMatchesSelector).call(element, selector);
-    }
-
-    // getting the closest element that triggered the evt
-    function elementClosest(element, selector) {
-        if (window.Element && !Element.prototype.closest) {
-            var isMatch = elementMatches(element, selector);
-            while (!isMatch && element && element !== document) {
-                element = element.parentNode;
-                isMatch = element && element !== document && elementMatches(element, selector);
-            }
-            return element && element !== document ? element : null;
-        } else {
-            return element.closest(selector);
-        }
-    }
-
-    function initControls() {
-        // Reset field values.
-        searchField.value = "";
-        [sortField, filterField].forEach(function (field) {
-            field.value = field.querySelectorAll('option')[0].value;
-        });
-
-        // Set initial search query, active filter, active sort value
-        searchFieldValue = searchField.value.toLowerCase();
-        filterFieldValue = filterField.value;
-        sortFieldValue = sortField.value;
-
-        // Search field binding.
-        searchField.addEventListener('keyup', function () {
-            var newSearch = searchField.value.toLowerCase();
-            if (searchFieldValue !== newSearch) {
-                searchFieldValue = newSearch;
-                filter();
-            }
-        });
-
-        // Filter, sort bindings.
-        filterField.addEventListener('change', filter);
-        sortField.addEventListener('change', sort);
-    }
 
     gridElement.addEventListener('click', function (e) {
         if (elementMatches(e.target, '.dashboard-card-remove, .dashboard-card-remove i')) {
@@ -649,17 +642,6 @@ document.addEventListener('DOMContentLoaded', function () {
         });
 
     }
-
-
-    // $(".popup-overlay").on("click", function (event) {
-    //     // hide
-    //     document.querySelector(".popup-overlay").classList.add("hidden");
-    //
-    //     // remove all dialogs
-    //     document.querySelector(".remove-all-dialog").classList.add("hidden");
-    //     document.querySelector(".add-dialog").classList.add("hidden");
-    //     document.querySelector(".eink-sent-dialog").classList.add("hidden");
-    // });
 
     $("#controls #add").on("click", function (event) {
         // show overlay
