@@ -66,12 +66,21 @@ public class Login {
 
     @POST
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    public void login(@FormParam("username") String username, @FormParam("password") String password, @Context HttpServletResponse servletResponse,
+    public void login(@FormParam("username") String usernameOrEmail, @FormParam("password") String password, @Context HttpServletResponse servletResponse,
                       @Context HttpServletRequest servletRequest) throws IOException {
 
-        System.out.println("Checking credentials: " + username + " & " + password);
+        System.out.println("Checking credentials: " + usernameOrEmail + " & " + password);
 
-        User user = UserDao.instance.getUserWithPassword(username, password);
+        String username = null;
+        User user;
+        if (usernameOrEmail.matches("(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|\"(?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21\\x23-\\x5b\\x5d-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])*\")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21-\\x5a\\x53-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])+)\\])")) {
+            username = UserDao.instance.getUserDetailsWithEmail(usernameOrEmail);
+            user = UserDao.instance.getUserWithPassword(username, password);
+        } else {
+            user = UserDao.instance.getUserWithPassword(usernameOrEmail, password);
+            username = usernameOrEmail;
+        }
+
 
         if (!UserDao.instance.isActivated(username) && user != null) {
             System.out.println("account is not activated");
