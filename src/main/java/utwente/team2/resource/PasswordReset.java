@@ -56,12 +56,14 @@ public class PasswordReset {
             username = UserDao.instance.getUserDetailsWithEmail(usernameOrEmail);
             user = UserDao.instance.getUserDetails(username);
         } else {
-             user = UserDao.instance.getUserDetails(username);
-             username = user.getUsername();
+             user = UserDao.instance.getUserDetails(usernameOrEmail);
+             if (user != null) {
+                 username = user.getUsername();
+             }
         }
 
-
         if (username == null || !username.matches("[a-zA-Z_]{2,}")) {
+            servletResponse.sendRedirect("/");
             return;
         }
 
