@@ -18,7 +18,8 @@ CREATE TABLE general_user (
     password text, -- when we know the actual length of salted hash, better replace with CHAR(fixed_limit)
     salt text,
     is_activated boolean,
-    PRIMARY KEY (username)
+    PRIMARY KEY (username),
+    UNIQUE(email)
 );
 
 CREATE TABLE user_picture (

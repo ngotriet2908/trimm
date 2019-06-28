@@ -47,14 +47,24 @@ public class PasswordReset {
     @Path("/reset")
     @POST
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    public void sendResetToken(@FormParam("username") String username, @Context HttpServletResponse servletResponse,
+    public void sendResetToken(@FormParam("username") String usernameOrEmail, @Context HttpServletResponse servletResponse,
                                @Context HttpServletRequest servletRequest) throws MessagingException, IOException, NoSuchMethodException, NoSuchMethodError {
 
-        if (!username.matches("[a-zA-Z_]{2,}")) {
+        String username = null;
+        User user;
+        if (usernameOrEmail.matches("(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|\"(?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21\\x23-\\x5b\\x5d-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])*\")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21-\\x5a\\x53-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])+)\\])")) {
+            username = UserDao.instance.getUserDetailsWithEmail(usernameOrEmail);
+            user = UserDao.instance.getUserDetails(username);
+        } else {
+             user = UserDao.instance.getUserDetails(username);
+             username = user.getUsername();
+        }
+
+
+        if (username == null || !username.matches("[a-zA-Z_]{2,}")) {
             return;
         }
 
-        User user = UserDao.instance.getUserDetails(username);
 
         if (user != null) {
             ZoneId zoneId = ZoneId.systemDefault();

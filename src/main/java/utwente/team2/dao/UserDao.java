@@ -57,6 +57,29 @@ public enum UserDao {
         }
     }
 
+    public String getUserDetailsWithEmail(String email) {
+        try {
+            String query = "SELECT * FROM general_user " +
+                    "WHERE email = ?";
+
+            PreparedStatement statement = DatabaseInitialiser.getCon().prepareStatement(query);
+            statement.setString(1, email);
+
+            ResultSet resultSet = statement.executeQuery();
+            // should be only one row
+            if (resultSet.next()) {
+
+                return resultSet.getString("username");
+            } else {
+                return null;
+            }
+        } catch (SQLException se) {
+            se.printStackTrace();
+        }
+
+        return null;
+    }
+
     public User getUserDetails(String username, User user) {
         try {
             String query = "SELECT * FROM getUserDetails(?)";
@@ -237,6 +260,24 @@ public enum UserDao {
             ResultSet resultSet = statement.executeQuery();
 
             return !(!resultSet.isBeforeFirst() && resultSet.getRow() == 0);
+        } catch (SQLException se) {
+            se.printStackTrace();
+        }
+
+        return false;
+    }
+
+    public boolean emailExist( String email) {
+        try {
+            String query = "SELECT * FROM general_user " +
+                    "WHERE email = ?";
+
+            PreparedStatement statement = DatabaseInitialiser.getCon().prepareStatement(query);
+            statement.setString(1, email);
+
+            ResultSet resultSet = statement.executeQuery();
+
+            return resultSet.next();
         } catch (SQLException se) {
             se.printStackTrace();
         }

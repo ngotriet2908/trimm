@@ -328,7 +328,7 @@ public class DataExporter {
             statement.setString(1, "JF");
             statement.setString(2, "Johnny");
             statement.setString(3, "Frankenstein");
-            statement.setString(4, "ngotriet2908@gmail.com");
+            statement.setString(4, "ngohungminhtriet@student.utwente.nl");
             statement.setString(5, UserDao.instance.getSHA256(UserDao.instance.getSHA256("Password7")+ salt));
             statement.setString(6, salt);
             statement.setBoolean(7, true);
