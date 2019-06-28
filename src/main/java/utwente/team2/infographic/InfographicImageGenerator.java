@@ -40,7 +40,7 @@ public class InfographicImageGenerator {
 
             try {
                 ClassLoader classLoaderr = getClass().getClassLoader();
-                InputStream stream = classLoaderr.getResourceAsStream("../../fonts/AvenirNext-Regular.ttf");
+                InputStream stream = classLoaderr.getResourceAsStream("../../fonts/Lato-Regular.ttf");
                 Font font = Font.createFont(Font.TRUETYPE_FONT, stream).deriveFont(200.0f);
 
                 g.setFont(font.deriveFont(font.getSize() * 0.2F));
