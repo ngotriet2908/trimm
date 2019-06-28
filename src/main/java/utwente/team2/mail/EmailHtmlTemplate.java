@@ -7,7 +7,7 @@ public class EmailHtmlTemplate {
     public static String createEmailHtml(String username, String token, String messageBody, String messageButton, String url, String domain) {
         User user = UserDao.instance.getUserDetails(username);
 
-        return part1 + user.getFirstName() + " " + user.getLastName() + "(" + user + ")" + part2 + messageBody + part3 + domain + part4
+        return part1 + user.getFirstName() + " " + user.getLastName() + " (" + username + ")" + part2 + messageBody + part3 + domain + part4
                 + url + token + part5 + messageButton + part6 + domain + part7;
     }
 
