@@ -10,7 +10,6 @@ html, body {
 
     position: relative;
 
-    overflow: hidden;
 }
 
 body {
@@ -632,7 +631,7 @@ footer div p {
 }
 
 
-#dashboard, #compare, #profile-management, #profile {
+#dashboard, #compare {
     height: auto;
 }
 
